@@ -1,0 +1,76 @@
+{
+  "name": "ipfs-repo-migrations",
+  "version": "0.1.0",
+  "description": "Tool for versioning and migrations of IPFS repositories",
+  "leadMaintainer": "Adam Uhlir <hello@adam-uhlir.me>",
+  "main": "src/index.js",
+  "files": [
+    "migrations",
+    "src",
+    "dist"
+  ],
+  "browser": {
+    "rimraf": false,
+    "datastore-fs": "datastore-level",
+    "./src/lock.js": "./src/lock-memory.js",
+    "./src/default-options.js": "./src/default-options-browser.js"
+  },
+  "scripts": {
+    "test": "aegir test",
+    "test:node": "aegir test --target node",
+    "test:browser": "aegir test --target browser",
+    "build": "aegir build",
+    "lint": "aegir lint",
+    "release": "aegir release --docs",
+    "release-minor": "aegir release --type minor --docs",
+    "release-major": "aegir release --type major --docs",
+    "coverage": "aegir coverage",
+    "coverage-publish": "aegir-coverage --provider coveralls",
+    "docs": "aegir docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/auhau/js-ipfs-repo-migrations.git"
+  },
+  "keywords": [
+    "IPFS",
+    "libp2p",
+    "migrations"
+  ],
+  "homepage": "https://github.com/auhau/js-ipfs-repo-migrations",
+  "engines": {
+    "node": ">=6.0.0",
+    "npm": ">=3.0.0"
+  },
+  "devDependencies": {
+    "aegir": "^18.1.0",
+    "chai": "^4.2.0",
+    "dirty-chai": "^2.0.1",
+    "lodash": "^4.17.11",
+    "memdown": "^3.0.0",
+    "multihashes": "~0.4.14",
+    "multihashing-async": "~0.5.2",
+    "ncp": "^2.0.0",
+    "rimraf": "^2.6.3"
+  },
+  "dependencies": {
+    "async": "^2.6.2",
+    "base32.js": "~0.1.0",
+    "bignumber.js": "^8.0.2",
+    "cids": "~0.5.7",
+    "datastore-core": "~0.6.0",
+    "datastore-fs": "~0.8.0",
+    "datastore-level": "~0.10.0",
+    "debug": "^4.1.1",
+    "interface-datastore": "~0.6.0",
+    "ipfs-block": "~0.8.0",
+    "multiaddr": "^6.0.4",
+    "proper-lockfile": "^3.2.0",
+    "pull-stream": "^3.6.9",
+    "sort-keys": "^2.0.0"
+  },
+  "license": "MIT",
+  "contributors": [
+    "Adam Uhlir <hello@adam-uhlir.me>",
+  ]
+}
