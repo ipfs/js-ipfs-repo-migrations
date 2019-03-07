@@ -2,11 +2,12 @@
 
 const exports = module.exports
 
-exports.NonReversibleMigration = NonReversibleMigration
 class NonReversibleMigration extends Error {
-    constructor(message) {
-        super(message)
-        this.name = 'NonReversibleMigration'
-        this.message = message
-    }
+  constructor (message) {
+    super(message)
+    this.name = 'NonReversibleMigration'
+    this.message = message
+  }
 }
+
+exports.NonReversibleMigration = NonReversibleMigration

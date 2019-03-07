@@ -43,7 +43,7 @@
     "dirty-chai": "^2.0.1"
   },
   "dependencies": {
-    "ipfs-repo": "^0.26.2",
+    "ipfs-repo": "~0.26.2",
     "debug": "^4.1.0"
   },
   "license": "MIT",
