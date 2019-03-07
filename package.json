@@ -9,12 +9,7 @@
     "src",
     "dist"
   ],
-  "browser": {
-    "rimraf": false,
-    "datastore-fs": "datastore-level",
-    "./src/lock.js": "./src/lock-memory.js",
-    "./src/default-options.js": "./src/default-options-browser.js"
-  },
+  "browser": {},
   "scripts": {
     "test": "aegir test",
     "test:node": "aegir test --target node",
@@ -45,32 +40,14 @@
   "devDependencies": {
     "aegir": "^18.1.0",
     "chai": "^4.2.0",
-    "dirty-chai": "^2.0.1",
-    "lodash": "^4.17.11",
-    "memdown": "^3.0.0",
-    "multihashes": "~0.4.14",
-    "multihashing-async": "~0.5.2",
-    "ncp": "^2.0.0",
-    "rimraf": "^2.6.3"
+    "dirty-chai": "^2.0.1"
   },
   "dependencies": {
-    "async": "^2.6.2",
-    "base32.js": "~0.1.0",
-    "bignumber.js": "^8.0.2",
-    "cids": "~0.5.7",
-    "datastore-core": "~0.6.0",
-    "datastore-fs": "~0.8.0",
-    "datastore-level": "~0.10.0",
-    "debug": "^4.1.1",
-    "interface-datastore": "~0.6.0",
-    "ipfs-block": "~0.8.0",
-    "multiaddr": "^6.0.4",
-    "proper-lockfile": "^3.2.0",
-    "pull-stream": "^3.6.9",
-    "sort-keys": "^2.0.0"
+    "ipfs-repo": "^0.26.2",
+    "debug": "^4.1.0"
   },
   "license": "MIT",
   "contributors": [
-    "Adam Uhlir <hello@adam-uhlir.me>",
+    "Adam Uhlir <hello@adam-uhlir.me>"
   ]
 }
