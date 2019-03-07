@@ -1,8 +1,10 @@
+'use strict'
+
 const migrations = require('../migrations')
 const debug = require('debug')
 
 const log = debug('migrator')
-exports = module.exports
+const exports = module.exports
 
 exports.getLatestVersion = getLatestVersion
 function getLatestVersion(){

@@ -1,4 +1,6 @@
-exports = module.exports
+'use strict'
+
+const exports = module.exports
 
 exports.NonReversibleMigration = NonReversibleMigration
 class NonReversibleMigration extends Error {
