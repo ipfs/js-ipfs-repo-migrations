@@ -12,7 +12,11 @@ class MigrationInterface {
   }
 
   static get version () {
-    return null
+    throw new Error('You have to provide version!')
+  }
+
+  static get description () {
+    throw new Error('You have to provide description of the migration!!')
   }
 }
 

@@ -1,6 +1,6 @@
 'use strict'
 
-const exports = module.exports
+exports = module.exports
 
 class NonReversibleMigration extends Error {
   constructor (message) {

@@ -2,13 +2,16 @@
   "name": "ipfs-repo-migrations",
   "version": "0.1.0",
   "description": "Tool for versioning and migrations of IPFS repositories",
-  "leadMaintainer": "Adam Uhlir <hello@adam-uhlir.me>",
+  "leadMaintainer": "Adam Uhlir <adam@uhlir.dev>",
   "main": "src/index.js",
   "files": [
     "migrations",
     "src",
     "dist"
   ],
+  "bin": {
+    "jsipfs-migrations": "./src/cli.js"
+  },
   "browser": {},
   "scripts": {
     "test": "aegir test",
@@ -43,8 +46,12 @@
     "dirty-chai": "^2.0.1"
   },
   "dependencies": {
-    "ipfs-repo": "~0.26.2",
-    "debug": "^4.1.0"
+    "chalk": "^2.4.2",
+    "debug": "^4.1.0",
+    "fast-write-atomic": "^0.2.1",
+    "ipfs-repo": "ipfs/js-ipfs-repo#pull/189/head",
+    "yargs": "^12.0.5",
+    "yargs-promise": "^1.1.0"
   },
   "license": "MIT",
   "contributors": [

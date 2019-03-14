@@ -3,8 +3,8 @@
 const migrations = require('../migrations')
 const debug = require('debug')
 
-const log = debug('migrator')
-const exports = module.exports
+const log = debug('js-ipfs-repo-migrations:migrator')
+exports = module.exports
 
 exports.getLatestVersion = getLatestVersion
 
@@ -14,38 +14,42 @@ function getLatestVersion () {
 
 exports.migrate = migrate
 
-async function migrate (repo, toVersion) {
+async function migrate (repo, toVersion, progressCb, isDryRun) {
   await bootstrapRepo(repo)
 
   const currentVersion = await repo.version.get()
 
-  if ((toVersion !== undefined && currentVersion === toVersion) ||
-    currentVersion === getLatestVersion()) {
+  toVersion = parseInt(toVersion) || getLatestVersion()
+  if (currentVersion === toVersion) {
     log('Nothing to migrate, skipping migrations.')
     return
   }
 
+  let counter = 0, totalMigrations = toVersion - currentVersion
   for (let migration of migrations) {
     if (toVersion !== undefined && migration.version > toVersion) {
       break
     }
 
+    counter++
+
     if (migration.version > currentVersion) {
       log(`Migrating version ${migration.version}`)
-      await migration.migrate(repo)
+      if(!isDryRun) await migration.migrate(repo)
+      typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
       log(`Migrating to version ${migration.version} finished`)
     }
   }
 
-  await repo.version.set(toVersion || getLatestVersion())
-  log('All migrations successfully migrated ', (`to version ${toVersion}!` ? toVersion !== undefined : 'to latest version!'))
+  if(!isDryRun) await repo.version.set(toVersion || getLatestVersion())
+  log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!`  : 'to latest version!')
 
   await repo.close()
 }
 
 exports.revert = revert
 
-async function revert (repo, toVersion) {
+async function revert (repo, toVersion, progressCb, isDryRun) {
   await bootstrapRepo(repo)
 
   const currentVersion = await repo.version.get()
@@ -59,6 +63,7 @@ async function revert (repo, toVersion) {
     return
   }
 
+  let counter = 0, totalMigrations = currentVersion - toVersion
   for (let migration of migrations.revert()) {
     if (migration.version <= toVersion) {
       break
@@ -67,7 +72,8 @@ async function revert (repo, toVersion) {
     if (migration.version <= currentVersion) {
       log(`Reverting migration version ${migration.version}`)
       try {
-        await migration.revert(repo)
+        if(!isDryRun) await migration.revert(repo)
+        typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
       } catch (e) {
         if (e.name === 'NonReversibleMigration') {
           log(`Migration version ${migration.version} is not possible to revert! Aborting...`)
@@ -80,7 +86,7 @@ async function revert (repo, toVersion) {
     }
   }
 
-  await repo.version.set(toVersion)
+  if(!isDryRun) await repo.version.set(toVersion)
   log(`All migrations successfully reverted to version ${toVersion}!`)
 
   await repo.close()
