@@ -23,7 +23,7 @@ function print(msg, newline) {
 }
 
 async function main(args) {
-  const cli = yargs(args)
+  const cli = yargs()
     .option('repo-path', {
       desc: 'Path to the IPFS repo',
       type: 'string',
@@ -32,7 +32,18 @@ async function main(args) {
     .command(commands.revert)
     .command(commands.status)
     .demandCommand(1, 'You need at least one command before continuing')
-    .help()
+    .strict()
+    .fail((msg, err, yargs) => {
+      if (err) {
+        throw err // preserve stack
+      }
+
+      if (args.length > 0) {
+        print(msg)
+      }
+
+      yargs.showHelp()
+    })
 
   let exitCode = 0
 

@@ -25,14 +25,14 @@ function reportingClosure(action){
     process.stdout.write(`${chalk.green(`[${currentlyMigrated}/${totalToMigrate}]`)} Successfully ${action} ${chalk.bold(migration.version)}: ${migration.description}\n`)
 }
 
-async function migrate({repoPath, version, dry}) {
+async function migrate({repoPath, ver, dry}) {
   const repo = getRepo(repoPath)
-  await migrator.migrate(repo, version, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
+  await migrator.migrate(repo, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
 }
 
-async function revert({repoPath, version, dry}) {
+async function revert({repoPath, ver, dry}) {
   const repo = getRepo(repoPath)
-  await migrator.revert(repo, version, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
+  await migrator.revert(repo, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
 }
 
 async function status({repoPath}) {
@@ -51,7 +51,7 @@ async function status({repoPath}) {
   const repoVersion = await repo.version.get()
   const lastMigrationVersion = migrator.getLatestVersion()
   const statusString =
-    repoVersion < lastMigrationVersion ? chalk.red('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
+    repoVersion < lastMigrationVersion ? chalk.yellow('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
 
   return `${statusString}\nCurrent repo version: ${repoVersion}\nLast migration's version: ${lastMigrationVersion}`
 }
@@ -59,10 +59,10 @@ async function status({repoPath}) {
 module.exports = {
   migrate: {
     command: 'migrate',
-    describe: 'migrate IPFS repo',
+    describe: 'Migrate IPFS repo to latest or specific version',
     handler: asyncClosure(migrate),
     builder: yargv => yargv
-      .option('version', {
+      .option('ver', {
         describe: 'Specify to which version should be repo migrated to',
         type: 'number'
       })
@@ -72,13 +72,17 @@ module.exports = {
       })
   },
   revert: {
-    command: 'revert <version>',
-    describe: 'revert IPFS repo to specific version',
+    command: 'revert <ver>',
+    describe: 'Revert IPFS repo to specific version',
     handler: asyncClosure(revert),
     builder: yargv => yargv
       .option('dry', {
         describe: 'Only displays what migrations will be applied',
         type: 'boolean'
+      })
+      .positional('ver', {
+        describe: 'version to revert to (inclusive)',
+        type: 'number'
       }),
   },
   status: {
