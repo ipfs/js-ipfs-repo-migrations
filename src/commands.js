@@ -2,16 +2,19 @@ const os = require('os')
 const path = require('path')
 const process = require('process')
 
-const IPFSRepo = require('ipfs-repo')
+const datastore = require('datastore-fs')
 const chalk = require('chalk')
 const log = require('debug')('js-ipfs-repo-migrations:commands')
 
+const repo_version = require('./repo/version')
 const migrator = require('./index')
 
-function getRepo(dir) {
+function getRepoRootStore(dir) {
   const repoPath = dir || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
+  log(`Operating with repo on path: ${repoPath}`)
 
-  return new IPFSRepo(repoPath)
+  // Will throw error if does not exist
+  return new datastore(repoPath, {extension: '', createIfMissing: false})
 }
 
 function asyncClosure(fnc) {
@@ -26,30 +29,20 @@ function reportingClosure(action){
 }
 
 async function migrate({repoPath, ver, dry}) {
-  const repo = getRepo(repoPath)
-  await migrator.migrate(repo, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
+  const store = getRepoRootStore(repoPath)
+  await migrator.migrate(store, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
 }
 
 async function revert({repoPath, ver, dry}) {
-  const repo = getRepo(repoPath)
-  await migrator.revert(repo, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
+  const store = getRepoRootStore(repoPath)
+  await migrator.revert(store, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
 }
 
 async function status({repoPath}) {
-  const repo = getRepo(repoPath)
+  const store = getRepoRootStore(repoPath)
 
-  const repoExists = await repo.exists()
-  log(`Repo exists: ${repoExists}`)
-  if (!repoExists) {
-    throw new Error(`Repo on path \'${repo.path}\' does not exists!`)
-  }
-
-  // Will fail with error, if the repo is locked or not initialized.
-  // There is not much to do about those errors, so letting them propagate...
-  await repo.open()
-
-  const repoVersion = await repo.version.get()
-  const lastMigrationVersion = migrator.getLatestVersion()
+  const repoVersion = await repo_version.getVersion(store)
+  const lastMigrationVersion = migrator.getLatestMigrationVersion()
   const statusString =
     repoVersion < lastMigrationVersion ? chalk.yellow('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
 

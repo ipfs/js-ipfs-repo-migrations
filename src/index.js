@@ -1,43 +1,50 @@
 'use strict'
 
 const migrations = require('../migrations')
+const repo_version = require('./repo/version')
+const repo_lock = require('./repo/lock')
 const debug = require('debug')
 
 const log = debug('js-ipfs-repo-migrations:migrator')
-exports = module.exports
 
-exports.getLatestVersion = getLatestVersion
+exports.getLatestMigrationVersion = getLatestMigrationVersion
 
-function getLatestVersion() {
+/**
+ * Returns the version of latest migration.
+ *
+ * @returns int
+ */
+function getLatestMigrationVersion() {
   return migrations[migrations.length - 1].version
 }
 
-exports.migrate = migrate
+async function migrate(store, toVersion, progressCb, isDryRun) {
+  if (toVersion && (!Number.isInteger(toVersion) || toVersion <= 0)) {
+    throw new Error('Version has to be positive integer!')
+  }
+  toVersion = toVersion || getLatestMigrationVersion()
 
-async function migrate(repo, toVersion, progressCb, isDryRun) {
-  await bootstrapRepo(repo)
+  const currentVersion = await repo_version.getVersion(store)
 
-  const currentVersion = await repo.version.get()
+  let lock
+  if (!isDryRun) lock = await repo_lock.lock(currentVersion, store.path)
 
-  toVersion = parseInt(toVersion) || getLatestVersion()
   if (currentVersion === toVersion) {
     log('Nothing to migrate, skipping migrations.')
     return
   }
-
   let counter = 0, totalMigrations = toVersion - currentVersion
   for (let migration of migrations) {
     if (toVersion !== undefined && migration.version > toVersion) {
       break
     }
 
-    counter++
-
     if (migration.version > currentVersion) {
+      counter++
       log(`Migrating version ${migration.version}`)
       if (!isDryRun) {
         try {
-          await migration.migrate(repo)
+          await migration.migrate(store)
         } catch (e) {
           e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
           throw e
@@ -48,19 +55,16 @@ async function migrate(repo, toVersion, progressCb, isDryRun) {
     }
   }
 
-  if (!isDryRun) await repo.version.set(toVersion || getLatestVersion())
+  if (!isDryRun) await repo_version.setVersion(store, toVersion || getLatestMigrationVersion())
   log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
 
-  await repo.close()
+  if (!isDryRun) await lock.close()
+  await store.close()
 }
 
-exports.revert = revert
+exports.migrate = migrate
 
-async function revert(repo, toVersion, progressCb, isDryRun) {
-  await bootstrapRepo(repo)
-
-  const currentVersion = await repo.version.get()
-
+async function revert(store, toVersion, progressCb, isDryRun) {
   if (!toVersion) {
     throw new Error('When reverting migrations, you have to specify to which version to revert!')
   }
@@ -69,6 +73,7 @@ async function revert(repo, toVersion, progressCb, isDryRun) {
     throw new Error('Version has to be positive integer!')
   }
 
+  const currentVersion = await repo_version.getVersion(store)
   if (currentVersion === toVersion) {
     log('Nothing to revert, skipping reverting.')
     return
@@ -79,17 +84,21 @@ async function revert(repo, toVersion, progressCb, isDryRun) {
     throw new Error(`Migration version ${problematicMigration} is not possible to revert! Cancelling reversion.`)
   }
 
+  let lock
+  if (!isDryRun) lock = await repo_lock.lock(currentVersion, store.path)
   let counter = 0, totalMigrations = currentVersion - toVersion
-  for (let migration of migrations.reverse()) {
+  const reversedMigrationArray = migrations.reverse()
+  for (let migration of reversedMigrationArray) {
     if (migration.version <= toVersion) {
       break
     }
 
     if (migration.version <= currentVersion) {
+      counter++
       log(`Reverting migration version ${migration.version}`)
       if (!isDryRun) {
         try {
-          await migration.revert(repo)
+          await migration.revert(store)
         } catch (e) {
           e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
           throw e
@@ -100,14 +109,18 @@ async function revert(repo, toVersion, progressCb, isDryRun) {
     }
   }
 
-  if (!isDryRun) await repo.version.set(toVersion)
+  if (!isDryRun) await repo_version.setVersion(store, toVersion)
   log(`All migrations successfully reverted to version ${toVersion}!`)
 
-  await repo.close()
+  if (!isDryRun) await lock.close()
+  await store.close()
 }
 
+exports.revert = revert
+
 function verifyReversibility(fromVersion, toVersion) {
-  for (let migration of migrations.reverse()) {
+  const reversedMigrationArray = migrations.reverse()
+  for (let migration of reversedMigrationArray) {
     if (migration.version <= toVersion) {
       break
     }
@@ -117,15 +130,5 @@ function verifyReversibility(fromVersion, toVersion) {
     }
   }
 
-  return {reversible: true}
-}
-
-async function bootstrapRepo(repo) {
-  if (!(await repo.exists())) {
-    throw Error(`Repo on path '${repo.path}' does not exists!`)
-  }
-
-  // Will fail with error, if the repo is locked or not initialized.
-  // There is not much to do about those errors, so letting them propagate...
-  await repo.open()
+  return {reversible: true, version: undefined}
 }

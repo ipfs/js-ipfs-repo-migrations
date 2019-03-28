@@ -48,8 +48,10 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "debug": "^4.1.0",
-    "fast-write-atomic": "^0.2.1",
-    "ipfs-repo": "ipfs/js-ipfs-repo#pull/189/head",
+    "datastore-fs": "ipfs/js-datastore-fs#pull/22/head",
+    "datastore-level": "ipfs/js-datastore-level#pull/12/head",
+    "interface-datastore": "ipfs/interface-datastore#pull/25/head",
+    "proper-lockfile": "^3.2.0",
     "yargs": "^12.0.5",
     "yargs-promise": "^1.1.0"
   },

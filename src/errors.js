@@ -11,3 +11,13 @@ class NonReversibleMigration extends Error {
 }
 
 exports.NonReversibleMigration = NonReversibleMigration
+
+class UnknownRepoStructure extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'UnknownRepoStructure'
+    this.message = message
+  }
+}
+
+exports.UnknownRepoStructure = UnknownRepoStructure
