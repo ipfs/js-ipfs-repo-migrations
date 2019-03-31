@@ -12,7 +12,11 @@
   "bin": {
     "jsipfs-migrations": "./src/cli.js"
   },
-  "browser": {},
+  "browser": {
+    "./src/option-node.js": "./src/option-browser.js",
+    "./src/repo/lock.js": "./src/repo/lock-memory.js",
+    "datastore-fs": "datastore-level"
+  },
   "scripts": {
     "test": "aegir test",
     "test:node": "aegir test --target node",

@@ -1,21 +1,13 @@
+'use strict'
+
 const os = require('os')
 const path = require('path')
 const process = require('process')
 
-const datastore = require('datastore-fs')
 const chalk = require('chalk')
-const log = require('debug')('js-ipfs-repo-migrations:commands')
 
-const repo_version = require('./repo/version')
+const repoVersion = require('./repo/version')
 const migrator = require('./index')
-
-function getRepoRootStore(dir) {
-  const repoPath = dir || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-  log(`Operating with repo on path: ${repoPath}`)
-
-  // Will throw error if does not exist
-  return new datastore(repoPath, {extension: '', createIfMissing: false})
-}
 
 function asyncClosure(fnc) {
   return function asyncWrapper({resolve, ...options}) {
@@ -29,24 +21,24 @@ function reportingClosure(action){
 }
 
 async function migrate({repoPath, ver, dry}) {
-  const store = getRepoRootStore(repoPath)
-  await migrator.migrate(store, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
+  repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
+  await migrator.migrate(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
 }
 
 async function revert({repoPath, ver, dry}) {
-  const store = getRepoRootStore(repoPath)
-  await migrator.revert(store, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
+  repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
+  await migrator.revert(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
 }
 
 async function status({repoPath}) {
-  const store = getRepoRootStore(repoPath)
+  repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
 
-  const repoVersion = await repo_version.getVersion(store)
+  const version = await repoVersion.getVersion(repoPath)
   const lastMigrationVersion = migrator.getLatestMigrationVersion()
   const statusString =
-    repoVersion < lastMigrationVersion ? chalk.yellow('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
+    version < lastMigrationVersion ? chalk.yellow('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
 
-  return `${statusString}\nCurrent repo version: ${repoVersion}\nLast migration's version: ${lastMigrationVersion}`
+  return `${statusString}\nCurrent repo version: ${version}\nLast migration's version: ${lastMigrationVersion}`
 }
 
 module.exports = {

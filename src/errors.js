@@ -1,7 +1,9 @@
 'use strict'
 
-exports = module.exports
-
+/**
+ * Exception raised when trying to revert migration that is not possible
+ * to revert.
+ */
 class NonReversibleMigration extends Error {
   constructor (message) {
     super(message)
@@ -9,9 +11,11 @@ class NonReversibleMigration extends Error {
     this.message = message
   }
 }
-
 exports.NonReversibleMigration = NonReversibleMigration
 
+/**
+ * Exception raised when structure of a repo is not as expected.
+ */
 class UnknownRepoStructure extends Error {
   constructor (message) {
     super(message)
@@ -19,5 +23,4 @@ class UnknownRepoStructure extends Error {
     this.message = message
   }
 }
-
 exports.UnknownRepoStructure = UnknownRepoStructure

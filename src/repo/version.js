@@ -1,4 +1,7 @@
+'use strict'
+
 const errors = require('../errors')
+const Datastore = require('datastore-fs')
 
 const Key = require('interface-datastore').Key
 
@@ -11,27 +14,35 @@ exports.getVersion = getVersion
  * This function needs to be cross-repo-version functional to be able to fetch any version number,
  * even in case of change of repo's versioning.
  *
- * @param {FsDatastore|LevelDatastore} store
- * @returns Promise<int>
+ * @param {string} path
+ * @returns {Promise<int>}
  */
-async function getVersion(store) {
+async function getVersion(path) {
+  const store = new Datastore(path, {extension: '', createIfMissing: false})
+  await store.open()
 
   if (!await store.has(versionKey)) {
     throw new errors.UnknownRepoStructure('Repo does not have version file! Is the repo initialized?')
   }
 
-  return parseInt(await store.get(versionKey))
+  const version = parseInt(await store.get(versionKey))
+  await store.close()
+
+  return version
 }
 
 /**
  * Function for setting a version in cross-repo-version manner.
  *
- * @param {FsDatastore|LevelDatastore} store
+ * @param {string} path
  * @param {int} version
- * @returns {Promise<Promise<void>|*|void|IDBRequest<IDBValidKey>|Promise<void>>}
+ * @returns {Promise<void>}
  */
-async function setVersion(store, version) {
-  return store.put(versionKey, Buffer.from(String(version)))
+async function setVersion(path, version) {
+  const store = new Datastore(path, {extension: '', createIfMissing: false})
+  await store.open()
+  await store.put(versionKey, Buffer.from(String(version)))
+  await store.close()
 }
 
 exports.setVersion = setVersion
