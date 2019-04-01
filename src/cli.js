@@ -31,6 +31,7 @@ async function main(args) {
     .command(commands.migrate)
     .command(commands.revert)
     .command(commands.status)
+    .command(commands.add)
     .demandCommand(1, 'You need at least one command before continuing')
     .strict()
     .fail((msg, err, yargs) => {
