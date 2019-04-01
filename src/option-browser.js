@@ -1,2 +1,2 @@
 'use strict'
-exports = true
+module.exports = true

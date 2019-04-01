@@ -4,11 +4,11 @@ const os = require('os')
 const path = require('path')
 const fs = require('fs')
 const process = require('process')
-const util = require('util');
+const util = require('util')
 
 const writeFile = util.promisify(fs.writeFile)
 const mkdir = util.promisify(fs.mkdir)
-const exec = util.promisify(require('child_process').exec);
+const exec = util.promisify(require('child_process').exec)
 
 const chalk = require('chalk')
 
@@ -17,28 +17,28 @@ const migrator = require('./index')
 const templates = require('./migration-templates')
 const migrations = require('../migrations')
 
-function asyncClosure(fnc) {
-  return function asyncWrapper({resolve, ...options}) {
+function asyncClosure (fnc) {
+  return function asyncWrapper ({ resolve, ...options }) {
     resolve(fnc(options))
   }
 }
 
-function reportingClosure(action) {
+function reportingClosure (action) {
   return (migration, currentlyMigrated, totalToMigrate) =>
     process.stdout.write(`${chalk.green(`[${currentlyMigrated}/${totalToMigrate}]`)} Successfully ${action} ${chalk.bold(migration.version)}: ${migration.description}\n`)
 }
 
-async function migrate({repoPath, ver, dry}) {
+async function migrate ({ repoPath, ver, dry }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
   await migrator.migrate(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
 }
 
-async function revert({repoPath, ver, dry}) {
+async function revert ({ repoPath, ver, dry }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
   await migrator.revert(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
 }
 
-async function status({repoPath}) {
+async function status ({ repoPath }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
 
   const version = await repoVersion.getVersion(repoPath)
@@ -49,17 +49,17 @@ async function status({repoPath}) {
   return `${statusString}\nCurrent repo version: ${version}\nLast migration's version: ${lastMigrationVersion}`
 }
 
-async function getAuthor() {
+async function getAuthor () {
   try {
-    const name = (await exec('git config --get user.name'))['stdout']
-    const email = (await exec('git config --get user.email'))['stdout']
+    const name = (await exec('git config --get user.name')).stdout
+    const email = (await exec('git config --get user.email')).stdout
     return `${name.replace('\n', '')} <${email.replace('\n', '')}>`
   } catch (e) {
     return ''
   }
 }
 
-async function add({repoPath, empty}) {
+async function add ({ repoPath, empty }) {
   const newMigrationVersion = migrator.getLatestMigrationVersion() + 1
   const newMigrationFolder = path.join(__dirname, '..', 'migrations', 'migration-' + newMigrationVersion)
 
@@ -71,7 +71,7 @@ async function add({repoPath, empty}) {
   }
   const migrationsIndexJsContent = templates.migrationsIndexJs
     .replace('{{imports}}', migrationsImport.join('\n'))
-  ;await writeFile(path.join(newMigrationFolder, '..', 'index.js'), migrationsIndexJsContent)
+  await writeFile(path.join(newMigrationFolder, '..', 'index.js'), migrationsIndexJsContent)
 
   if (empty) return
 
@@ -80,11 +80,11 @@ async function add({repoPath, empty}) {
   const packageJsonContent = templates.packageJson
     .replace(/{{version}}/gi, newMigrationVersion)
     .replace(/{{author}}/gi, await getAuthor())
-  ;await writeFile(path.join(newMigrationFolder, 'package.json'), packageJsonContent)
+  await writeFile(path.join(newMigrationFolder, 'package.json'), packageJsonContent)
 
   const indexJsContent = templates.indexJs
     .replace(/{{version}}/gi, newMigrationVersion)
-  ;await writeFile(path.join(newMigrationFolder, 'index.js'), indexJsContent)
+  await writeFile(path.join(newMigrationFolder, 'index.js'), indexJsContent)
 }
 
 module.exports = {
@@ -114,12 +114,12 @@ module.exports = {
       .positional('ver', {
         describe: 'version to revert to (inclusive)',
         type: 'number'
-      }),
+      })
   },
   status: {
     command: 'status',
     describe: 'Display status of IPFS repo',
-    handler: asyncClosure(status),
+    handler: asyncClosure(status)
   },
   add: {
     command: 'add',
@@ -130,5 +130,5 @@ module.exports = {
         describe: 'Creates empty migration',
         type: 'boolean'
       })
-  },
+  }
 }

@@ -9,15 +9,15 @@ const debug = require('debug')
 
 const log = debug('js-ipfs-repo-migrations:migrator')
 
-
 /**
  * Returns the version of latest migration.
  *
  * @returns {int}
  */
-function getLatestMigrationVersion() {
+function getLatestMigrationVersion () {
   return migrations[migrations.length - 1].version
 }
+
 exports.getLatestMigrationVersion = getLatestMigrationVersion
 
 /**
@@ -32,7 +32,7 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the migrations without any effect.
  * @returns {Promise<void>}
  */
-async function migrate(path, toVersion, progressCb, isDryRun) {
+async function migrate (path, toVersion, progressCb, isDryRun) {
   if (toVersion && (!Number.isInteger(toVersion) || toVersion <= 0)) {
     throw new Error('Version has to be positive integer!')
   }
@@ -47,7 +47,8 @@ async function migrate(path, toVersion, progressCb, isDryRun) {
     log('Nothing to migrate, skipping migrations.')
     return
   }
-  let counter = 0, totalMigrations = toVersion - currentVersion
+  let counter = 0
+  let totalMigrations = toVersion - currentVersion
   for (let migration of migrations) {
     if (toVersion !== undefined && migration.version > toVersion) {
       break
@@ -74,6 +75,7 @@ async function migrate(path, toVersion, progressCb, isDryRun) {
 
   if (!isDryRun) await lock.close()
 }
+
 exports.migrate = migrate
 
 /**
@@ -88,7 +90,7 @@ exports.migrate = migrate
  * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the reversion without any effect.
  * @returns {Promise<void>}
  */
-async function revert(path, toVersion, progressCb, isDryRun) {
+async function revert (path, toVersion, progressCb, isDryRun) {
   if (!toVersion) {
     throw new Error('When reverting migrations, you have to specify to which version to revert!')
   }
@@ -103,14 +105,15 @@ async function revert(path, toVersion, progressCb, isDryRun) {
     return
   }
 
-  let {reversible, problematicMigration} = verifyReversibility(currentVersion, toVersion)
+  let { reversible, problematicMigration } = verifyReversibility(currentVersion, toVersion)
   if (!reversible) {
     throw new errors.NonReversibleMigration(`Migration version ${problematicMigration} is not possible to revert! Cancelling reversion.`)
   }
 
   let lock
   if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
-  let counter = 0, totalMigrations = currentVersion - toVersion
+  let counter = 0
+  let totalMigrations = currentVersion - toVersion
   const reversedMigrationArray = migrations.reverse()
   for (let migration of reversedMigrationArray) {
     if (migration.version <= toVersion) {
@@ -138,6 +141,7 @@ async function revert(path, toVersion, progressCb, isDryRun) {
 
   if (!isDryRun) await lock.close()
 }
+
 exports.revert = revert
 
 /**
@@ -147,7 +151,7 @@ exports.revert = revert
  * @param {int} toVersion
  * @returns {object}
  */
-function verifyReversibility(fromVersion, toVersion) {
+function verifyReversibility (fromVersion, toVersion) {
   const reversedMigrationArray = migrations.reverse()
   for (let migration of reversedMigrationArray) {
     if (migration.version <= toVersion) {
@@ -155,9 +159,9 @@ function verifyReversibility(fromVersion, toVersion) {
     }
 
     if (migration.version <= fromVersion && !migration.reversible) {
-      return {reversible: false, version: migration.version}
+      return { reversible: false, version: migration.version }
     }
   }
 
-  return {reversible: true, version: undefined}
+  return { reversible: true, version: undefined }
 }

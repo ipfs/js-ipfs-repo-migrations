@@ -9,8 +9,7 @@ const log = require('debug')('js-ipfs-repo-migrations:cli')
 
 const commands = require('./commands')
 
-
-function print(msg, newline) {
+function print (msg, newline) {
   if (newline === undefined) {
     newline = true
   }
@@ -22,11 +21,11 @@ function print(msg, newline) {
   process.stdout.write(msg)
 }
 
-async function main(args) {
+async function main (args) {
   const cli = yargs()
     .option('repo-path', {
       desc: 'Path to the IPFS repo',
-      type: 'string',
+      type: 'string'
     })
     .command(commands.migrate)
     .command(commands.revert)
@@ -49,7 +48,7 @@ async function main(args) {
   let exitCode = 0
 
   try {
-    const {data} = await new YargsPromise(cli).parse(args)
+    const { data } = await new YargsPromise(cli).parse(args)
     if (data) print(data)
   } catch (err) {
     log(err)

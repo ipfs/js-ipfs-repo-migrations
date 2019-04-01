@@ -14,7 +14,7 @@ const LOCKS = {}
  * @param {string} dir
  * @returns {Promise<Object>}
  */
-exports.lock = async function lock(version, dir) {
+exports.lock = async function lock (version, dir) {
   const file = dir + '/' + lockFile
   log('locking %s', file)
 
@@ -24,7 +24,7 @@ exports.lock = async function lock(version, dir) {
 
   LOCKS[file] = true
   return {
-    close() {
+    close () {
       if (LOCKS[file]) {
         log('releasing lock %s', file)
         delete LOCKS[file]

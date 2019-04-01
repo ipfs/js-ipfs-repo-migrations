@@ -17,8 +17,8 @@ exports.getVersion = getVersion
  * @param {string} path
  * @returns {Promise<int>}
  */
-async function getVersion(path) {
-  const store = new Datastore(path, {extension: '', createIfMissing: false})
+async function getVersion (path) {
+  const store = new Datastore(path, { extension: '', createIfMissing: false })
   await store.open()
 
   if (!await store.has(versionKey)) {
@@ -38,8 +38,8 @@ async function getVersion(path) {
  * @param {int} version
  * @returns {Promise<void>}
  */
-async function setVersion(path, version) {
-  const store = new Datastore(path, {extension: '', createIfMissing: false})
+async function setVersion (path, version) {
+  const store = new Datastore(path, { extension: '', createIfMissing: false })
   await store.open()
   await store.put(versionKey, Buffer.from(String(version)))
   await store.close()

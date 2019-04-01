@@ -26,7 +26,6 @@ const STALE_TIME = 20000
  * @returns {Promise<Object>}
  */
 exports.lock = async (version, dir) => {
-
   const file = path.join(dir, lockFile)
   log('locking %s', file)
   const release = await lock(dir, { lockfilePath: file, stale: STALE_TIME })
