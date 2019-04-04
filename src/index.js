@@ -43,37 +43,39 @@ async function migrate (path, toVersion, progressCb, isDryRun) {
   let lock
   if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
 
-  if (currentVersion === toVersion) {
-    log('Nothing to migrate, skipping migrations.')
-    return
-  }
-  let counter = 0
-  let totalMigrations = toVersion - currentVersion
-  for (let migration of migrations) {
-    if (toVersion !== undefined && migration.version > toVersion) {
-      break
+  try {
+    if (currentVersion === toVersion) {
+      log('Nothing to migrate, skipping migrations.')
+      return
     }
-
-    if (migration.version > currentVersion) {
-      counter++
-      log(`Migrating version ${migration.version}`)
-      if (!isDryRun) {
-        try {
-          await migration.migrate(path, isBrowser)
-        } catch (e) {
-          e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
-          throw e
-        }
+    let counter = 0
+    let totalMigrations = toVersion - currentVersion
+    for (let migration of migrations) {
+      if (toVersion !== undefined && migration.version > toVersion) {
+        break
       }
-      typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
-      log(`Migrating to version ${migration.version} finished`)
+
+      if (migration.version > currentVersion) {
+        counter++
+        log(`Migrating version ${migration.version}`)
+        if (!isDryRun) {
+          try {
+            await migration.migrate(path, isBrowser)
+          } catch (e) {
+            e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
+            throw e
+          }
+        }
+        typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
+        log(`Migrating to version ${migration.version} finished`)
+      }
     }
+
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion())
+    log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
+  } finally {
+    if (!isDryRun) await lock.close()
   }
-
-  if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion())
-  log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
-
-  if (!isDryRun) await lock.close()
 }
 
 exports.migrate = migrate
@@ -112,34 +114,37 @@ async function revert (path, toVersion, progressCb, isDryRun) {
 
   let lock
   if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
-  let counter = 0
-  let totalMigrations = currentVersion - toVersion
-  const reversedMigrationArray = migrations.reverse()
-  for (let migration of reversedMigrationArray) {
-    if (migration.version <= toVersion) {
-      break
-    }
 
-    if (migration.version <= currentVersion) {
-      counter++
-      log(`Reverting migration version ${migration.version}`)
-      if (!isDryRun) {
-        try {
-          await migration.revert(path, isBrowser)
-        } catch (e) {
-          e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
-          throw e
-        }
+  try {
+    let counter = 0
+    let totalMigrations = currentVersion - toVersion
+    const reversedMigrationArray = migrations.reverse()
+    for (let migration of reversedMigrationArray) {
+      if (migration.version <= toVersion) {
+        break
       }
-      typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
-      log(`Reverting to version ${migration.version} finished`)
+
+      if (migration.version <= currentVersion) {
+        counter++
+        log(`Reverting migration version ${migration.version}`)
+        if (!isDryRun) {
+          try {
+            await migration.revert(path, isBrowser)
+          } catch (e) {
+            e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
+            throw e
+          }
+        }
+        typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
+        log(`Reverting to version ${migration.version} finished`)
+      }
     }
+
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion)
+    log(`All migrations successfully reverted to version ${toVersion}!`)
+  } finally {
+    if (!isDryRun) await lock.close()
   }
-
-  if (!isDryRun) await repoVersion.setVersion(path, toVersion)
-  log(`All migrations successfully reverted to version ${toVersion}!`)
-
-  if (!isDryRun) await lock.close()
 }
 
 exports.revert = revert

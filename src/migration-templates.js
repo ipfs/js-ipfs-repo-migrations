@@ -22,11 +22,11 @@ module.exports = {
 
   indexJs: `'use strict'
 
-const Dastore = require('datastore-fs')
+const Datastore = require('datastore-fs')
 const log = require('debug')('jsipfs-repo-migrations:migration-{{version}}')
 
 async function migrate(repoPath, isBrowser) {
-  const store = new Dastore(repoPath, {extension: '', createIfMissing: false})
+  const store = new Datastore(repoPath, {extension: '', createIfMissing: false})
   store.open()
 
   try {
@@ -37,7 +37,7 @@ async function migrate(repoPath, isBrowser) {
 }
 
 async function revert(repoPath, isBrowser) {
-  const store = new Dastore(repoPath, {extension: '', createIfMissing: false})
+  const store = new Datastore(repoPath, {extension: '', createIfMissing: false})
   store.open()
 
   try {

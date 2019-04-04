@@ -1,7 +1,7 @@
 {
   "name": "ipfs-repo-migrations",
   "version": "0.1.0",
-  "description": "Tool for versioning and migrations of IPFS repositories",
+  "description": "Migration framework for versioning of JS IPFS Repo",
   "leadMaintainer": "Adam Uhlir <adam@uhlir.dev>",
   "main": "src/index.js",
   "files": [
