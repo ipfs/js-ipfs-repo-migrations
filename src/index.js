@@ -1,6 +1,6 @@
 'use strict'
 
-const migrations = require('../migrations')
+const defaultMigrations = require('../migrations')
 const repoVersion = require('./repo/version')
 const repoLock = require('./repo/lock')
 const isBrowser = require('./option-node')
@@ -14,7 +14,13 @@ const log = debug('js-ipfs-repo-migrations:migrator')
  *
  * @returns {int}
  */
-function getLatestMigrationVersion () {
+function getLatestMigrationVersion (migrations) {
+  migrations = migrations || defaultMigrations
+
+  if (!Array.isArray(migrations) || migrations.length === 0) {
+    throw Error('Migrations must be non-empty array!')
+  }
+
   return migrations[migrations.length - 1].version
 }
 
@@ -30,13 +36,20 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * @param {int|undefined} toVersion - Version to which the repo should be migrated, if undefined repo will be migrated to the latest version.
  * @param {function|undefined} progressCb - Callback which will be called after each executed migration to report progress
  * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the migrations without any effect.
+ * @param {array} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function migrate (path, toVersion, progressCb, isDryRun) {
+async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
+  migrations = migrations || defaultMigrations
+
+  if (!path) {
+    throw new Error('Path argument is required!')
+  }
+
   if (toVersion && (!Number.isInteger(toVersion) || toVersion <= 0)) {
     throw new Error('Version has to be positive integer!')
   }
-  toVersion = toVersion || getLatestMigrationVersion()
+  toVersion = toVersion || getLatestMigrationVersion(migrations)
 
   const currentVersion = await repoVersion.getVersion(path)
 
@@ -71,7 +84,7 @@ async function migrate (path, toVersion, progressCb, isDryRun) {
       }
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion())
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations))
     log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
     if (!isDryRun) await lock.close()
@@ -89,10 +102,17 @@ exports.migrate = migrate
  * @param {string} path - Path to initialized (!) JS-IPFS repo
  * @param {int} toVersion - Version to which the repo will be reverted.
  * @param {function|undefined} progressCb - Callback which will be called after each reverted migration to report progress
- * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the reversion without any effect.
+ * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the reversion without any effects. Make sense to utilize progressCb with this argument.
+ * @param {array|undefined} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function revert (path, toVersion, progressCb, isDryRun) {
+async function revert (path, toVersion, progressCb, isDryRun, migrations) {
+  migrations = migrations || defaultMigrations
+
+  if (!path) {
+    throw new Error('Path argument is required!')
+  }
+
   if (!toVersion) {
     throw new Error('When reverting migrations, you have to specify to which version to revert!')
   }
@@ -107,18 +127,19 @@ async function revert (path, toVersion, progressCb, isDryRun) {
     return
   }
 
-  let { reversible, problematicMigration } = verifyReversibility(currentVersion, toVersion)
-  if (!reversible) {
-    throw new errors.NonReversibleMigration(`Migration version ${problematicMigration} is not possible to revert! Cancelling reversion.`)
+  let reversibility = verifyReversibility(migrations, currentVersion, toVersion)
+  if (!reversibility.reversible) {
+    throw new errors.NonReversibleMigration(`Migration version ${reversibility.version} is not possible to revert! Cancelling reversion.`)
   }
 
   let lock
   if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
 
+  log(`Reverting from version ${currentVersion} to ${toVersion}`)
   try {
     let counter = 0
     let totalMigrations = currentVersion - toVersion
-    const reversedMigrationArray = migrations.reverse()
+    const reversedMigrationArray = migrations.slice().reverse()
     for (let migration of reversedMigrationArray) {
       if (migration.version <= toVersion) {
         break
@@ -152,18 +173,22 @@ exports.revert = revert
 /**
  * Function checks if all migrations in given range supports reversion.
  *
+ * @param {array} migrations
  * @param {int} fromVersion
  * @param {int} toVersion
  * @returns {object}
  */
-function verifyReversibility (fromVersion, toVersion) {
-  const reversedMigrationArray = migrations.reverse()
-  for (let migration of reversedMigrationArray) {
-    if (migration.version <= toVersion) {
+function verifyReversibility (migrations, fromVersion, toVersion) {
+  if (fromVersion <= toVersion) {
+    throw Error('fromVersion has to be greater then toVersion!')
+  }
+
+  for (let migration of migrations) {
+    if (migration.version > fromVersion) {
       break
     }
 
-    if (migration.version <= fromVersion && !migration.reversible) {
+    if (migration.version >= toVersion && !migration.reversible) {
       return { reversible: false, version: migration.version }
     }
   }

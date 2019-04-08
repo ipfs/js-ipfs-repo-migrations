@@ -151,6 +151,13 @@ far future, when the package might be removed from registry.
 
 #### Tests
 
+If migration affects working of any of the following functionality, it has to provide tests for the following functions
+ to work under the version of the repo that it migrates to:
+
+* `/src/repo/version.js`:`getVersion()` - retrieving repository's version
+* `/src/repo/lock.js`:`lock()` - locking repository that lives on file system
+* `/src/repo/lock-memory.js`:`lock()` - locking repository that lives in memory
+
 **TODO**
 
 #### Empty migrations

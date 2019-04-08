@@ -12,5 +12,4 @@ const emptyMigration = {
 }
 
 module.exports = [
-  require('./migration-8'),
 ]
