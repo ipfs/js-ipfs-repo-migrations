@@ -58,6 +58,11 @@ async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
     return
   }
 
+  if (currentVersion > toVersion) {
+    log(`Current repo's version (${currentVersion} is higher then toVersion (${toVersion}), nothing to migrate.`)
+    return
+  }
+
   let lock
   if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
 
@@ -128,6 +133,11 @@ async function revert (path, toVersion, progressCb, isDryRun, migrations) {
     return
   }
 
+  if (currentVersion < toVersion){
+    log(`Current repo's version (${currentVersion} is lower then toVersion (${toVersion}), nothing to revert.`)
+    return
+  }
+
   let reversibility = verifyReversibility(migrations, currentVersion, toVersion)
   if (!reversibility.reversible) {
     throw new errors.NonReversibleMigration(`Migration version ${reversibility.version} is not possible to revert! Cancelling reversion.`)
@@ -180,10 +190,6 @@ exports.revert = revert
  * @returns {object}
  */
 function verifyReversibility (migrations, fromVersion, toVersion) {
-  if (fromVersion <= toVersion) {
-    throw Error('fromVersion has to be greater then toVersion!')
-  }
-
   for (let migration of migrations) {
     if (migration.version > fromVersion) {
       break

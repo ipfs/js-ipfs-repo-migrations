@@ -100,11 +100,21 @@ describe('index.js', () => {
       )
     })
 
-    it('should not migrate if current repo version and toVersion matches', async () => {
+    it('should not revert if current repo version and toVersion matches', async () => {
       getVersionStub.returns(2)
       const migrationsMock = createMigrations()
 
       await expect(migrator.revert('/some/path', 2, undefined, undefined, migrationsMock))
+        .to.eventually.be.fulfilled()
+
+      expect(lockStub.called).to.be.false()
+    })
+
+    it('should not rever if current repo version is lower then toVersion', async () => {
+      getVersionStub.returns(2)
+      const migrationsMock = createMigrations()
+
+      await expect(migrator.revert('/some/path', 3, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockStub.called).to.be.false()
@@ -122,19 +132,19 @@ describe('index.js', () => {
 
     it('should revert expected migrations', async () => {
       const migrationsMock = createMigrations()
-      getVersionStub.returns(4)
+      getVersionStub.returns(3)
 
-      await expect(migrator.revert('/some/path', 2, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 1, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
       expect(lockStub.calledOnce).to.be.true()
-      expect(setVersionStub.calledOnceWith('/some/path', 2)).to.be.true()
+      expect(setVersionStub.calledOnceWith('/some/path', 1)).to.be.true()
 
       // Checking migrations
-      expect(migrationsMock[3].revert.calledOnce).to.be.true()
+      expect(migrationsMock[3].revert.called).to.be.false()
       expect(migrationsMock[2].revert.calledOnce).to.be.true()
-      expect(migrationsMock[1].revert.called).to.be.false()
+      expect(migrationsMock[1].revert.calledOnce).to.be.true()
       expect(migrationsMock[0].revert.called).to.be.false()
     })
 
@@ -216,21 +226,31 @@ describe('index.js', () => {
       expect(lockStub.called).to.be.false()
     })
 
+    it('should not migrate if current repo version is higher then toVersion', async () => {
+      getVersionStub.returns(3)
+      const migrationsMock = createMigrations()
+
+      await expect(migrator.migrate('/some/path', 2, undefined, undefined, migrationsMock))
+        .to.eventually.be.fulfilled()
+
+      expect(lockStub.called).to.be.false()
+    })
+
     it('should migrate expected migrations', async () => {
       const migrationsMock = createMigrations()
-      getVersionStub.returns(2)
+      getVersionStub.returns(1)
 
-      await expect(migrator.migrate('/some/path', 4, undefined, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', 3, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
       expect(lockStub.calledOnce).to.be.true()
-      expect(setVersionStub.calledOnceWith('/some/path', 4)).to.be.true()
+      expect(setVersionStub.calledOnceWith('/some/path', 3)).to.be.true()
 
       // Checking migrations
-      expect(migrationsMock[3].migrate.calledOnce).to.be.true()
+      expect(migrationsMock[3].migrate.called).to.be.false()
       expect(migrationsMock[2].migrate.calledOnce).to.be.true()
-      expect(migrationsMock[1].migrate.called).to.be.false()
+      expect(migrationsMock[1].migrate.calledOnce).to.be.true()
       expect(migrationsMock[0].migrate.called).to.be.false()
     })
 
