@@ -53,14 +53,15 @@ async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
 
   const currentVersion = await repoVersion.getVersion(path)
 
+  if (currentVersion === toVersion) {
+    log('Nothing to migrate, skipping migrations.')
+    return
+  }
+
   let lock
   if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
 
   try {
-    if (currentVersion === toVersion) {
-      log('Nothing to migrate, skipping migrations.')
-      return
-    }
     let counter = 0
     let totalMigrations = toVersion - currentVersion
     for (let migration of migrations) {
