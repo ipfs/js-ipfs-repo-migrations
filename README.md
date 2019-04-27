@@ -43,7 +43,7 @@ one version of IPFS repo into next/previous one.
 This framework provides:
  * Handles locking/unlocking of repository
  * Define migrations API
- * Executes and reports migrations in both direction: forward and backword
+ * Executes and reports migrations in both direction: forward and backward
  * Simplify creation of new migrations
 
 ## Install
@@ -155,10 +155,11 @@ If migration affects working of any of the following functionality, it has to pr
  to work under the version of the repo that it migrates to:
 
 * `/src/repo/version.js`:`getVersion()` - retrieving repository's version
-* `/src/repo/lock.js`:`lock()` - locking repository that lives on file system
-* `/src/repo/lock-memory.js`:`lock()` - locking repository that lives in memory
+* `/src/repo/lock.js`:`lock()` - locking repository that uses file system
+* `/src/repo/lock-memory.js`:`lock()` - locking repository that uses memory
 
-**TODO**
+Migration has to have a test coverage. Tests for migration should be placed in `/test/migrations/` folder. Most probably
+you will have to plug the tests into `browser.js`/`node.js` if they require specific bootstrap on each platform.
 
 #### Empty migrations
 
@@ -175,7 +176,10 @@ This will create empty migration with next version in line.
 
 ### Migrations matrix
 
-**TODO**
+| IPFS repo version  | JS IPFS version  |
+| -----------------: |:----------------:|
+|                  7 | v0.0.0 - latest  |
+
 
 ## API
 
