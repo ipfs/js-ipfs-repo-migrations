@@ -4,7 +4,7 @@ const Datastore = require('datastore-fs')
 const path = require('path')
 const base32 = require('base32.js')
 const Key = require('interface-datastore').Key
-const log = require('debug')('jsipfs-repo-migrations:migration-8')
+const log = require('debug')('ipfs-repo-migrations:migration-8')
 
 const KEY_PREFIX = 'key_'
 
