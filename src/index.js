@@ -33,10 +33,10 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
- * @param {int|undefined} toVersion - Version to which the repo should be migrated, if undefined repo will be migrated to the latest version.
- * @param {function|undefined} progressCb - Callback which will be called after each executed migration to report progress
- * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the migrations without any effect.
- * @param {array} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
+ * @param {int?} toVersion - Version to which the repo should be migrated, if undefined repo will be migrated to the latest version.
+ * @param {function?} progressCb - Callback which will be called after each executed migration to report progress
+ * @param {boolean?} isDryRun - Allows to simulate the execution of the migrations without any effect.
+ * @param {array?} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
 async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
@@ -107,9 +107,9 @@ exports.migrate = migrate
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
  * @param {int} toVersion - Version to which the repo will be reverted.
- * @param {function|undefined} progressCb - Callback which will be called after each reverted migration to report progress
- * @param {boolean|undefined} isDryRun - Allows to simulate the execution of the reversion without any effects. Make sense to utilize progressCb with this argument.
- * @param {array|undefined} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
+ * @param {function?} progressCb - Callback which will be called after each reverted migration to report progress
+ * @param {boolean?} isDryRun - Allows to simulate the execution of the reversion without any effects. Make sense to utilize progressCb with this argument.
+ * @param {array?} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
 async function revert (path, toVersion, progressCb, isDryRun, migrations) {
