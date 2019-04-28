@@ -35,7 +35,7 @@ async function migrate ({ repoPath, ver, dry }) {
 
 async function revert ({ repoPath, ver, dry }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-  await migrator.revert(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'reverted to version'), dry)
+  await migrator.revert(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'reverted version'), dry)
 }
 
 async function status ({ repoPath }) {
