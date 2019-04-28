@@ -9,6 +9,8 @@ const debug = require('debug')
 
 const log = debug('js-ipfs-repo-migrations:migrator')
 
+exports.getCurrentRepoVersion = repoVersion.getVersion
+
 /**
  * Returns the version of latest migration.
  *
