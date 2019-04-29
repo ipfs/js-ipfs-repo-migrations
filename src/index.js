@@ -185,6 +185,7 @@ exports.revert = revert
 
 /**
  * Function checks if all migrations in given range supports reversion.
+ * fromVersion > toVersion
  *
  * @param {array} migrations
  * @param {int} fromVersion
@@ -192,15 +193,23 @@ exports.revert = revert
  * @returns {object}
  */
 function verifyReversibility (migrations, fromVersion, toVersion) {
+  let migrationCounter = 0
   for (let migration of migrations) {
     if (migration.version > fromVersion) {
       break
     }
 
-    if (migration.version >= toVersion && !migration.reversible) {
-      return { reversible: false, version: migration.version }
+    if (migration.version >= toVersion) {
+      migrationCounter++
+
+      if (!migration.reversible)
+        return { reversible: false, version: migration.version }
     }
   }
 
-  return { reversible: true, version: undefined }
+  if (migrationCounter !== (fromVersion - toVersion)){
+    throw new Error('There are missing migration to perform the reversion!')
+  }
+
+    return { reversible: true, version: undefined }
 }
