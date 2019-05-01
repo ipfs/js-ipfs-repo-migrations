@@ -12,7 +12,7 @@ module.exports = (locker, setup, cleanup) => {
   describe('version 7 and bellow', () => {
     let dir
 
-    beforeEach(async () => {dir = await setup()})
+    beforeEach(async () => { dir = await setup() })
     afterEach(() => cleanup(dir))
 
     it('should return lock object', async () => {

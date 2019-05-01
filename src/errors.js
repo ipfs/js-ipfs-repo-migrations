@@ -24,3 +24,15 @@ class UnknownRepoStructure extends Error {
   }
 }
 exports.UnknownRepoStructure = UnknownRepoStructure
+
+/**
+ * Exception raised when repo is not initialized.
+ */
+class NotInitializedRepo extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'NotInitializedRepo'
+    this.message = message
+  }
+}
+exports.NotInitializedRepo = NotInitializedRepo

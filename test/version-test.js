@@ -45,6 +45,5 @@ module.exports = (setup, cleanup) => {
       await version.setVersion(dir, 7)
       expect(await version.getVersion(dir)).to.be.equal(7)
     })
-
   })
 }

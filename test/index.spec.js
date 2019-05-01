@@ -5,12 +5,13 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 const sinon = require('sinon')
-const chaiAsPromised = require("chai-as-promised")
+const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const migrator = require('../src/index')
 const repoVersion = require('../src/repo/version')
 const repoLock = require('../src/repo/lock')
+const repoInit = require('../src/repo/init')
 
 function createMigrations () {
   return [
@@ -45,24 +46,31 @@ describe('index.js', () => {
   let getVersionStub
   let setVersionStub
   let lockStub
+  let initStub
   let lockCloseStub
 
   beforeEach(() => {
     // Reset all stubs
     sinon.reset()
 
-    getVersionStub = sinon.stub(repoVersion, 'getVersion')
-    setVersionStub = sinon.stub(repoVersion, 'setVersion')
-    lockCloseStub = sinon.stub()
+    initStub.resolves(true)
     lockCloseStub.resolves()
-    lockStub = sinon.stub(repoLock, 'lock')
     lockStub.resolves({ close: lockCloseStub })
   })
 
-  afterEach(() => {
+  before(() => {
+    getVersionStub = sinon.stub(repoVersion, 'getVersion')
+    setVersionStub = sinon.stub(repoVersion, 'setVersion')
+    lockCloseStub = sinon.stub()
+    lockStub = sinon.stub(repoLock, 'lock')
+    initStub = sinon.stub(repoInit, 'isRepoInitialized')
+  })
+
+  after(() => {
     getVersionStub.restore()
     setVersionStub.restore()
     lockStub.restore()
+    initStub.restore()
   })
 
   it('get version of the latest migration', () => {
@@ -110,7 +118,7 @@ describe('index.js', () => {
       expect(lockStub.called).to.be.false()
     })
 
-    it('should not rever if current repo version is lower then toVersion', async () => {
+    it('should not revert if current repo version is lower then toVersion', async () => {
       getVersionStub.returns(2)
       const migrationsMock = createMigrations()
 
@@ -146,6 +154,46 @@ describe('index.js', () => {
       expect(migrationsMock[2].revert.calledOnce).to.be.true()
       expect(migrationsMock[1].revert.calledOnce).to.be.true()
       expect(migrationsMock[0].revert.called).to.be.false()
+    })
+
+    it('should revert one migration as expected', async () => {
+      const migrationsMock = createMigrations()
+      getVersionStub.returns(2)
+
+      await expect(migrator.revert('/some/path', 1, undefined, undefined, migrationsMock))
+        .to.eventually.be.fulfilled()
+
+      expect(lockCloseStub.calledOnce).to.be.true()
+      expect(lockStub.calledOnce).to.be.true()
+      expect(setVersionStub.calledOnceWith('/some/path', 1)).to.be.true()
+
+      // Checking migrations
+      expect(migrationsMock[3].revert.called).to.be.false()
+      expect(migrationsMock[2].revert.called).to.be.false()
+      expect(migrationsMock[1].revert.calledOnce).to.be.true()
+      expect(migrationsMock[0].revert.called).to.be.false()
+    })
+
+    it('should reversion with one migration', async () => {
+      const migrationsMock = [
+        {
+          version: 2,
+          reversible: true,
+          migrate: sinon.stub().resolves(),
+          revert: sinon.stub().resolves()
+        }
+      ]
+      getVersionStub.returns(2)
+
+      await expect(migrator.revert('/some/path', 1, undefined, undefined, migrationsMock))
+        .to.eventually.be.fulfilled()
+
+      expect(lockCloseStub.calledOnce).to.be.true()
+      expect(lockStub.calledOnce).to.be.true()
+      expect(setVersionStub.calledOnceWith('/some/path', 1)).to.be.true()
+
+      // Checking migrations
+      expect(migrationsMock[0].revert.calledOnce).to.be.true()
     })
 
     it('should not have any side-effects when in dry run', async () => {

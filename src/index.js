@@ -3,17 +3,19 @@
 const defaultMigrations = require('../migrations')
 const repoVersion = require('./repo/version')
 const repoLock = require('./repo/lock')
+const repoInit = require('./repo/init')
 const isBrowser = require('./option-node')
 const errors = require('./errors')
-const debug = require('debug')
 
-const log = debug('js-ipfs-repo-migrations:migrator')
+const log = require('debug')('js-ipfs-repo-migrations:migrator')
 
 exports.getCurrentRepoVersion = repoVersion.getVersion
+exports.errors = errors
 
 /**
  * Returns the version of latest migration.
  *
+ * @param {array?} migrations - Array of migrations to consider. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {int}
  */
 function getLatestMigrationVersion (migrations) {
@@ -48,6 +50,10 @@ async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
     throw new Error('Path argument is required!')
   }
 
+  if (!(await repoInit.isRepoInitialized(path))) {
+    throw new errors.NotInitializedRepo(`Repo in path ${path} is not initialized!`)
+  }
+
   if (toVersion && (!Number.isInteger(toVersion) || toVersion <= 0)) {
     throw new Error('Version has to be positive integer!')
   }
@@ -75,21 +81,20 @@ async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
       if (toVersion !== undefined && migration.version > toVersion) {
         break
       }
-
-      if (migration.version > currentVersion) {
-        counter++
-        log(`Migrating version ${migration.version}`)
-        if (!isDryRun) {
-          try {
-            await migration.migrate(path, isBrowser)
-          } catch (e) {
-            e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
-            throw e
-          }
-        }
-        typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
-        log(`Migrating to version ${migration.version} finished`)
+      if (migration.version <= currentVersion) {
+        continue
       }
+
+      counter++
+      log(`Migrating version ${migration.version}`)
+      try {
+        if (!isDryRun) await migration.migrate(path, isBrowser)
+      } catch (e) {
+        e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
+        throw e
+      }
+      typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
+      log(`Migrating to version ${migration.version} finished`)
     }
 
     if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations))
@@ -121,6 +126,10 @@ async function revert (path, toVersion, progressCb, isDryRun, migrations) {
     throw new Error('Path argument is required!')
   }
 
+  if (!(await repoInit.isRepoInitialized(path))) {
+    throw new errors.NotInitializedRepo(`Repo in path ${path} is not initialized!`)
+  }
+
   if (!toVersion) {
     throw new Error('When reverting migrations, you have to specify to which version to revert!')
   }
@@ -135,7 +144,7 @@ async function revert (path, toVersion, progressCb, isDryRun, migrations) {
     return
   }
 
-  if (currentVersion < toVersion){
+  if (currentVersion < toVersion) {
     log(`Current repo's version (${currentVersion} is lower then toVersion (${toVersion}), nothing to revert.`)
     return
   }
@@ -158,20 +167,20 @@ async function revert (path, toVersion, progressCb, isDryRun, migrations) {
         break
       }
 
-      if (migration.version <= currentVersion) {
-        counter++
-        log(`Reverting migration version ${migration.version}`)
-        if (!isDryRun) {
-          try {
-            await migration.revert(path, isBrowser)
-          } catch (e) {
-            e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
-            throw e
-          }
-        }
-        typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
-        log(`Reverting to version ${migration.version} finished`)
+      if (migration.version > currentVersion) {
+        continue
       }
+
+      counter++
+      log(`Reverting migration version ${migration.version}`)
+      try {
+        if (!isDryRun) await migration.revert(path, isBrowser)
+      } catch (e) {
+        e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
+        throw e
+      }
+      typeof progressCb === 'function' && progressCb(migration, counter, totalMigrations) // Reports on migration process
+      log(`Reverting to version ${migration.version} finished`)
     }
 
     if (!isDryRun) await repoVersion.setVersion(path, toVersion)
@@ -199,17 +208,16 @@ function verifyReversibility (migrations, fromVersion, toVersion) {
       break
     }
 
-    if (migration.version >= toVersion) {
-      migrationCounter++
+    if (migration.version > toVersion) {
+      if (!migration.reversible) return { reversible: false, version: migration.version }
 
-      if (!migration.reversible)
-        return { reversible: false, version: migration.version }
+      migrationCounter++
     }
   }
 
-  if (migrationCounter !== (fromVersion - toVersion)){
-    throw new Error('There are missing migration to perform the reversion!')
+  if (migrationCounter !== (fromVersion - toVersion)) {
+    throw new Error(`There are missing migration to perform the reversion! ${migrationCounter}/${(fromVersion - toVersion)}`)
   }
 
-    return { reversible: true, version: undefined }
+  return { reversible: true, version: undefined }
 }

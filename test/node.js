@@ -34,4 +34,8 @@ describe('Node specific tests', () => {
   describe('version tests', () => {
     require('./version-test')(repoSetup, repoCleanup)
   })
+
+  describe('init tests', () => {
+    require('./init-test')(repoSetup, repoCleanup)
+  })
 })
