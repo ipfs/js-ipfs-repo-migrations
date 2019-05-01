@@ -30,12 +30,12 @@ function reportingClosure (action) {
 
 async function migrate ({ repoPath, ver, dry }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-  await migrator.migrate(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
+  await migrator.migrate(repoPath, ver, false, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
 }
 
 async function revert ({ repoPath, ver, dry }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-  await migrator.revert(repoPath, ver, reportingClosure(dry ? 'loaded migration' : 'reverted version'), dry)
+  await migrator.revert(repoPath, ver, false, reportingClosure(dry ? 'loaded migration' : 'reverted version'), dry)
 }
 
 async function status ({ repoPath }) {

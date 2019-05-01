@@ -87,14 +87,14 @@ describe('index.js', () => {
     it('should error with out path argument', () => {
       const migrationsMock = createMigrations()
 
-      return expect(migrator.revert(undefined, undefined, undefined, undefined, migrationsMock))
+      return expect(migrator.revert(undefined, undefined, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.rejectedWith('Path argument is required!')
     })
 
     it('should error with out toVersion argument', () => {
       const migrationsMock = createMigrations()
 
-      return expect(migrator.revert('/some/path', undefined, undefined, undefined, migrationsMock))
+      return expect(migrator.revert('/some/path', undefined, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.rejectedWith('When reverting migrations, you have to specify to which version to revert!')
     })
 
@@ -103,7 +103,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
 
       return Promise.all(
-        invalidValues.map((value) => expect(migrator.revert('/some/path', value, undefined, undefined, migrationsMock))
+        invalidValues.map((value) => expect(migrator.revert('/some/path', value, undefined, undefined, undefined, migrationsMock))
           .to.eventually.be.rejectedWith('Version has to be positive integer!'))
       )
     })
@@ -112,7 +112,7 @@ describe('index.js', () => {
       getVersionStub.returns(2)
       const migrationsMock = createMigrations()
 
-      await expect(migrator.revert('/some/path', 2, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 2, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockStub.called).to.be.false()
@@ -122,7 +122,7 @@ describe('index.js', () => {
       getVersionStub.returns(2)
       const migrationsMock = createMigrations()
 
-      await expect(migrator.revert('/some/path', 3, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 3, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockStub.called).to.be.false()
@@ -134,7 +134,7 @@ describe('index.js', () => {
 
       getVersionStub.returns(4)
       return expect(
-        migrator.revert('/some/path', 1, undefined, undefined, nonReversibleMigrationsMock)
+        migrator.revert('/some/path', 1, undefined, undefined, undefined, nonReversibleMigrationsMock)
       ).to.eventually.be.rejectedWith('Migration version 3 is not possible to revert! Cancelling reversion.')
     })
 
@@ -142,7 +142,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(3)
 
-      await expect(migrator.revert('/some/path', 1, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 1, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
@@ -160,7 +160,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(2)
 
-      await expect(migrator.revert('/some/path', 1, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 1, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
@@ -185,7 +185,7 @@ describe('index.js', () => {
       ]
       getVersionStub.returns(2)
 
-      await expect(migrator.revert('/some/path', 1, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 1, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
@@ -200,7 +200,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(4)
 
-      await expect(migrator.revert('/some/path', 2, undefined, true, migrationsMock))
+      await expect(migrator.revert('/some/path', 2, undefined, undefined, true, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.called).to.be.false()
@@ -210,12 +210,30 @@ describe('index.js', () => {
       return migrationsMock.forEach(({ revert }) => expect(revert.calledOnce).to.be.false)
     })
 
+    it('should not lock repo when ignoreLock is used', async () => {
+      const migrationsMock = createMigrations()
+      getVersionStub.returns(4)
+
+      await expect(migrator.revert('/some/path', 2, true, undefined, undefined, migrationsMock))
+        .to.eventually.be.fulfilled()
+
+      expect(lockCloseStub.called).to.be.false()
+      expect(lockStub.called).to.be.false()
+      expect(setVersionStub.calledOnceWith('/some/path', 2)).to.be.true()
+
+      // Checking migrations
+      expect(migrationsMock[3].revert.calledOnce).to.be.true()
+      expect(migrationsMock[2].revert.calledOnce).to.be.true()
+      expect(migrationsMock[1].revert.called).to.be.false()
+      expect(migrationsMock[0].revert.called).to.be.false()
+    })
+
     it('should report progress when progress callback is supplied', async () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(4)
       const progressCb = sinon.stub()
 
-      await expect(migrator.revert('/some/path', 2, progressCb, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 2, undefined, progressCb, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(progressCb.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
@@ -227,7 +245,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       migrationsMock[3].revert = sinon.stub().rejects()
 
-      await expect(migrator.revert('/some/path', 2, undefined, undefined, migrationsMock))
+      await expect(migrator.revert('/some/path', 2, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.rejected()
 
       expect(lockCloseStub.calledOnce).to.be.true()
@@ -240,7 +258,7 @@ describe('index.js', () => {
     it('should error with out path argument', () => {
       const migrationsMock = createMigrations()
 
-      return expect(migrator.migrate(undefined, undefined, undefined, undefined, migrationsMock))
+      return expect(migrator.migrate(undefined, undefined, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.rejectedWith('Path argument is required!')
     })
 
@@ -249,7 +267,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
 
       return Promise.all(
-        invalidValues.map((value) => expect(migrator.migrate('/some/path', value, undefined, undefined, migrationsMock))
+        invalidValues.map((value) => expect(migrator.migrate('/some/path', value, undefined, undefined, undefined, migrationsMock))
           .to.eventually.be.rejectedWith('Version has to be positive integer!'))
       )
     })
@@ -258,7 +276,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', undefined, undefined, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', undefined, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       setVersionStub.calledOnceWithExactly('/some/path', 4) // 4 is the latest migration's version
@@ -268,7 +286,7 @@ describe('index.js', () => {
       getVersionStub.returns(2)
       const migrationsMock = createMigrations()
 
-      await expect(migrator.migrate('/some/path', 2, undefined, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', 2, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockStub.called).to.be.false()
@@ -278,7 +296,7 @@ describe('index.js', () => {
       getVersionStub.returns(3)
       const migrationsMock = createMigrations()
 
-      await expect(migrator.migrate('/some/path', 2, undefined, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', 2, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockStub.called).to.be.false()
@@ -288,7 +306,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(1)
 
-      await expect(migrator.migrate('/some/path', 3, undefined, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', 3, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
@@ -306,7 +324,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', 4, undefined, true, migrationsMock))
+      await expect(migrator.migrate('/some/path', 4, undefined, undefined, true, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.called).to.be.false()
@@ -316,12 +334,30 @@ describe('index.js', () => {
       return migrationsMock.forEach(({ migrate }) => expect(migrate.calledOnce).to.be.false)
     })
 
+    it('should not lock repo when ignoreLock is used', async () => {
+      const migrationsMock = createMigrations()
+      getVersionStub.returns(2)
+
+      await expect(migrator.migrate('/some/path', 4, true, undefined, undefined, migrationsMock))
+        .to.eventually.be.fulfilled()
+
+      expect(lockCloseStub.called).to.be.false()
+      expect(lockStub.called).to.be.false()
+      expect(setVersionStub.calledOnceWith('/some/path', 4)).to.be.true()
+
+      // Checking migrations
+      expect(migrationsMock[3].migrate.calledOnce).to.be.true()
+      expect(migrationsMock[2].migrate.calledOnce).to.be.true()
+      expect(migrationsMock[1].migrate.called).to.be.false()
+      expect(migrationsMock[0].migrate.called).to.be.false()
+    })
+
     it('should report progress when progress callback is supplied', async () => {
       const migrationsMock = createMigrations()
       getVersionStub.returns(2)
       const progressCb = sinon.stub()
 
-      await expect(migrator.migrate('/some/path', 4, progressCb, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', 4, undefined, progressCb, undefined, migrationsMock))
         .to.eventually.be.fulfilled()
 
       expect(progressCb.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
@@ -333,7 +369,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
       migrationsMock[3].migrate = sinon.stub().rejects()
 
-      await expect(migrator.migrate('/some/path', 4, undefined, undefined, migrationsMock))
+      await expect(migrator.migrate('/some/path', 4, undefined, undefined, undefined, migrationsMock))
         .to.eventually.be.rejected()
 
       expect(lockCloseStub.calledOnce).to.be.true()

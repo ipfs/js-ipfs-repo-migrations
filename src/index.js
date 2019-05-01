@@ -38,12 +38,13 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
  * @param {int?} toVersion - Version to which the repo should be migrated, if undefined repo will be migrated to the latest version.
+ * @param {boolean?} ignoreLock - Won't lock the repo for applying the migrations. Use with caution.
  * @param {function?} progressCb - Callback which will be called after each executed migration to report progress
  * @param {boolean?} isDryRun - Allows to simulate the execution of the migrations without any effect.
  * @param {array?} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
+async function migrate (path, toVersion, ignoreLock, progressCb, isDryRun, migrations) {
   migrations = migrations || defaultMigrations
 
   if (!path) {
@@ -72,7 +73,7 @@ async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
   }
 
   let lock
-  if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
+  if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
 
   try {
     let counter = 0
@@ -100,7 +101,7 @@ async function migrate (path, toVersion, progressCb, isDryRun, migrations) {
     if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations))
     log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
-    if (!isDryRun) await lock.close()
+    if (!isDryRun && !ignoreLock) await lock.close()
   }
 }
 
@@ -116,10 +117,11 @@ exports.migrate = migrate
  * @param {int} toVersion - Version to which the repo will be reverted.
  * @param {function?} progressCb - Callback which will be called after each reverted migration to report progress
  * @param {boolean?} isDryRun - Allows to simulate the execution of the reversion without any effects. Make sense to utilize progressCb with this argument.
+ * @param {boolean?} ignoreLock - Won't lock the repo for reverting the migrations. Use with caution.
  * @param {array?} migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function revert (path, toVersion, progressCb, isDryRun, migrations) {
+async function revert (path, toVersion, ignoreLock, progressCb, isDryRun, migrations) {
   migrations = migrations || defaultMigrations
 
   if (!path) {
@@ -155,7 +157,7 @@ async function revert (path, toVersion, progressCb, isDryRun, migrations) {
   }
 
   let lock
-  if (!isDryRun) lock = await repoLock.lock(currentVersion, path)
+  if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
 
   log(`Reverting from version ${currentVersion} to ${toVersion}`)
   try {
@@ -186,7 +188,7 @@ async function revert (path, toVersion, progressCb, isDryRun, migrations) {
     if (!isDryRun) await repoVersion.setVersion(path, toVersion)
     log(`All migrations successfully reverted to version ${toVersion}!`)
   } finally {
-    if (!isDryRun) await lock.close()
+    if (!isDryRun && !ignoreLock) await lock.close()
   }
 }
 
