@@ -8,25 +8,25 @@ const log = require('debug')('ipfs-repo-migrations:migration-8')
 
 const KEY_PREFIX = 'key_'
 
-function encode(name) {
+function encode (name) {
   name = Buffer.from(name)
-  const encoder = new base32.Encoder({type: "rfc4648"});
+  const encoder = new base32.Encoder({ type: "rfc4648" })
   return (KEY_PREFIX + encoder.finalize(name)).toLowerCase()
 }
 
-function decode(name) {
+function decode (name) {
   log(name)
   if (!name.startsWith(KEY_PREFIX)) {
     throw Error("Unknown format of key's name!")
   }
 
-  const decoder = new base32.Decoder({type: "rfc4648"});
+  const decoder = new base32.Decoder({ type: "rfc4648" })
   return decoder.finalize(name.replace(KEY_PREFIX, '').toUpperCase())
 }
 
-async function processFolder(store, prefix, fileNameProcessor) {
+async function processFolder (store, prefix, fileNameProcessor) {
   const query = {
-    prefix: `/${prefix}`,
+    prefix: `/${prefix}`
   }
 
   const files = await store.query(query)
@@ -41,9 +41,18 @@ async function processFolder(store, prefix, fileNameProcessor) {
   }
 }
 
-async function migrate(repoPath, isBrowser) {
-  const store = new Datastore(path.join(repoPath, 'keys'), {extension: '.data', createIfMissing: false})
-  store.open()
+async function migrate (repoPath, options, isBrowser) {
+  let storageBackend
+  if (options !== undefined
+    && options['storageBackends'] !== undefined
+    && options['storageBackends']['keys'] !== undefined
+  ) {
+    storageBackend = options['storageBackends']['keys']
+  } else {
+    storageBackend = Datastore
+  }
+
+  const store = new storageBackend(path.join(repoPath, 'keys'), { extension: '.data' })
   try {
     const info = processFolder(store, 'info', encode)
     const data = processFolder(store, 'pkcs8', encode)
@@ -54,10 +63,18 @@ async function migrate(repoPath, isBrowser) {
   }
 }
 
-async function revert(repoPath, isBrowser) {
-  const store = new Datastore(path.join(repoPath, 'keys'), {extension: '.data', createIfMissing: false})
-  store.open()
+async function revert (repoPath, options, isBrowser) {
+let storageBackend
+  if (options !== undefined
+    && options['storageBackends'] !== undefined
+    && options['storageBackends']['keys'] !== undefined
+  ) {
+    storageBackend = options['storageBackends']['keys']
+  } else {
+    storageBackend = Datastore
+  }
 
+  const store = new storageBackend(path.join(repoPath, 'keys'), { extension: '.data' })
   try {
     const info = processFolder(store, 'info', decode)
     const data = processFolder(store, 'pkcs8', decode)
@@ -73,5 +90,5 @@ module.exports = {
   description: 'Transforms key\'s names into base32 encoding.',
   reversible: true,
   migrate,
-  revert,
+  revert
 }
