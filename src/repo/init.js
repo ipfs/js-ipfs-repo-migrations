@@ -1,7 +1,7 @@
 'use strict'
 
 const Datastore = require('datastore-fs')
-const log = require('debug')('js-ipfs-repo-migrations:repo:init')
+const log = require('debug')('repo-migrations:repo:init')
 
 const Key = require('interface-datastore').Key
 

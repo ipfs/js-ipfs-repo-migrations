@@ -2,7 +2,7 @@
 
 const debug = require('debug')
 
-const log = debug('js-ipfs-repo-migrations:repo_mem_lock')
+const log = debug('repo-migrations:repo_mem_lock')
 
 const lockFile = 'repo.lock'
 

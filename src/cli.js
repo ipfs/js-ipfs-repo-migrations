@@ -5,7 +5,7 @@
 const YargsPromise = require('yargs-promise')
 const yargs = require('yargs')
 const process = require('process')
-const log = require('debug')('js-ipfs-repo-migrations:cli')
+const log = require('debug')('repo-migrations:cli')
 
 const commands = require('./commands')
 
@@ -57,7 +57,7 @@ async function main (args) {
     if (err.message || (err.error && err.error.message)) {
       print(err.message || err.error.message)
     } else {
-      print('Unknown error, please re-run the command with DEBUG=js-ipfs-repo-migrations:cli to see debug output')
+      print('Unknown error, please re-run the command with DEBUG=repo-migrations:cli to see debug output')
     }
 
     exitCode = 1

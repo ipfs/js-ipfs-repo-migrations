@@ -7,7 +7,7 @@ const repoInit = require('./repo/init')
 const isBrowser = require('./option-node')
 const errors = require('./errors')
 
-const log = require('debug')('js-ipfs-repo-migrations:migrator')
+const log = require('debug')('repo-migrations:migrator')
 
 exports.getCurrentRepoVersion = repoVersion.getVersion
 exports.errors = errors
