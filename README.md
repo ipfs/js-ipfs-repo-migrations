@@ -109,6 +109,7 @@ _Do not confuse this function with the `require('ipfs-repo-migrations').migrate(
 
 Arguments:
  * `repoPath` (string) - absolute path to the root of the repo
+ * `options` (object, optional) - object containing `IPFSRepo` options, that should be used to construct datastore instance.
  * `isBrowser` (bool) - indicates if the migration is run in browser environment in oppose to NodeJS
  
 ##### `revert(repoPath, isBrowser)`
@@ -117,6 +118,7 @@ _Do not confuse this function with the `require('ipfs-repo-migrations').revert()
 
 Arguments:
  * `repoPath` (string) - path to the root of the repo
+ * `options` (object, optional) - object containing `IPFSRepo` options, that should be used to construct datastore instance.
  * `isBrowser` (bool) - indicates if the migration is run in browser environment in oppose to NodeJS
 
 #### Browser vs. NodeJS environments
@@ -183,7 +185,7 @@ This will create empty migration with next version in line.
 
 ## API
 
-### `migrate(path[, toVersion[, progressCb[, isDryRun]]]) -> Promise<void>`
+### `migrate(path[, toVersion[, ignoreLock[, options[, progressCb[, isDryRun]]]]]) -> Promise<void>`
 
 Executes forward migration to specific version or if not specified to the latest version.
 
@@ -191,6 +193,8 @@ Executes forward migration to specific version or if not specified to the latest
 
  * `path` (string, mandatory) - path to the repo to be migrated
  * `toVersion` (int, optional) - version to which the repo should be migrated to. If left out the version of latest migration is used.
+ * `ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
+ * `options` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
  * `progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
  
@@ -203,7 +207,7 @@ Signature of the progress callback.
  * `counter` (int) - current number of migration in the planned migrations streak.
  * `totalMigrations` (int) - total count of migrations that are planned to be run.
 
-### `revert(path, toVersion[, progressCb[, isDryRun]]) -> Promise<void>`
+### `revert(path, toVersion[, ignoreLock[, options[, progressCb[, isDryRun]]]]) -> Promise<void>`
 
 Executes backward migration to specific version.
 
@@ -211,6 +215,8 @@ Executes backward migration to specific version.
 
  * `path` (string, mandatory) - path to the repo to be reverted
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to. 
+ * `ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
+ * `options` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
  * `progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
  
