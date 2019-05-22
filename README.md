@@ -151,6 +151,12 @@ write the rest of migration!
 The `node_modules` of the migration should be committed to the repo to ensure that the dependencies are resolved even in
 far future, when the package might be removed from registry. 
 
+#### Integration with js-ipfs
+
+When new migration is created, the repo version in [`js-ipfs-repo`](https://github.com/ipfs/js-ipfs-repo) should be updated with the new version.
+After releasing the updated version of `js-ipfs-repo` this version should be propagated into `js-ipfs` together with
+updated version of this package.
+
 #### Tests
 
 If migration affects working of any of the following functionality, it has to provide tests for the following functions
