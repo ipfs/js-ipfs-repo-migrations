@@ -55,9 +55,9 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "debug": "^4.1.0",
-    "datastore-fs": "ipfs/js-datastore-fs#pull/22/head",
-    "datastore-level": "ipfs/js-datastore-level#pull/12/head",
-    "interface-datastore": "ipfs/interface-datastore#ab2f2b9ee20fbb876b1ea9ea2b33ee35e92b4254",
+    "datastore-fs": "^0.9.0",
+    "datastore-level": "^0.12.0",
+    "interface-datastore": "^0.7.0",
     "proper-lockfile": "^3.2.0",
     "yargs": "^12.0.5",
     "yargs-promise": "^1.1.0"
