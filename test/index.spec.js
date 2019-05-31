@@ -2,16 +2,16 @@
 'use strict'
 
 const chai = require('chai')
-chai.use(require('dirty-chai'))
 const expect = chai.expect
 const sinon = require('sinon')
-const chaiAsPromised = require('chai-as-promised')
-chai.use(chaiAsPromised)
+chai.use(require('chai-as-promised'))
+chai.use(require('dirty-chai'))
 
 const migrator = require('../src/index')
 const repoVersion = require('../src/repo/version')
 const repoLock = require('../src/repo/lock')
 const repoInit = require('../src/repo/init')
+const errors = require('../src/errors')
 
 function createMigrations () {
   return [
@@ -80,7 +80,7 @@ describe('index.js', () => {
 
     expect(
       () => migrator.getLatestMigrationVersion([])
-    ).to.throw('Migrations must be non-empty array!')
+    ).to.throw(errors.InvalidValueError, 'Migrations must be non-empty array!').with.property('code', errors.InvalidValueError.code)
   })
 
   describe('revert', () => {
@@ -88,14 +88,14 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
 
       return expect(migrator.revert(undefined, undefined, undefined, undefined, undefined, undefined, migrationsMock))
-        .to.eventually.be.rejectedWith('Path argument is required!')
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError, 'Path argument is required!').with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with out toVersion argument', () => {
       const migrationsMock = createMigrations()
 
       return expect(migrator.revert('/some/path', undefined, undefined, undefined, undefined, undefined, migrationsMock))
-        .to.eventually.be.rejectedWith('When reverting migrations, you have to specify to which version to revert!')
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError, 'When reverting migrations, you have to specify to which version to revert!').with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
@@ -104,7 +104,7 @@ describe('index.js', () => {
 
       return Promise.all(
         invalidValues.map((value) => expect(migrator.revert('/some/path', value, undefined, undefined, undefined, undefined, migrationsMock))
-          .to.eventually.be.rejectedWith('Version has to be positive integer!'))
+          .to.eventually.be.rejectedWith(errors.InvalidValueError, 'Version has to be positive integer!').with.property('code', errors.InvalidValueError.code))
       )
     })
 
@@ -135,7 +135,8 @@ describe('index.js', () => {
       getVersionStub.returns(4)
       return expect(
         migrator.revert('/some/path', 1, undefined, undefined, undefined, undefined, nonReversibleMigrationsMock)
-      ).to.eventually.be.rejectedWith('Migration version 3 is not possible to revert! Cancelling reversion.')
+      ).to.eventually.be.rejectedWith(errors.NonReversibleMigrationError, 'Migration version 3 is not possible to revert! Cancelling reversion.')
+       .with.property('code', errors.NonReversibleMigrationError.code)
     })
 
     it('should revert expected migrations', async () => {
@@ -259,7 +260,7 @@ describe('index.js', () => {
       const migrationsMock = createMigrations()
 
       return expect(migrator.migrate(undefined, undefined, undefined, undefined, undefined, undefined, migrationsMock))
-        .to.eventually.be.rejectedWith('Path argument is required!')
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError, 'Path argument is required!').with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
@@ -268,7 +269,7 @@ describe('index.js', () => {
 
       return Promise.all(
         invalidValues.map((value) => expect(migrator.migrate('/some/path', value, undefined, undefined, undefined, undefined, migrationsMock))
-          .to.eventually.be.rejectedWith('Version has to be positive integer!'))
+          .to.eventually.be.rejectedWith(errors.InvalidValueError, 'Version has to be positive integer!').with.property('code', errors.InvalidValueError.code))
       )
     })
 

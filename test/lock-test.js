@@ -2,7 +2,6 @@
 'use strict'
 
 const chai = require('chai')
-chai.use(require('dirty-chai'))
 const expect = chai.expect
 
 // When new lock mechanism is introduced in new version don't forget to update

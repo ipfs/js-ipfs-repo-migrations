@@ -4,35 +4,75 @@
  * Exception raised when trying to revert migration that is not possible
  * to revert.
  */
-class NonReversibleMigration extends Error {
+class NonReversibleMigrationError extends Error {
   constructor (message) {
     super(message)
-    this.name = 'NonReversibleMigration'
+    this.name = 'NonReversibleMigrationError'
+    this.code = 'ERR_NON_REVERSIBLE_MIGRATION'
     this.message = message
   }
 }
-exports.NonReversibleMigration = NonReversibleMigration
+
+NonReversibleMigrationError.code = 'ERR_NON_REVERSIBLE_MIGRATION'
+exports.NonReversibleMigrationError = NonReversibleMigrationError
 
 /**
  * Exception raised when structure of a repo is not as expected.
  */
-class UnknownRepoStructure extends Error {
+class UnknownRepoStructureError extends Error {
   constructor (message) {
     super(message)
-    this.name = 'UnknownRepoStructure'
+    this.name = 'UnknownRepoStructureError'
+    this.code = 'ERR_UNKNOWN_REPO_STRUCTURE'
     this.message = message
   }
 }
-exports.UnknownRepoStructure = UnknownRepoStructure
+
+UnknownRepoStructureError.code = 'ERR_UNKNOWN_REPO_STRUCTURE'
+exports.UnknownRepoStructureError = UnknownRepoStructureError
 
 /**
  * Exception raised when repo is not initialized.
  */
-class NotInitializedRepo extends Error {
+class NotInitializedRepoError extends Error {
   constructor (message) {
     super(message)
-    this.name = 'NotInitializedRepo'
+    this.name = 'NotInitializedRepoError'
+    this.code = 'ERR_NOT_INITIALIZED_REPO'
     this.message = message
   }
 }
-exports.NotInitializedRepo = NotInitializedRepo
+
+NotInitializedRepoError.code = 'ERR_NOT_INITIALIZED_REPO'
+exports.NotInitializedRepoError = NotInitializedRepoError
+
+/**
+ * Exception raised when required parameter is not provided.
+ */
+class RequiredParameterError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'RequiredParameterError'
+    this.code = 'ERR_REQUIRED_PARAMETER'
+    this.message = message
+  }
+}
+
+RequiredParameterError.code = 'ERR_REQUIRED_PARAMETER'
+exports.RequiredParameterError = RequiredParameterError
+
+/**
+ * Exception raised when value is not valid.
+ */
+class InvalidValueError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'InvalidValueError'
+    this.code = 'ERR_INVALID_VALUE'
+    this.message = message
+  }
+}
+
+InvalidValueError.code = 'ERR_INVALID_VALUE'
+exports.InvalidValueError = InvalidValueError
+

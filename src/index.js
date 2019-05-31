@@ -22,7 +22,7 @@ function getLatestMigrationVersion (migrations) {
   migrations = migrations || defaultMigrations
 
   if (!Array.isArray(migrations) || migrations.length === 0) {
-    throw Error('Migrations must be non-empty array!')
+    throw new errors.InvalidValueError('Migrations must be non-empty array!')
   }
 
   return migrations[migrations.length - 1].version
@@ -49,15 +49,15 @@ async function migrate (path, toVersion, ignoreLock, options, progressCb, isDryR
   migrations = migrations || defaultMigrations
 
   if (!path) {
-    throw new Error('Path argument is required!')
+    throw new errors.RequiredParameterError('Path argument is required!')
   }
 
   if (!(await repoInit.isRepoInitialized(path))) {
-    throw new errors.NotInitializedRepo(`Repo in path ${path} is not initialized!`)
+    throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
   }
 
   if (toVersion && (!Number.isInteger(toVersion) || toVersion <= 0)) {
-    throw new Error('Version has to be positive integer!')
+    throw new errors.InvalidValueError('Version has to be positive integer!')
   }
   toVersion = toVersion || getLatestMigrationVersion(migrations)
 
@@ -127,19 +127,19 @@ async function revert (path, toVersion, ignoreLock, options, progressCb, isDryRu
   migrations = migrations || defaultMigrations
 
   if (!path) {
-    throw new Error('Path argument is required!')
+    throw new errors.RequiredParameterError('Path argument is required!')
   }
 
   if (!(await repoInit.isRepoInitialized(path))) {
-    throw new errors.NotInitializedRepo(`Repo in path ${path} is not initialized!`)
+    throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
   }
 
   if (!toVersion) {
-    throw new Error('When reverting migrations, you have to specify to which version to revert!')
+    throw new errors.RequiredParameterError('When reverting migrations, you have to specify to which version to revert!')
   }
 
   if (!Number.isInteger(toVersion) || toVersion <= 0) {
-    throw new Error('Version has to be positive integer!')
+    throw new errors.InvalidValueError('Version has to be positive integer!')
   }
 
   const currentVersion = await repoVersion.getVersion(path)
@@ -155,7 +155,7 @@ async function revert (path, toVersion, ignoreLock, options, progressCb, isDryRu
 
   let reversibility = verifyReversibility(migrations, currentVersion, toVersion)
   if (!reversibility.reversible) {
-    throw new errors.NonReversibleMigration(`Migration version ${reversibility.version} is not possible to revert! Cancelling reversion.`)
+    throw new errors.NonReversibleMigrationError(`Migration version ${reversibility.version} is not possible to revert! Cancelling reversion.`)
   }
 
   let lock
@@ -220,7 +220,8 @@ function verifyReversibility (migrations, fromVersion, toVersion) {
   }
 
   if (migrationCounter !== (fromVersion - toVersion)) {
-    throw new Error(`There are missing migration to perform the reversion! ${migrationCounter}/${(fromVersion - toVersion)}`)
+    throw new errors.NonReversibleMigrationError(`There are missing migration to perform the reversion! 
+    Expected ${(fromVersion - toVersion)} migrations, but there is only ${migrationCounter} migrations.`)
   }
 
   return { reversible: true, version: undefined }

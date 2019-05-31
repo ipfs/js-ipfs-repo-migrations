@@ -22,7 +22,7 @@ async function getVersion (path) {
   await store.open()
 
   if (!await store.has(versionKey)) {
-    throw new errors.UnknownRepoStructure('Repo does not have version file! Is the repo initialized?')
+    throw new errors.UnknownRepoStructureError('Repo does not have version file! Is the repo initialized?')
   }
 
   const version = parseInt(await store.get(versionKey))
