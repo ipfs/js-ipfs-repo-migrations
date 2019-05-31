@@ -42,9 +42,9 @@ one version of IPFS repo into next/previous one.
 
 This framework provides:
  * Handles locking/unlocking of repository
- * Define migrations API
+ * Defines migrations API
  * Executes and reports migrations in both direction: forward and backward
- * Simplify creation of new migrations
+ * Simplifies creation of new migrations
 
 ## Install
 
@@ -191,18 +191,19 @@ This will create empty migration with next version in line.
 
 ## API
 
-### `migrate(path[, toVersion[, ignoreLock[, options[, progressCb[, isDryRun]]]]]) -> Promise<void>`
+### `migrate(path, {toVersion, ignoreLock, repoOptions, progressCb, isDryRun}) -> Promise<void>`
 
 Executes forward migration to specific version or if not specified to the latest version.
 
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be migrated
- * `toVersion` (int, optional) - version to which the repo should be migrated to. If left out the version of latest migration is used.
- * `ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
- * `options` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
- * `progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
- * `isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
+ * `options` (object, optional) - options for the migration
+ * `options.toVersion` (int, optional) - version to which the repo should be migrated to. If left out the version of latest migration is used.
+ * `options.ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
+ * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
+ * `options.progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
+ * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
  
 #### `progressCb(migration, counter, totalMigrations)`
  
@@ -213,7 +214,7 @@ Signature of the progress callback.
  * `counter` (int) - current number of migration in the planned migrations streak.
  * `totalMigrations` (int) - total count of migrations that are planned to be run.
 
-### `revert(path, toVersion[, ignoreLock[, options[, progressCb[, isDryRun]]]]) -> Promise<void>`
+### `revert(path, toVersion, {ignoreLock, options, progressCb, isDryRun}) -> Promise<void>`
 
 Executes backward migration to specific version.
 
@@ -221,10 +222,11 @@ Executes backward migration to specific version.
 
  * `path` (string, mandatory) - path to the repo to be reverted
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to. 
- * `ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
- * `options` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
- * `progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
- * `isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
+ * `options` (object, optional) - options for the reversion
+ * `options.ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
+ * `options.options` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
+ * `options.progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
+ * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
  
 ### `getLatestMigrationVersion() -> int`
 
