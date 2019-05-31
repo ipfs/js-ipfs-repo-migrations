@@ -237,8 +237,7 @@ Return the version of latest migration.
 The package comes also with CLI that is exposed as NodeJS binary with name `jsipfs-repo-migrations`. 
 It has several commands:
 
- * `migrate` - performs forward migration to specific or latest version.
- * `revert` - performs backward migration to specific version.
+ * `migrate` - performs forward/backward migration to specific or latest version.
  * `status` - check repo for migrations that should be run.
  * `add` - bootstraps new migration.
  

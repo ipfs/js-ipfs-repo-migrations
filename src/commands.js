@@ -28,14 +28,23 @@ function reportingClosure (action) {
     process.stdout.write(`${chalk.green(`[${currentlyMigrated}/${totalToMigrate}]`)} Successfully ${action} ${chalk.bold(migration.version)}: ${migration.description}\n`)
 }
 
-async function migrate ({ repoPath, ver, dry }) {
+async function migrate ({ repoPath, to, dry, revertOk }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-  await migrator.migrate(repoPath, ver, false, undefined, reportingClosure(dry ? 'loaded migration' : 'migrated to version'), dry)
-}
+  const version = await repoVersion.getVersion(repoPath)
+  const options = {
+    toVersion: to,
+    ignoreLock: false,
+    progressCb: reportingClosure(dry ? 'loaded migration' : 'migrated to version'),
+    isDryRun: dry
+  }
 
-async function revert ({ repoPath, ver, dry }) {
-  repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-  await migrator.revert(repoPath, ver, false, undefined, reportingClosure(dry ? 'loaded migration' : 'reverted version'), dry)
+  if (!to || (version <= to)) {
+    await migrator.migrate(repoPath, options)
+  } else if(revertOk){
+    await migrator.revert(repoPath, to, options)
+  } else {
+    throw new Error('The migration would require reversion of the repo, but you have not allowed it as \'--revert-ok\' is not present.')
+  }
 }
 
 async function status ({ repoPath }) {
@@ -93,7 +102,7 @@ module.exports = {
     describe: 'Migrate IPFS repo to latest or specific version',
     handler: asyncClosure(migrate),
     builder: yargv => yargv
-      .option('ver', {
+      .option('to', {
         describe: 'Specify to which version should be repo migrated to',
         type: 'number'
       })
@@ -101,19 +110,9 @@ module.exports = {
         describe: 'Only displays what migrations will be reverted',
         type: 'boolean'
       })
-  },
-  revert: {
-    command: 'revert <ver>',
-    describe: 'Revert IPFS repo to specific version',
-    handler: asyncClosure(revert),
-    builder: yargv => yargv
-      .option('dry', {
-        describe: 'Only displays what migrations will be applied',
+      .option('revert-ok', {
+        describe: 'Allows to do backward migration, if the specific version is lower the current version of repository',
         type: 'boolean'
-      })
-      .positional('ver', {
-        describe: 'version to revert to (inclusive)',
-        type: 'number'
       })
   },
   status: {
