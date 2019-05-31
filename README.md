@@ -83,7 +83,20 @@ if(repoVersion < migrations.getLatestMigrationVersion()){
 }
 ```
 
+On how to migrate your repository using CLI, you can find the recommended steps in [how to run migrations](./run.md) tutorial. 
+
+**For tools that build on top of `js-ipfs` and run mainly in the browser environment, be aware of disabling automatic
+migrations as user does not have any other way how to run the migrations because of lack of CLI in browser. In such
+a case, you should provide a way how to trigger migrations manually.**
+
 ### Writing migration
+
+Migrations are one of those things that can be extremely painful on users. At the end of the day, we want users never to have to think about it. The process should be:
+
+- SAFE. No data lost. Ever.
+- Revertible. Tools must implement forward and backward migrations.
+- Frozen. After the tool is written, all code must be frozen and vendored.
+- To Spec. The tools must conform to the spec.
 
 #### Architecture of migrations
 
@@ -135,7 +148,8 @@ There are currently two main datastore implementations:
  
  When the migration is run in browser environment the `datastore-fs` is automatically replaced with `datastore-level` even
  when it is directly imported (`require('datastore-fs')` will return `datastore-level` in browser). Because of this mechanism
- with simple migrations you should not worry about difference between `datastore-fs` and `datastore-level`.
+ with simple migrations you should not worry about difference between `datastore-fs` and `datastore-level` and by default 
+ use the `datastore-fs` package (as the replace mechanism does not work vice vera).
 
 #### Guidelines
 
