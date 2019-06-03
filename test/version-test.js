@@ -8,13 +8,15 @@ const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const version = require('../src/repo/version')
 
+const errors = require('../src/errors')
+
 // When new versioning mechanism is introduced in new version don't forget to update
 // the range (from/to) of the previous version test's description
 
 module.exports = (setup, cleanup) => {
   it('getVersion should fail without any version in repo', async () => {
     const dir = await setup()
-    await expect(version.getVersion(dir)).to.be.eventually.rejectedWith('Repo does not have version file! Is the repo initialized?')
+    await expect(version.getVersion(dir)).to.be.eventually.rejectedWith(errors.UnknownRepoStructureError).with.property('code', errors.UnknownRepoStructureError.code)
     return cleanup(dir)
   })
 
@@ -40,7 +42,7 @@ module.exports = (setup, cleanup) => {
     })
 
     it('should set version number', async () => {
-      await expect(version.getVersion(dir)).to.be.eventually.rejectedWith('Repo does not have version file! Is the repo initialized?')
+      await expect(version.getVersion(dir)).to.be.eventually.rejectedWith(errors.UnknownRepoStructureError).with.property('code', errors.UnknownRepoStructureError.code)
       await version.setVersion(dir, 7)
       expect(await version.getVersion(dir)).to.be.equal(7)
     })

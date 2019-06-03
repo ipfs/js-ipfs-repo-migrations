@@ -87,7 +87,7 @@ describe('index.js', () => {
 
     expect(
       () => migrator.getLatestMigrationVersion([])
-    ).to.throw(errors.InvalidValueError, 'Migrations must be non-empty array!').with.property('code', errors.InvalidValueError.code)
+    ).to.throw(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
   })
 
   describe('revert', () => {
@@ -95,14 +95,14 @@ describe('index.js', () => {
       const options = createOptions()
 
       return expect(migrator.revert(undefined, undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError, 'Path argument is required!').with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with out toVersion argument', () => {
       const options = createOptions()
 
       return expect(migrator.revert('/some/path', undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError, 'When reverting migrations, you have to specify to which version to revert!').with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
@@ -111,7 +111,7 @@ describe('index.js', () => {
 
       return Promise.all(
         invalidValues.map((value) => expect(migrator.revert('/some/path', value, options))
-          .to.eventually.be.rejectedWith(errors.InvalidValueError, 'Version has to be positive integer!').with.property('code', errors.InvalidValueError.code))
+          .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
       )
     })
 
@@ -143,7 +143,7 @@ describe('index.js', () => {
       getVersionStub.returns(4)
       return expect(
         migrator.revert('/some/path', 1, options)
-      ).to.eventually.be.rejectedWith(errors.NonReversibleMigrationError, 'Migration version 3 is not possible to revert! Cancelling reversion.')
+      ).to.eventually.be.rejectedWith(errors.NonReversibleMigrationError)
         .with.property('code', errors.NonReversibleMigrationError.code)
     })
 
@@ -272,7 +272,7 @@ describe('index.js', () => {
       const options = createOptions()
 
       return expect(migrator.migrate(undefined, options))
-        .to.eventually.be.rejectedWith(errors.RequiredParameterError, 'Path argument is required!').with.property('code', errors.RequiredParameterError.code)
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
@@ -280,7 +280,7 @@ describe('index.js', () => {
 
       return Promise.all(
         invalidValues.map((invalidValue) => expect(migrator.migrate('/some/path', createOptions(invalidValue)))
-          .to.eventually.be.rejectedWith(errors.InvalidValueError, 'Version has to be positive integer!').with.property('code', errors.InvalidValueError.code))
+          .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
       )
     })
 
