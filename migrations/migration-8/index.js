@@ -29,7 +29,7 @@ async function processFolder (store, prefix, fileNameProcessor) {
     prefix: `/${prefix}`
   }
 
-  const files = await store.query(query)
+  const files = store.query(query)
   for await (let file of files) {
     const name = String(file.key._buf).replace(`/${prefix}/`, '')
     const encodedFileName = fileNameProcessor(name)
@@ -42,7 +42,7 @@ async function processFolder (store, prefix, fileNameProcessor) {
 }
 
 async function migrate (repoPath, options, isBrowser) {
-  let storageBackend
+  let storageBackend, storageBackendOptions
   if (options !== undefined
     && options['storageBackends'] !== undefined
     && options['storageBackends']['keys'] !== undefined
@@ -52,7 +52,16 @@ async function migrate (repoPath, options, isBrowser) {
     storageBackend = Datastore
   }
 
-  const store = new storageBackend(path.join(repoPath, 'keys'), { extension: '.data' })
+  if (options !== undefined
+    && options['storageBackendOptions'] !== undefined
+    && options['storageBackendOptions']['keys'] !== undefined
+  ) {
+    storageBackendOptions = options['storageBackendOptions']['keys']
+  } else {
+    storageBackendOptions = {}
+  }
+
+  const store = new storageBackend(path.join(repoPath, 'keys'), storageBackendOptions)
   try {
     const info = processFolder(store, 'info', encode)
     const data = processFolder(store, 'pkcs8', encode)
@@ -71,7 +80,7 @@ let storageBackend
   ) {
     storageBackend = options['storageBackends']['keys']
   } else {
-    storageBackend = Datastore
+    storageBackend = FSDatastore
   }
 
   const store = new storageBackend(path.join(repoPath, 'keys'), { extension: '.data' })
