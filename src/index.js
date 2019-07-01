@@ -215,7 +215,7 @@ function verifyReversibility (migrations, fromVersion, toVersion) {
     }
 
     if (migration.version > toVersion) {
-      if (!migration.reversible) return { reversible: false, version: migration.version }
+      if (!migration.revert) return { reversible: false, version: migration.version }
 
       migrationCounter++
     }

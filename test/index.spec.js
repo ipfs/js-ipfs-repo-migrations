@@ -17,25 +17,21 @@ function createMigrations () {
   return [
     {
       version: 1,
-      reversible: true,
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     },
     {
       version: 2,
-      reversible: true,
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     },
     {
       version: 3,
-      reversible: true,
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     },
     {
       version: 4,
-      reversible: true,
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     }
@@ -137,7 +133,7 @@ describe('index.js', () => {
 
     it('should not allow to reverse migration that is not reversible', () => {
       const nonReversibleMigrationsMock = createMigrations()
-      nonReversibleMigrationsMock[2].reversible = false
+      nonReversibleMigrationsMock[2].revert = undefined
       const options = { migrations: nonReversibleMigrationsMock }
 
       getVersionStub.returns(4)

@@ -5,7 +5,6 @@
 
 const emptyMigration = {
   description: 'Empty migration.',
-  reversible: true,
   migrate: () => {},
   revert: () => {},
   empty: true,

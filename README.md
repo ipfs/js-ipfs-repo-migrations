@@ -112,9 +112,8 @@ Each migration has to follow this API. It has to export object in its `index.js`
 
  * `version` (int) - Number that represents the version into which will be the repo migrated to (eq. `migration-8` will move the repo into version 8).
  * `description` (string) - Brief description of what the migrations does.
- * `reversible` (bool) - Specify if it is possible to revert this migration.
  * `migrate` (function) - Function that on execution will perform the migration, see signature of this function bellow.
- * `revert` (function) - If `reversible == True` then this function will be used to revert the migration to previous version.
+ * `revert` (function) - If defined then this function will be used to revert the migration to previous version. Otherwise it is assumed that it is not possible to revert this migration.
 
 ##### `migrate(repoPath, isBrowser)`
 

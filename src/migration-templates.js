@@ -50,7 +50,6 @@ async function revert(repoPath, isBrowser) {
 module.exports = {
   version: {{version}},
   description: '', // <--- Fill in your description here
-  reversible: true,
   migrate,
   revert,
 }`,
@@ -62,7 +61,6 @@ module.exports = {
 
 const emptyMigration = {
   description: 'Empty migration.',
-  reversible: true,
   migrate: () => {},
   revert: () => {},
   empty: true,
