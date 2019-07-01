@@ -220,7 +220,7 @@ describe('index.js', () => {
     it('should not lock repo when ignoreLock is used', async () => {
       const options = createOptions()
       options.ignoreLock = true
-      
+
       getVersionStub.returns(4)
 
       await expect(migrator.revert('/some/path', 2, options))

@@ -13,7 +13,6 @@ const CONFIG_KEY = new Key('config')
 const VERSION_KEY = new Key('version')
 
 module.exports = (setup, cleanup) => {
-
   let dir
 
   beforeEach(async () => {

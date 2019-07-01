@@ -40,7 +40,7 @@ async function migrate ({ repoPath, to, dry, revertOk }) {
 
   if (!to || (version <= to)) {
     await migrator.migrate(repoPath, options)
-  } else if(revertOk){
+  } else if (revertOk) {
     await migrator.revert(repoPath, to, options)
   } else {
     throw new Error('The migration would require reversion of the repo, but you have not allowed it as \'--revert-ok\' is not present.')

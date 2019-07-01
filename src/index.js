@@ -46,7 +46,7 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * @param {array?} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function migrate (path, {toVersion, ignoreLock=false, repoOptions, onProgress, isDryRun=false, migrations}) {
+async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
 
   if (!path) {
@@ -125,7 +125,7 @@ exports.migrate = migrate
  * @param {array?} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function revert (path, toVersion, {ignoreLock=false, repoOptions, onProgress, isDryRun=false, migrations}) {
+async function revert (path, toVersion, { ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
 
   if (!path) {

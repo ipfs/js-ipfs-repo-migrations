@@ -3,7 +3,6 @@
 const Datastore = require('datastore-fs')
 const path = require('path')
 const Key = require('interface-datastore').Key
-const log = require('debug')('ipfs-repo-migrations:migration-8')
 const _set = require('just-safe-set')
 
 const CONFIG_KEY = new Key('config')
@@ -19,26 +18,26 @@ const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
  */
 
 function datastoreFactory (repoPath, options) {
-  let storageBackend, storageBackendOptions
-  if (options !== undefined
-    && options['storageBackends'] !== undefined
-    && options['storageBackends']['root'] !== undefined
+  let StorageBackend, storageBackendOptions
+  if (options !== undefined &&
+    options.storageBackends !== undefined &&
+    options.storageBackends.root !== undefined
   ) {
-    storageBackend = options['storageBackends']['root']
+    StorageBackend = options.storageBackends.root
   } else {
-    storageBackend = Datastore
+    StorageBackend = Datastore
   }
 
-  if (options !== undefined
-    && options['storageBackendOptions'] !== undefined
-    && options['storageBackendOptions']['root'] !== undefined
+  if (options !== undefined &&
+    options.storageBackendOptions !== undefined &&
+    options.storageBackendOptions.root !== undefined
   ) {
-    storageBackendOptions = options['storageBackends']['root']
+    storageBackendOptions = options.storageBackendOptions.root
   } else {
-    storageBackendOptions = { 'extension': '' }
+    storageBackendOptions = { extension: '' }
   }
 
-  return new storageBackend(path.join(repoPath), storageBackendOptions)
+  return new StorageBackend(path.join(repoPath), storageBackendOptions)
 }
 
 function addNewApiAddress (config) {

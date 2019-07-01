@@ -37,7 +37,7 @@ module.exports = (setup, cleanup) => {
     await store.put(configKey, '')
     await store.close()
 
-    expect( await repoInit.isRepoInitialized(dir)).to.be.false()
+    expect(await repoInit.isRepoInitialized(dir)).to.be.false()
   })
 
   it('should return false with missing config key', async () => {
