@@ -34,7 +34,7 @@ async function migrate ({ repoPath, to, dry, revertOk }) {
   const options = {
     toVersion: to,
     ignoreLock: false,
-    progressCb: reportingClosure(dry ? 'loaded migration' : 'migrated to version'),
+    onProgress: reportingClosure(dry ? 'loaded migration' : 'migrated to version'),
     isDryRun: dry
   }
 

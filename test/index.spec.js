@@ -239,14 +239,14 @@ describe('index.js', () => {
 
     it('should report progress when progress callback is supplied', async () => {
       const options = createOptions()
-      options.progressCb = sinon.stub()
+      options.onProgress = sinon.stub()
       getVersionStub.returns(4)
 
       await expect(migrator.revert('/some/path', 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.progressCb.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
-      expect(options.progressCb.getCall(1).calledWith(sinon.match.any, 2, 2)).to.be.true()
+      expect(options.onProgress.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
+      expect(options.onProgress.getCall(1).calledWith(sinon.match.any, 2, 2)).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {
@@ -364,14 +364,14 @@ describe('index.js', () => {
 
     it('should report progress when progress callback is supplied', async () => {
       const options = createOptions(4)
-      options.progressCb = sinon.stub()
+      options.onProgress = sinon.stub()
       getVersionStub.returns(2)
 
       await expect(migrator.migrate('/some/path', options))
         .to.eventually.be.fulfilled()
 
-      expect(options.progressCb.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
-      expect(options.progressCb.getCall(1).calledWith(sinon.match.any, 2, 2)).to.be.true()
+      expect(options.onProgress.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
+      expect(options.onProgress.getCall(1).calledWith(sinon.match.any, 2, 2)).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {

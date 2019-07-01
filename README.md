@@ -204,7 +204,7 @@ This will create empty migration with next version in line.
 
 ## API
 
-### `migrate(path, {toVersion, ignoreLock, repoOptions, progressCb, isDryRun}) -> Promise<void>`
+### `migrate(path, {toVersion, ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
 
 Executes forward migration to specific version or if not specified to the latest version.
 
@@ -215,10 +215,10 @@ Executes forward migration to specific version or if not specified to the latest
  * `options.toVersion` (int, optional) - version to which the repo should be migrated to. If left out the version of latest migration is used.
  * `options.ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
  * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
- * `options.progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
+ * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
  
-#### `progressCb(migration, counter, totalMigrations)`
+#### `onProgress(migration, counter, totalMigrations)`
  
 Signature of the progress callback.
 
@@ -227,7 +227,7 @@ Signature of the progress callback.
  * `counter` (int) - current number of migration in the planned migrations streak.
  * `totalMigrations` (int) - total count of migrations that are planned to be run.
 
-### `revert(path, toVersion, {ignoreLock, options, progressCb, isDryRun}) -> Promise<void>`
+### `revert(path, toVersion, {ignoreLock, options, onProgress, isDryRun}) -> Promise<void>`
 
 Executes backward migration to specific version.
 
@@ -238,7 +238,7 @@ Executes backward migration to specific version.
  * `options` (object, optional) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true won't lock the repo for applying the migrations. Use with caution.
  * `options.options` (object, optional) - options that are passed to migrations, that use them to correctly construct datastore. Options are same like for IPFSRepo.
- * `options.progressCb` (function, optional) - callback that is called after finishing execution of each migration to report progress.
+ * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should imitate running migration without actually any change.
  
 ### `getLatestMigrationVersion() -> int`
