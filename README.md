@@ -94,19 +94,18 @@ a case, you should provide a way how to trigger migrations manually.**
 Migrations are one of those things that can be extremely painful on users. At the end of the day, we want users never to have to think about it. The process should be:
 
 - SAFE. No data lost. Ever.
-- Revertible. Tools must implement forward and backward migrations.
-- Frozen. After the tool is written, all code must be frozen and vendored.
+- Revertible. Tools must implement forward and backward (if possible) migrations.
+- Tests. Migrations have to be well tested.
 - To Spec. The tools must conform to the spec.
 
 #### Architecture of migrations
 
-All migrations are placed in `/migrations` folder. Each folder there represents one migration that behaves as stand-alone
-package that has its own `package.json` file that states migration's dependencies, has its own tests and follows migration
-API. 
+All migrations are placed in `/migrations` folder. Each folder there represents one migration that follows migration
+API.
 
 All migrations are collected in `/migrations/index.js`, which should not be edited manually is it is regenerated on
 every run of `jsipfs-migrations add` (or the manual changes should follow same style of modifications). 
-The order of migrations is important and the migrations have to be sorted in the growing order.
+**The order of migrations is important and the migrations have to be sorted in the growing order**.
 
 Each migration has to follow this API. It has to export object in its `index.js` that has following properties:
 
@@ -164,11 +163,24 @@ write the rest of migration!
 The `node_modules` of the migration should be committed to the repo to ensure that the dependencies are resolved even in
 far future, when the package might be removed from registry. 
 
+#### Migration's dependencies
+
+Size of `js-ipfs`'s bundle is crucial for distribution in browser environment, hence dependency management of all related
+packages is important.
+
+If migration need to depend on some package, this dependency should be declared in the root's `package.json`. Author
+of migrations should be thoughtful about adding dependencies that would significantly increase the size of the final bundle.
+
+Most of the migration's dependencies will most likely overlap with `js-ipfs`'s dependencies and hence should not introduce
+any significant overhead, but it requires to keep the versions of these dependencies in sync with `js-ipfs`. For this 
+reason migrations should be well tested to ensure correct behaviour over its dependencies updates. It might happen
+that update of some dependency could introduce breaking change, in such a case the next steps should be discussed with broader 
+audience. 
+
 #### Integration with js-ipfs
 
-When new migration is created, the repo version in [`js-ipfs-repo`](https://github.com/ipfs/js-ipfs-repo) should be updated with the new version.
-After releasing the updated version of `js-ipfs-repo` this version should be propagated into `js-ipfs` together with
-updated version of this package.
+When new migration is created, the repo version in [`js-ipfs-repo`](https://github.com/ipfs/js-ipfs-repo) should be updated with the new version,
+together with updated version of this package. And afterwards propagate the updated version to `js-ipfs`.
 
 #### Tests
 
@@ -179,7 +191,7 @@ If migration affects working of any of the following functionality, it has to pr
 * `/src/repo/lock.js`:`lock()` - locking repository that uses file system
 * `/src/repo/lock-memory.js`:`lock()` - locking repository that uses memory
 
-Migration has to have a test coverage. Tests for migration should be placed in `/test/migrations/` folder. Most probably
+Every mgration has to have a test coverage. Tests for migration should be placed in `/test/migrations/` folder. Most probably
 you will have to plug the tests into `browser.js`/`node.js` if they require specific bootstrap on each platform.
 
 #### Empty migrations
