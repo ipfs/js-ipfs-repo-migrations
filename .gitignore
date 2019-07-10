@@ -1,6 +1,5 @@
 docs
 
-test/test-repo-for*
 .eslintrc
 
 # Logs
@@ -26,3 +25,7 @@ dist
 
 # Dependency directory
 node_modules
+
+# Tests
+test/test-repo-for*
+test/sharness/tmp

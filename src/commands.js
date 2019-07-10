@@ -28,13 +28,32 @@ function reportingClosure (action) {
     process.stdout.write(`${chalk.green(`[${currentlyMigrated}/${totalToMigrate}]`)} Successfully ${action} ${chalk.bold(migration.version)}: ${migration.description}\n`)
 }
 
-async function migrate ({ repoPath, to, dry, revertOk }) {
+async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
+
+  // Import migrations if set
+  if (migrations) {
+    migrations = require(migrations)
+  }
+
   const version = await repoVersion.getVersion(repoPath)
+
+  let action
+  if (dry) {
+    action = 'loaded migration'
+  } else {
+    if (!to || (version <= to)) {
+      action = 'migrated to version'
+    } else {
+      action = 'reverted version'
+    }
+  }
+
   const options = {
+    migrations: migrations,
     toVersion: to,
     ignoreLock: false,
-    onProgress: reportingClosure(dry ? 'loaded migration' : 'migrated to version'),
+    onProgress: reportingClosure(action),
     isDryRun: dry
   }
 
@@ -47,11 +66,16 @@ async function migrate ({ repoPath, to, dry, revertOk }) {
   }
 }
 
-async function status ({ repoPath }) {
+async function status ({ repoPath, migrations }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
 
+  // Import migrations if set
+  if (migrations) {
+    migrations = require(migrations)
+  }
+
   const version = await repoVersion.getVersion(repoPath)
-  const lastMigrationVersion = migrator.getLatestMigrationVersion()
+  const lastMigrationVersion = migrator.getLatestMigrationVersion(migrations)
   const statusString =
     version < lastMigrationVersion ? chalk.yellow('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
 
@@ -68,7 +92,7 @@ async function getAuthor () {
   }
 }
 
-async function add ({ repoPath, empty }) {
+async function add ({ empty }) {
   const newMigrationVersion = migrator.getLatestMigrationVersion() + 1
   const newMigrationFolder = path.join(__dirname, '..', 'migrations', 'migration-' + newMigrationVersion)
 

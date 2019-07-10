@@ -27,6 +27,10 @@ async function main (args) {
       desc: 'Path to the IPFS repo',
       type: 'string'
     })
+    .option('migrations', {
+      desc: 'Path to folder with migrations. Default: bundled migrations',
+      type: 'string'
+    })
     .command(commands.migrate)
     .command(commands.status)
     .command(commands.add)
