@@ -80,7 +80,7 @@ let storageBackend
   ) {
     storageBackend = options['storageBackends']['keys']
   } else {
-    storageBackend = FSDatastore
+    storageBackend = Datastore
   }
 
   const store = new storageBackend(path.join(repoPath, 'keys'), { extension: '.data' })
