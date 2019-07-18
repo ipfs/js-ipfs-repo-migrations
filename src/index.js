@@ -14,6 +14,7 @@ exports.errors = errors
 
 /**
  * Returns the version of latest migration.
+ * If no migrations are present returns 0.
  *
  * @param {array?} migrations - Array of migrations to consider. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {int}
@@ -22,7 +23,7 @@ function getLatestMigrationVersion (migrations) {
   migrations = migrations || defaultMigrations
 
   if (!Array.isArray(migrations) || migrations.length === 0) {
-    throw new errors.InvalidValueError('Migrations must be non-empty array!')
+    return 0
   }
 
   return migrations[migrations.length - 1].version

@@ -80,10 +80,7 @@ describe('index.js', () => {
     const migrationsMock = createMigrations()
 
     expect(migrator.getLatestMigrationVersion(migrationsMock)).to.equal(4)
-
-    expect(
-      () => migrator.getLatestMigrationVersion([])
-    ).to.throw(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+    expect(migrator.getLatestMigrationVersion([])).to.equal(0)
   })
 
   describe('revert', () => {
