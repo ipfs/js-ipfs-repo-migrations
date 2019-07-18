@@ -8,7 +8,7 @@ const path = require('path')
 const fs = require('fs')
 
 async function createRepo () {
-  const testRepoPath = path.join(__dirname, 'test-repo')
+  const testRepoPath = path.join(__dirname, 'fixtures', 'test-repo')
   const date = Date.now().toString()
   const dir = testRepoPath + '-for-' + date
   fs.mkdirSync(dir)
@@ -18,7 +18,7 @@ async function createRepo () {
 
 async function createAndLoadRepo () {
   const dir = await createRepo()
-  const testRepoPath = path.join(__dirname, 'test-repo')
+  const testRepoPath = path.join(__dirname, 'fixtures', 'test-repo')
 
   await asyncNcp(testRepoPath, dir)
   return dir
