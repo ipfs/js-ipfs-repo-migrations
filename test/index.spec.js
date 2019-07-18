@@ -277,6 +277,13 @@ describe('index.js', () => {
       )
     })
 
+    it('should error if migrations does not exist', () => {
+      const options = createOptions(5)
+
+      return expect(migrator.migrate('/some/path', options))
+        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+    })
+
     it('should use latest migration\'s version if no toVersion is provided', async () => {
       const options = createOptions()
       getVersionStub.returns(2)

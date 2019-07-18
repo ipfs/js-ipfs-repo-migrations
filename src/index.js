@@ -63,6 +63,10 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
   }
   toVersion = toVersion || getLatestMigrationVersion(migrations)
 
+  if (toVersion > getLatestMigrationVersion(migrations)) {
+    throw new errors.InvalidValueError('The ipfs-repo-migrations package does not have migration for version: ' + toVersion)
+  }
+
   const currentVersion = await repoVersion.getVersion(path)
 
   if (currentVersion === toVersion) {
