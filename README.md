@@ -29,6 +29,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
   - [Migrations matrix](#migrations-matrix)
 - [API](#api)
 - [CLI](#cli)
+- [Versioning](#versioning)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -264,6 +265,10 @@ It has several commands:
  * `add` - bootstraps new migration.
  
 For further details see the `--help` pages.
+
+## Versioning
+
+In order to have good overview of what version of package contains what kind of migrations, this package follows this versioning schema: `0.<versionOfLastMigration>.<patches>`.
 
 ## Contribute
 
