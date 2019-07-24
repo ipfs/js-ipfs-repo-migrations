@@ -9,7 +9,7 @@ const log = require('debug')('repo-migrations:cli')
 
 const commands = require('./commands')
 
-function print (msg, newline) {
+function print (msg = '', newline = true) {
   if (newline === undefined) {
     newline = true
   }
