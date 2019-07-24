@@ -48,7 +48,6 @@ async function main (args) {
       yargs.showHelp()
     })
 
-
   try {
     const { data } = await new YargsPromise(cli).parse(args)
     if (data) print(data)
