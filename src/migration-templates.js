@@ -25,7 +25,7 @@ module.exports = {
 const Datastore = require('datastore-fs')
 const log = require('debug')('jsipfs-repo-migrations:migration-{{version}}')
 
-async function migrate(repoPath, isBrowser) {
+async function migrate(repoPath, options, isBrowser) {
   const store = new Datastore(repoPath, {extension: '', createIfMissing: false})
   store.open()
 
@@ -36,7 +36,7 @@ async function migrate(repoPath, isBrowser) {
   }
 }
 
-async function revert(repoPath, isBrowser) {
+async function revert(repoPath, options, isBrowser) {
   const store = new Datastore(repoPath, {extension: '', createIfMissing: false})
   store.open()
 
