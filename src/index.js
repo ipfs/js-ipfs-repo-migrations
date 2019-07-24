@@ -75,7 +75,7 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
   }
 
   if (currentVersion > toVersion) {
-    log(`Current repo's version (${currentVersion} is higher then toVersion (${toVersion}), nothing to migrate.`)
+    log(`Current repo's version (${currentVersion}) is higher then toVersion (${toVersion}), nothing to migrate.`)
     return
   }
 
@@ -156,7 +156,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
   }
 
   if (currentVersion < toVersion) {
-    log(`Current repo's version (${currentVersion} is lower then toVersion (${toVersion}), nothing to revert.`)
+    log(`Current repo's version (${currentVersion}) is lower then toVersion (${toVersion}), nothing to revert.`)
     return
   }
 

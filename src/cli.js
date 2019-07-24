@@ -48,7 +48,6 @@ async function main (args) {
       yargs.showHelp()
     })
 
-  let exitCode = 0
 
   try {
     const { data } = await new YargsPromise(cli).parse(args)
@@ -63,11 +62,7 @@ async function main (args) {
       print('Unknown error, please re-run the command with DEBUG=repo-migrations:cli to see debug output')
     }
 
-    exitCode = 1
-  }
-
-  if (exitCode) {
-    process.exit(exitCode)
+    process.exit(1)
   }
 }
 

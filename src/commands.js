@@ -36,6 +36,10 @@ async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
     migrations = require(migrations)
   }
 
+  if (!to) {
+    to = migrator.getLatestMigrationVersion()
+  }
+
   const version = await repoVersion.getVersion(repoPath)
 
   let action
@@ -57,7 +61,9 @@ async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
     isDryRun: dry
   }
 
-  if (!to || (version <= to)) {
+  if (version === to) {
+    return chalk.yellow('Nothing to migrate! Versions matches')
+  } else if (version < to) {
     await migrator.migrate(repoPath, options)
   } else if (revertOk) {
     await migrator.revert(repoPath, to, options)
