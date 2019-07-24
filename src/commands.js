@@ -62,7 +62,7 @@ async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
   } else if (revertOk) {
     await migrator.revert(repoPath, to, options)
   } else {
-    throw new Error('The migration would require reversion of the repo, but you have not allowed it as \'--revert-ok\' is not present.')
+    throw new Error(`The migration would revert the repo version from ${version} to ${to}. To revert you must supply '--revert-ok'.`)
   }
 }
 
@@ -77,9 +77,9 @@ async function status ({ repoPath, migrations }) {
   const version = await repoVersion.getVersion(repoPath)
   const lastMigrationVersion = migrator.getLatestMigrationVersion(migrations)
   const statusString =
-    version < lastMigrationVersion ? chalk.yellow('There are migrations to be applied!') : chalk.green('Nothing to migrate!')
+    version < lastMigrationVersion ? chalk.yellow('Repo is out of date') : chalk.green('Nothing to migrate')
 
-  return `${statusString}\nCurrent repo version: ${version}\nLast migration's version: ${lastMigrationVersion}`
+  return `${statusString}\nCurrent repo version: ${version}\nLatest migration version: ${lastMigrationVersion}`
 }
 
 async function getAuthor () {
@@ -127,21 +127,21 @@ module.exports = {
     handler: asyncClosure(migrate),
     builder: yargv => yargv
       .option('to', {
-        describe: 'Specify to which version should be repo migrated to',
+        describe: 'Target version to migrate repo to',
         type: 'number'
       })
       .option('dry', {
-        describe: 'Only displays what migrations will be reverted',
+        describe: `Output migration results but don't actually perform migration`,
         type: 'boolean'
       })
       .option('revert-ok', {
-        describe: 'Allows to do backward migration, if the specific version is lower the current version of repository',
+        describe: 'Allow migrating to a lower version (reverting)',
         type: 'boolean'
       })
   },
   status: {
     command: 'status',
-    describe: 'Display status of IPFS repo',
+    describe: 'Display migration status of IPFS repo',
     handler: asyncClosure(status)
   },
   add: {
