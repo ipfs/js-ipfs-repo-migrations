@@ -2,9 +2,9 @@
 
 This document explains how to run [repo](https://github.com/ipfs/specs/tree/master/repo/) migrations for [js-ipfs](https://github.com/ipfs/js-ipfs).
 
-Note that running migrations is a task automatically performed by the `js-ipfs` when running the `js-ipfs` command after installing its new version, so you would normally not need to run the `jsipfs-repo-migrations` tool.
+Note that the `js-ipfs` command automatically runs migrations when a new version is installed, so you would normally not need to run the `jsipfs-repo-migrations` tool.
 
-The `jsipfs-repo-migrations` comes into play when the internal, on-disk format `js-ipfs` uses to store data changes. In order to avoid losing data, this tool upgrades old versions of the repo to the new ones.
+`jsipfs-repo-migrations` comes into play when the internal, on-disk format `js-ipfs` uses to store data changes. To enable the new version of `js-ipfs` to read the new data format, this tool upgrades from an old version of the repo to a new version.
 
 If you run into any trouble, please feel free to [open an issue in this repository](https://github.com/ipfs/js-ipfs-repo-migrations/issues).
 
@@ -18,17 +18,17 @@ cp -r ~/.js-ipfs ~/.js-ipfs.bak
 
 ## Step 1. Downloading the Migration
 
-Recommended way is to use `npm` and install this package with it: `npm install ipfs-repo-migrations`
+`npm install ipfs-repo-migrations`
 
 ## Step 2. Run the Migration
 
-Now, run the migration tool:
+To run the migration tool:
 
 ```sh
-# you can check if there are migrations that needs to be applied
+# to check if there are migrations that need to be applied
 js-ipfs-repo-migrations status
 
-# if so, you can migrate to the latest version
+# if so, migrate to the latest version
 js-ipfs-repo-migrations migrate
 ```
 
