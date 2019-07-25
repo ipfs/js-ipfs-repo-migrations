@@ -10,13 +10,6 @@ const log = require('debug')('repo-migrations:cli')
 const commands = require('./commands')
 
 function print (msg = '', newline = true) {
-  if (newline === undefined) {
-    newline = true
-  }
-
-  if (msg === undefined) {
-    msg = ''
-  }
   msg = newline ? msg + '\n' : msg
   process.stdout.write(msg)
 }
@@ -41,6 +34,7 @@ async function main (args) {
         throw err // preserve stack
       }
 
+      // Suppress "one command required" error when only help page is to be displayed
       if (args.length > 0) {
         print(msg)
       }

@@ -17,7 +17,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 
 ## Lead Maintainer
 
-???
+[Adam Uhlíř](https://github.com/auhau/)
 
 ## Table of Contents
 
