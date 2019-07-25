@@ -106,7 +106,7 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
     }
 
     if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations))
-    log('All migrations successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
+    log('Repo successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
     if (!isDryRun && !ignoreLock) await lock.close()
   }
@@ -162,7 +162,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
 
   let reversibility = verifyReversibility(migrations, currentVersion, toVersion)
   if (!reversibility.reversible) {
-    throw new errors.NonReversibleMigrationError(`Migration version ${reversibility.version} is not possible to revert! Cancelling reversion.`)
+    throw new errors.NonReversibleMigrationError(`It is not possible to revert to version ${toVersion} because migration version ${reversibility.version} is not reversible. Cancelling reversion.`)
   }
 
   let lock
@@ -227,8 +227,8 @@ function verifyReversibility (migrations, fromVersion, toVersion) {
   }
 
   if (migrationCounter !== (fromVersion - toVersion)) {
-    throw new errors.NonReversibleMigrationError(`There are missing migration to perform the reversion! 
-    Expected ${(fromVersion - toVersion)} migrations, but there is only ${migrationCounter} migrations.`)
+    throw new errors.NonReversibleMigrationError(`There are not enough migrations to perform the reversion! 
+    Expected ${(fromVersion - toVersion)} migrations, but there are only ${migrationCounter} migrations.`)
   }
 
   return { reversible: true, version: undefined }
