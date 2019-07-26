@@ -1,25 +1,6 @@
 'use strict'
 
 module.exports = {
-  packageJson: `{
-  "name": "ipfs-repo-migration-{{version}}",
-  "version": "0.1.0",
-  "description": "Migration",
-  "author": "{{author}}",
-  "main": "index.js",
-  "files": [
-    "index.js",
-    "node_modules"
-  ],
-  "engines": {
-    "node": ">=10.0.0",
-    "npm": ">=3.0.0"
-  },
-  "dependencies": {
-  },
-  "license": "MIT"
-}`,
-
   indexJs: `'use strict'
 
 const Datastore = require('datastore-fs')
@@ -41,7 +22,7 @@ async function revert(repoPath, options, isBrowser) {
   store.open()
 
   try {
-    // Your reversion of migration (if supported)
+    // Your reversion of migration (if supported, if not delete this function!!!)
   } finally {
     await store.close()
   }

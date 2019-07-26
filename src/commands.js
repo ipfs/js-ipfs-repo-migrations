@@ -8,7 +8,6 @@ const util = require('util')
 
 const writeFile = util.promisify(fs.writeFile)
 const mkdir = util.promisify(fs.mkdir)
-const exec = util.promisify(require('child_process').exec)
 
 const chalk = require('chalk')
 
@@ -88,21 +87,11 @@ async function status ({ repoPath, migrations }) {
   return `${statusString}\nCurrent repo version: ${version}\nLatest migration version: ${lastMigrationVersion}`
 }
 
-async function getAuthor () {
-  try {
-    const name = (await exec('git config --get user.name')).stdout
-    const email = (await exec('git config --get user.email')).stdout
-    return `${name.replace('\n', '')} <${email.replace('\n', '')}>`
-  } catch (e) {
-    return ''
-  }
-}
-
 async function add ({ empty }) {
   const newMigrationVersion = migrator.getLatestMigrationVersion() + 1
   const newMigrationFolder = path.join(__dirname, '..', 'migrations', 'migration-' + newMigrationVersion)
 
-  const migrationsImport = migrations.map((migration) => migration.empty ? `  Object.assign({version: ${migration.version}}, emptyMigration),` : `  require('./migration-${migration.version}'),`)
+  const migrationsImport = migrations.map((migration) => migration.empty ? `  Object.assign({version: ${parseInt(migration.version)}}, emptyMigration),` : `  require('./migration-${parseInt(migration.version)}'),`)
   if (empty) {
     migrationsImport.push(`  Object.assign({version: ${newMigrationVersion}}, emptyMigration),`)
   } else {
@@ -115,11 +104,6 @@ async function add ({ empty }) {
   if (empty) return
 
   await mkdir(newMigrationFolder)
-
-  const packageJsonContent = templates.packageJson
-    .replace(/{{version}}/gi, newMigrationVersion)
-    .replace(/{{author}}/gi, await getAuthor())
-  await writeFile(path.join(newMigrationFolder, 'package.json'), packageJsonContent)
 
   const indexJsContent = templates.indexJs
     .replace(/{{version}}/gi, newMigrationVersion)
