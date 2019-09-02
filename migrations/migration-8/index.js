@@ -15,13 +15,13 @@ function encode (name) {
 }
 
 function decode (name) {
-  log(name)
   if (!name.startsWith(KEY_PREFIX)) {
     throw Error("Unknown format of key's name!")
   }
 
   const decoder = new base32.Decoder({ type: "rfc4648" })
-  return decoder.finalize(name.replace(KEY_PREFIX, '').toUpperCase())
+  const decodedNameBuff = decoder.finalize(name.replace(KEY_PREFIX, '').toUpperCase())
+  return Buffer.from(decodedNameBuff).toString()
 }
 
 async function processFolder (store, prefix, fileNameProcessor) {
