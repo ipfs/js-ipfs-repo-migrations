@@ -98,9 +98,14 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
       try {
         if (!isDryRun) await migration.migrate(path, repoOptions, isBrowser)
       } catch (e) {
+        const lastSuccessfullyMigratedVersion = migration.version - 1
+        log(`An exception was raised during execution of migration. Setting the repo\'s version to last successfully migrated version: ${lastSuccessfullyMigratedVersion}`)
+        await repoVersion.setVersion(path, lastSuccessfullyMigratedVersion)
+
         e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
         throw e
       }
+
       typeof onProgress === 'function' && onProgress(migration, counter, totalMigrations) // Reports on migration process
       log(`Migrating to version ${migration.version} finished`)
     }
@@ -187,9 +192,14 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
       try {
         if (!isDryRun) await migration.revert(path, repoOptions, isBrowser)
       } catch (e) {
+        const lastSuccessfullyRevertedVersion = migration.version
+        log(`An exception was raised during execution of migration. Setting the repo\'s version to last successfully reverted version: ${lastSuccessfullyRevertedVersion}`)
+        await repoVersion.setVersion(path, lastSuccessfullyRevertedVersion)
+
         e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
         throw e
       }
+
       typeof onProgress === 'function' && onProgress(migration, counter, totalMigrations) // Reports on migration process
       log(`Reverting to version ${migration.version} finished`)
     }

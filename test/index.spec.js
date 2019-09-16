@@ -249,14 +249,16 @@ describe('index.js', () => {
     it('should unlock repo when error is thrown', async () => {
       getVersionStub.returns(4)
       const options = createOptions()
-      options.migrations[3].revert = sinon.stub().rejects()
+      options.migrations[2].revert = sinon.stub().rejects()
 
       await expect(migrator.revert('/some/path', 2, options))
         .to.eventually.be.rejected()
 
       expect(lockCloseStub.calledOnce).to.be.true()
       expect(lockStub.calledOnce).to.be.true()
-      expect(setVersionStub.called).to.be.false()
+
+      // The last successfully reverted migration should be set as repo's version
+      expect(setVersionStub.calledOnceWith('/some/path', 3)).to.be.true()
     })
   })
 
@@ -388,7 +390,9 @@ describe('index.js', () => {
 
       expect(lockCloseStub.calledOnce).to.be.true()
       expect(lockStub.calledOnce).to.be.true()
-      expect(setVersionStub.called).to.be.false()
+
+      // The last successfully migrated migration should be set as repo's version
+      expect(setVersionStub.calledOnceWith('/some/path', 3)).to.be.true()
     })
   })
 })

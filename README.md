@@ -102,6 +102,10 @@ Migrations are one of those things that can be extremely painful on users. At th
 - Tests. Migrations have to be well tested.
 - To Spec. The tools must conform to the spec.
 
+If your migration has several parts, it should be fail-proof enough that if one part of migration fails the previous changes
+are reverted before propagating the error. If possible then the outcome should be consistent repo so it migration could
+be run again. 
+
 #### Architecture of migrations
 
 All migrations are placed in the `/migrations` folder. Each folder there represents one migration that follows the migration
