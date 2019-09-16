@@ -22,7 +22,7 @@ async function maybeWithSharding (filestore, options) {
 function keyToMultihash(key){
   // Key to CID
   const decoder = new base32.Decoder()
-  const buff = decoder.write(key.toString().slice(1)).finalize()
+  const buff = decoder.finalize(key.toString().slice(1))
   const cid = new CID(Buffer.from(buff))
 
   // CID to multihash
@@ -51,12 +51,16 @@ async function process(repoPath, options, keyFunction){
     const batch = store.batch()
     let counter = 0
     for await (const block of store.query({})) {
-      batch.delete(block.key)
-
-      counter += 1
       const newKey = keyFunction(block.key)
-      log(`Migrating Block from ${block.key.toString()} to ${newKey.toString()}`)
-      batch.put(newKey, block.value)
+
+      // If the Key is CIDv0 then it is raw multihash and nothing is changing
+      if(newKey.toString() !== block.key.toString()){
+        counter += 1
+
+        log(`Migrating Block from ${block.key.toString()} to ${newKey.toString()}`)
+        batch.delete(block.key)
+        batch.put(newKey, block.value)
+      }
     }
 
     log(`Changing ${ counter } blocks`)
@@ -66,10 +70,10 @@ async function process(repoPath, options, keyFunction){
   }
 }
 
-exports.migrate = async function blocksMigrate (repoPath, options) {
+exports.migrate = function blocksMigrate (repoPath, options) {
   return process(repoPath, options, keyToMultihash)
 }
 
-exports.revert = async function blocksRevert (repoPath, options) {
+exports.revert = function blocksRevert (repoPath, options) {
   return process(repoPath, options, keyToCid)
 }
