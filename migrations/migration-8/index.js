@@ -33,7 +33,6 @@ async function revert (repoPath, options, isBrowser) {
 module.exports = {
   version: 8,
   description: 'Transforms key\'s names into base32 encoding and converts Block store to use multihashes',
-  reversible: false, // TODO: Currently Block's CIDs are lost
   migrate,
   revert
 }
