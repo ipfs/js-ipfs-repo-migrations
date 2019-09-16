@@ -25,7 +25,7 @@ const blocksFixtures = [
   ['CIQMUSJFXRZX7ZRBICXJQPHVD7YSPD5KS75DRO7Q55ADVNORRBXV75Y', ['CIQMUSJFXRZX7ZRBICXJQPHVD7YSPD5KS75DRO7Q55ADVNORRBXV75Y']],
   ['CIQJBQD2O6K4CGJVCCTJNUP57QHR4SKHZ74OIITBBGLOMCO3ZOLWLGA', ['CIQJBQD2O6K4CGJVCCTJNUP57QHR4SKHZ74OIITBBGLOMCO3ZOLWLGA']],
   ['CIQJF2E6OPOEYYEVHYML4UD5A3R4QRAVBI7NVH3PL64D3IJCWR2SPUQ', ['CIQJF2E6OPOEYYEVHYML4UD5A3R4QRAVBI7NVH3PL64D3IJCWR2SPUQ']],
-  ['CIQFTFEEHEDF6KLBT32BFAGLXEZL4UWFNWM4LFTLMXQBCERZ6CMLX3Y', ['CIQFTFEEHEDF6KLBT32BFAGLXEZL4UWFNWM4LFTLMXQBCERZ6CMLX3Y']],
+  ['CIQFTFEEHEDF6KLBT32BFAGLXEZL4UWFNWM4LFTLMXQBCERZ6CMLX3Y', ['CIQFTFEEHEDF6KLBT32BFAGLXEZL4UWFNWM4LFTLMXQBCERZ6CMLX3Y']]
 ]
 
 async function bootstrapKeys (dir, encoded) {
@@ -35,8 +35,8 @@ async function bootstrapKeys (dir, encoded) {
   let name
   for (let keyNames of keysFixtures) {
     name = encoded ? keyNames[1] : keyNames[0]
-    await store.put(new Key(`/pkcs8/${ name }`), '')
-    await store.put(new Key(`/info/${ name }`), '')
+    await store.put(new Key(`/pkcs8/${name}`), '')
+    await store.put(new Key(`/info/${name}`), '')
   }
 
   await store.close()
@@ -49,8 +49,8 @@ async function validateKeys (dir, shouldBeEncoded) {
   let name
   for (let keyNames of keysFixtures) {
     name = shouldBeEncoded ? keyNames[1] : keyNames[0]
-    expect(await store.has(new Key(`/pkcs8/${ name }`))).to.be.true(name)
-    expect(await store.has(new Key(`/info/${ name }`))).to.be.true(name)
+    expect(await store.has(new Key(`/pkcs8/${name}`))).to.be.true(name)
+    expect(await store.has(new Key(`/info/${name}`))).to.be.true(name)
   }
 
   await store.close()
@@ -130,6 +130,5 @@ module.exports = (setup, cleanup) => {
     //   await blocksMigration.revert(dir)
     //   await validateKeys(dir, false)
     // })
-
   })
 }
