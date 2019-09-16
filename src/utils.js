@@ -2,22 +2,22 @@
 
 const Datastore = require('datastore-fs')
 
-exports.getDatastoreAndOptions = function getDatastoreAndOptions(options, key, defaultDatastore = Datastore) {
+exports.getDatastoreAndOptions = function getDatastoreAndOptions (options, key, defaultDatastore = Datastore) {
   let StorageBackend, storageBackendOptions
-  if (options !== undefined
-    && options['storageBackends'] !== undefined
-    && options['storageBackends'][key] !== undefined
+  if (options !== undefined &&
+    options.storageBackends !== undefined &&
+    options.storageBackends[key] !== undefined
   ) {
-    StorageBackend = options['storageBackends'][key]
+    StorageBackend = options.storageBackends[key]
   } else {
     StorageBackend = defaultDatastore
   }
 
-  if (options !== undefined
-    && options['storageBackendOptions'] !== undefined
-    && options['storageBackendOptions'][key] !== undefined
+  if (options !== undefined &&
+    options.storageBackendOptions !== undefined &&
+    options.storageBackendOptions[key] !== undefined
   ) {
-    storageBackendOptions = options['storageBackendOptions'][key]
+    storageBackendOptions = options.storageBackendOptions[key]
   } else {
     storageBackendOptions = {}
   }
