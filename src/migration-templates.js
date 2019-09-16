@@ -3,11 +3,12 @@
 module.exports = {
   indexJs: `'use strict'
 
-const Datastore = require('datastore-fs')
-const log = require('debug')('jsipfs-repo-migrations:migration-{{version}}')
+const utils = require('../../src/utils')
+const log = require('debug')('repo-migrations:migration-{{version}}')
 
 async function migrate(repoPath, options, isBrowser) {
-  const store = new Datastore(repoPath, {extension: '', createIfMissing: false})
+  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'root')
+  const store = new StorageBackend(repoPath, storageOptions)
   store.open()
 
   try {
@@ -18,7 +19,8 @@ async function migrate(repoPath, options, isBrowser) {
 }
 
 async function revert(repoPath, options, isBrowser) {
-  const store = new Datastore(repoPath, {extension: '', createIfMissing: false})
+  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'root')
+  const store = new StorageBackend(repoPath, storageOptions)
   store.open()
 
   try {
