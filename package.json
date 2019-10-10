@@ -32,6 +32,7 @@
     "url": "https://github.com/ipfs/js-ipfs-repo-migrations.git"
   },
   "scripts": {
+    "new-migration": "./src/cli.js add",
     "test": "aegir test",
     "test:node": "aegir test --target node",
     "test:browser": "aegir test --target browser",
