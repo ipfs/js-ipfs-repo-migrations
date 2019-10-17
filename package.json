@@ -47,16 +47,16 @@
   },
   "dependencies": {
     "chalk": "^2.4.2",
-    "datastore-fs": "~0.9.0",
-    "datastore-level": "~0.12.0",
+    "datastore-fs": "~0.9.1",
+    "datastore-level": "~0.12.1",
     "debug": "^4.1.0",
-    "interface-datastore": "~0.7.0",
+    "interface-datastore": "~0.8.0",
     "proper-lockfile": "^3.2.0",
     "yargs": "^12.0.5",
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^18.1.0",
+    "aegir": "^20.4.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
