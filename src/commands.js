@@ -121,7 +121,7 @@ module.exports = {
         type: 'number'
       })
       .option('dry', {
-        describe: `Output migration results but don't actually perform migration`,
+        describe: 'Output migration results but don\'t actually perform migration',
         type: 'boolean'
       })
       .option('revert-ok', {

@@ -7,7 +7,7 @@ const asyncNcp = promisify(require('ncp').ncp)
 const path = require('path')
 const fs = require('fs')
 
-async function createRepo () {
+function createRepo () {
   const testRepoPath = path.join(__dirname, 'fixtures', 'test-repo')
   const date = Date.now().toString()
   const dir = testRepoPath + '-for-' + date
@@ -17,14 +17,14 @@ async function createRepo () {
 }
 
 async function createAndLoadRepo () {
-  const dir = await createRepo()
+  const dir = createRepo()
   const testRepoPath = path.join(__dirname, 'fixtures', 'test-repo')
 
   await asyncNcp(testRepoPath, dir)
   return dir
 }
 
-async function repoCleanup (dir) {
+function repoCleanup (dir) {
   return asyncRimraf(dir)
 }
 

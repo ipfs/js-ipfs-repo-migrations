@@ -84,8 +84,8 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
 
   try {
     let counter = 0
-    let totalMigrations = toVersion - currentVersion
-    for (let migration of migrations) {
+    const totalMigrations = toVersion - currentVersion
+    for (const migration of migrations) {
       if (toVersion !== undefined && migration.version > toVersion) {
         break
       }
@@ -165,7 +165,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
     return
   }
 
-  let reversibility = verifyReversibility(migrations, currentVersion, toVersion)
+  const reversibility = verifyReversibility(migrations, currentVersion, toVersion)
   if (!reversibility.reversible) {
     throw new errors.NonReversibleMigrationError(`It is not possible to revert to version ${toVersion} because migration version ${reversibility.version} is not reversible. Cancelling reversion.`)
   }
@@ -176,9 +176,9 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
   log(`Reverting from version ${currentVersion} to ${toVersion}`)
   try {
     let counter = 0
-    let totalMigrations = currentVersion - toVersion
+    const totalMigrations = currentVersion - toVersion
     const reversedMigrationArray = migrations.slice().reverse()
-    for (let migration of reversedMigrationArray) {
+    for (const migration of reversedMigrationArray) {
       if (migration.version <= toVersion) {
         break
       }
@@ -224,7 +224,7 @@ exports.revert = revert
  */
 function verifyReversibility (migrations, fromVersion, toVersion) {
   let migrationCounter = 0
-  for (let migration of migrations) {
+  for (const migration of migrations) {
     if (migration.version > fromVersion) {
       break
     }

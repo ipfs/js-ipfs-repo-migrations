@@ -57,7 +57,7 @@ function addNewApiAddress (config) {
 }
 
 function removeNewApiAddress (config) {
-  let apiAddrs = config.Addresses.API
+  const apiAddrs = config.Addresses.API
 
   if (!Array.isArray(apiAddrs)) {
     return config
