@@ -23,7 +23,7 @@ module.exports = (setup, cleanup) => {
   )
 
   it('migrate forward', async () => {
-    await migrator.migrate(dir, { migrations: migrations })
+    await migrator.migrate(dir, migrator.getLatestMigrationVersion(migrations), { migrations: migrations })
 
     const store = new Datastore(dir, { extension: '', createIfMissing: false })
 
@@ -37,7 +37,7 @@ module.exports = (setup, cleanup) => {
   })
 
   it('revert', async () => {
-    await migrator.migrate(dir, { migrations: migrations })
+    await migrator.migrate(dir, migrator.getLatestMigrationVersion(migrations), { migrations: migrations })
 
     await migrator.revert(dir, 1, { migrations: migrations })
 

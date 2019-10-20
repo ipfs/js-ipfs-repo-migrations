@@ -77,14 +77,14 @@ Example:
 
 ```js
 const migrations = require('ipfs-repo-migrations')
-const getVersion = require('ipfs-repo-migrations/repo/version')
 
 const repoPath = 'some/repo/path'
-const repoVersion = await getVersion(repoPath)
+const currentRepoVersion = 7
+const latestVersion = migrations.getLatestMigrationVersion()
 
-if(repoVersion < migrations.getLatestMigrationVersion()){
+if(currentRepoVersion < latestVersion){
   // Old repo! Lets migrate to latest version!
-  await migrations.migrate(repoPath)
+  await migrations.migrate(repoPath, latestVersion)
 }
 ```
 
@@ -92,15 +92,15 @@ To migrate your repository using the CLI, see the [how to run migrations](./run.
 
 ## API
 
-### `.migrate(path, {toVersion, ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
+### `.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
 
 Executes a forward migration to a specific version, or to the latest version if a specific version is not specified.
 
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be migrated
+ * `toVersion` (int, mandatory) - version to which the repo should be migrated.
  * `options` (object, optional) - options for the migration
- * `options.toVersion` (int, optional) - version to which the repo should be migrated. Defaults to the latest migration version.
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
  * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.

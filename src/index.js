@@ -42,8 +42,8 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
+ * @param {int} toVersion - Version to which the repo should be migrated.
  * @param {Object} options - Options for migration
- * @param {int?} options.toVersion - Version to which the repo should be migrated, if undefined repo will be migrated to the latest version.
  * @param {boolean?} options.ignoreLock - Won't lock the repo for applying the migrations. Use with caution.
  * @param {object?} options.repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {function?} options.onProgress - Callback which will be called after each executed migration to report progress
@@ -51,8 +51,9 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * @param {array?} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
+async function migrate (path, toVersion, {ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
+  onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
@@ -62,10 +63,13 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
     throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
   }
 
-  if (toVersion && (!Number.isInteger(toVersion) || toVersion <= 0)) {
+  if (!toVersion) {
+    throw new errors.RequiredParameterError('toVersion argument is required!')
+  }
+
+  if (!Number.isInteger(toVersion) || toVersion <= 0) {
     throw new errors.InvalidValueError('Version has to be positive integer!')
   }
-  toVersion = toVersion || getLatestMigrationVersion(migrations)
 
   if (toVersion > getLatestMigrationVersion(migrations)) {
     throw new errors.InvalidValueError('The ipfs-repo-migrations package does not have migration for version: ' + toVersion)
@@ -74,13 +78,12 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
   const currentVersion = await repoVersion.getVersion(path)
 
   if (currentVersion === toVersion) {
-    log('Nothing to migrate, skipping migrations.')
+    log('Nothing to migrate.')
     return
   }
 
   if (currentVersion > toVersion) {
-    log(`Current repo's version (${currentVersion}) is higher then toVersion (${toVersion}), nothing to migrate.`)
-    return
+    throw new errors.InvalidValueError(`Current repo's version (${currentVersion}) is higher then toVersion (${toVersion}), you probably wanted to revert it?`)
   }
 
   let lock
@@ -110,7 +113,7 @@ async function migrate (path, { toVersion, ignoreLock = false, repoOptions, onPr
         throw e
       }
 
-      typeof onProgress === 'function' && onProgress(migration, counter, totalMigrations) // Reports on migration process
+      onProgress(migration, counter, totalMigrations) // Reports on migration process
       log(`Migrating to version ${migration.version} finished`)
     }
 
@@ -141,6 +144,7 @@ exports.migrate = migrate
  */
 async function revert (path, toVersion, { ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
+  onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
@@ -160,13 +164,12 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
 
   const currentVersion = await repoVersion.getVersion(path)
   if (currentVersion === toVersion) {
-    log('Nothing to revert, skipping reverting.')
+    log('Nothing to revert.')
     return
   }
 
   if (currentVersion < toVersion) {
-    log(`Current repo's version (${currentVersion}) is lower then toVersion (${toVersion}), nothing to revert.`)
-    return
+    throw new errors.InvalidValueError(`Current repo's version (${currentVersion}) is lower then toVersion (${toVersion}), you probably wanted to migrate it?`)
   }
 
   const reversibility = verifyReversibility(migrations, currentVersion, toVersion)
@@ -204,7 +207,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
         throw e
       }
 
-      typeof onProgress === 'function' && onProgress(migration, counter, totalMigrations) // Reports on migration process
+      onProgress(migration, counter, totalMigrations) // Reports on migration process
       log(`Reverting to version ${migration.version} finished`)
     }
 

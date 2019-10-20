@@ -8,7 +8,7 @@ test_description="Test installation and some basic commands"
 
 # setup temp repo
 rm -rf ./tmp
-cp -r ../test-repo ./tmp
+cp -r ../fixtures/test-repo ./tmp
 IPFS_PATH=$(echo `pwd`/tmp)
 export IPFS_PATH
 
@@ -29,9 +29,9 @@ test_expect_success "jsipfs-migrations help succeeds" '
 
 test_expect_success "jsipfs-migrations status shows migrations are needed" $'
 	jsipfs-migrations status --migrations ../test/test-migrations > status.txt &&
-	grep "There are migrations to be applied!" status.txt &&
+	grep "Repo is out of date" status.txt &&
 	grep "Current repo version: 1" status.txt &&
-	grep "Last migration\'s version: 2" status.txt
+	grep "Latest migration version: 2" status.txt
 '
 
 test_expect_success "jsipfs-migrations successfully migrate to latest version" $'
@@ -41,9 +41,9 @@ test_expect_success "jsipfs-migrations successfully migrate to latest version" $
 
 test_expect_success "jsipfs-migrations status shows NO migrations are needed" $'
 	jsipfs-migrations status --migrations ../test/test-migrations > status.txt &&
-	grep "Nothing to migrate!" status.txt &&
+	grep "Nothing to migrate" status.txt &&
 	grep "Current repo version: 2" status.txt &&
-	grep "Last migration\'s version: 2" status.txt
+	grep "Latest migration version: 2" status.txt
 '
 
 test_expect_success "jsipfs-migrations successfully reverts" $'

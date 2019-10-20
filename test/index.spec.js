@@ -38,10 +38,9 @@ function createMigrations () {
   ]
 }
 
-function createOptions (toVersion) {
+function createOptions () {
   return {
     migrations: createMigrations(),
-    toVersion
   }
 }
 
@@ -123,7 +122,7 @@ describe('index.js', () => {
       const options = createOptions()
 
       await expect(migrator.revert('/some/path', 3, options))
-        .to.eventually.be.fulfilled()
+        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
 
       expect(lockStub.called).to.be.false()
     })
@@ -266,41 +265,38 @@ describe('index.js', () => {
     it('should error with out path argument', () => {
       const options = createOptions()
 
-      return expect(migrator.migrate(undefined, options))
+      return expect(migrator.migrate(undefined, undefined, options))
+        .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
+    })
+
+    it('should error with out toVersion argument', () => {
+      const options = createOptions()
+
+      return expect(migrator.migrate('/some/path', undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
 
     it('should error with invalid toVersion argument', () => {
-      const invalidValues = ['eight', '-1', '1', -1]
+      const invalidValues = ['eight', '-1', '1', -1, {}]
 
       return Promise.all(
-        invalidValues.map((invalidValue) => expect(migrator.migrate('/some/path', createOptions(invalidValue)))
+        invalidValues.map((invalidValue) => expect(migrator.migrate('/some/path', invalidValue, createOptions()))
           .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
       )
     })
 
     it('should error if migrations does not exist', () => {
-      const options = createOptions(5)
-
-      return expect(migrator.migrate('/some/path', options))
-        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
-    })
-
-    it('should use latest migration\'s version if no toVersion is provided', async () => {
       const options = createOptions()
-      getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', options))
-        .to.eventually.be.fulfilled()
-
-      setVersionStub.calledOnceWithExactly('/some/path', 4) // 4 is the latest migration's version
+      return expect(migrator.migrate('/some/path', 5, options))
+        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
     })
 
     it('should not migrate if current repo version and toVersion matches', async () => {
       getVersionStub.returns(2)
-      const options = createOptions(2)
+      const options = createOptions()
 
-      await expect(migrator.migrate('/some/path', options))
+      await expect(migrator.migrate('/some/path', 2, options))
         .to.eventually.be.fulfilled()
 
       expect(lockStub.called).to.be.false()
@@ -308,19 +304,19 @@ describe('index.js', () => {
 
     it('should not migrate if current repo version is higher then toVersion', async () => {
       getVersionStub.returns(3)
-      const options = createOptions(2)
+      const options = createOptions()
 
-      await expect(migrator.migrate('/some/path', options))
-        .to.eventually.be.fulfilled()
+      await expect(migrator.migrate('/some/path', 2, options))
+        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
 
       expect(lockStub.called).to.be.false()
     })
 
     it('should migrate expected migrations', async () => {
-      const options = createOptions(3)
+      const options = createOptions()
       getVersionStub.returns(1)
 
-      await expect(migrator.migrate('/some/path', options))
+      await expect(migrator.migrate('/some/path', 3, options))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.calledOnce).to.be.true()
@@ -335,11 +331,11 @@ describe('index.js', () => {
     })
 
     it('should not have any side-effects when in dry run', async () => {
-      const options = createOptions(4)
+      const options = createOptions()
       options.isDryRun = true
       getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', options))
+      await expect(migrator.migrate('/some/path', 4, options))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.called).to.be.false()
@@ -354,7 +350,7 @@ describe('index.js', () => {
       options.ignoreLock = true
       getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', options))
+      await expect(migrator.migrate('/some/path', 4,  options))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.called).to.be.false()
@@ -369,11 +365,11 @@ describe('index.js', () => {
     })
 
     it('should report progress when progress callback is supplied', async () => {
-      const options = createOptions(4)
+      const options = createOptions()
       options.onProgress = sinon.stub()
       getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', options))
+      await expect(migrator.migrate('/some/path', 4, options))
         .to.eventually.be.fulfilled()
 
       expect(options.onProgress.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
@@ -382,10 +378,10 @@ describe('index.js', () => {
 
     it('should unlock repo when error is thrown', async () => {
       getVersionStub.returns(2)
-      const options = createOptions(4)
+      const options = createOptions()
       options.migrations[3].migrate = sinon.stub().rejects()
 
-      await expect(migrator.migrate('/some/path', options))
+      await expect(migrator.migrate('/some/path', 4, options))
         .to.eventually.be.rejected()
 
       expect(lockCloseStub.calledOnce).to.be.true()
