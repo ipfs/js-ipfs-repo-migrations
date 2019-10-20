@@ -12,7 +12,6 @@
     "url": "https://github.com/ipfs/js-ipfs-repo-migrations/issues/"
   },
   "license": "MIT",
-  "leadMaintainer": "Adam Uhlir <adam@uhlir.dev>",
   "files": [
     "migrations",
     "src",
