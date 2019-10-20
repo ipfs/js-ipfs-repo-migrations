@@ -1,6 +1,7 @@
 'use strict'
 
 const errors = require('../errors')
+const repoInit = require('./init')
 const Datastore = require('datastore-fs')
 
 const Key = require('interface-datastore').Key
@@ -18,12 +19,12 @@ exports.getVersion = getVersion
  * @returns {Promise<int>}
  */
 async function getVersion (path) {
+  if (!(await repoInit.isRepoInitialized(path))) {
+    throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
+  }
+
   const store = new Datastore(path, { extension: '', createIfMissing: false })
   await store.open()
-
-  if (!await store.has(versionKey)) {
-    throw new errors.UnknownRepoStructureError('Repo does not have version file! Is the repo initialized?')
-  }
 
   const version = parseInt(await store.get(versionKey))
   await store.close()

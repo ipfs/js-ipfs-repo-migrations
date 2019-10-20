@@ -221,8 +221,8 @@ write the rest of the migration!
 
 ### Integration with js-ipfs
 
-When a new migration is created, the repo version in [`js-ipfs-repo`](https://github.com/ipfs/js-ipfs-repo) should be updated with the new version,
-together with updated version of this package. Then the updated version should be propagated to `js-ipfs`.
+When a new migration is created, new version of this package have to be released. Afterwards version of this package in [`js-ipfs-repo`](https://github.com/ipfs/js-ipfs-repo) have to be updated
+together with the repo version that `IPFSRepo` expects. Then the updated version of `js-ipfs-repo` should be propagated to `js-ipfs`.
 
 ### Tests
 

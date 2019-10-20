@@ -27,3 +27,9 @@ exports.getDatastoreAndOptions = function getDatastoreAndOptions (options, key, 
     storageOptions: storageBackendOptions
   }
 }
+
+exports.containsIrreversibleMigration = function containsIrreversibleMigration (from, to, migrations) {
+  return migrations
+    .filter(migration => migration.version > from && migration.version <= to)
+    .find(migration => migration.revert === undefined) !== undefined
+}

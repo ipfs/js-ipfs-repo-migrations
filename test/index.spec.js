@@ -40,7 +40,7 @@ function createMigrations () {
 
 function createOptions () {
   return {
-    migrations: createMigrations(),
+    migrations: createMigrations()
   }
 }
 
@@ -350,7 +350,7 @@ describe('index.js', () => {
       options.ignoreLock = true
       getVersionStub.returns(2)
 
-      await expect(migrator.migrate('/some/path', 4,  options))
+      await expect(migrator.migrate('/some/path', 4, options))
         .to.eventually.be.fulfilled()
 
       expect(lockCloseStub.called).to.be.false()

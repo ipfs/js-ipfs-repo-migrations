@@ -3,7 +3,6 @@
 const defaultMigrations = require('../migrations')
 const repoVersion = require('./repo/version')
 const repoLock = require('./repo/lock')
-const repoInit = require('./repo/init')
 const errors = require('./errors')
 const isElectron = require('is-electron')
 
@@ -51,16 +50,12 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * @param {array?} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function migrate (path, toVersion, {ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
+async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
   onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
-  }
-
-  if (!(await repoInit.isRepoInitialized(path))) {
-    throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
   }
 
   if (!toVersion) {
@@ -148,10 +143,6 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
-  }
-
-  if (!(await repoInit.isRepoInitialized(path))) {
-    throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
   }
 
   if (!toVersion) {

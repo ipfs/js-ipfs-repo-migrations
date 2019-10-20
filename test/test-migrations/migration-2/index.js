@@ -118,7 +118,6 @@ async function revert (repoPath, options, isBrowser) {
 module.exports = {
   version: 2,
   description: 'Updates config',
-  reversible: true,
   migrate,
   revert,
   newApiAddr: NEW_API_ADDRESS
