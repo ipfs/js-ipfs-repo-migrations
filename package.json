@@ -20,7 +20,6 @@
   ],
   "main": "src/index.js",
   "browser": {
-    "./src/option-node.js": "./src/option-browser.js",
     "./src/repo/lock.js": "./src/repo/lock-memory.js",
     "datastore-fs": "datastore-level"
   },
@@ -51,6 +50,7 @@
     "datastore-level": "~0.12.1",
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.0",
+    "is-electron": "^2.2.0",
     "proper-lockfile": "^4.1.1",
     "yargs": "^14.2.0",
     "yargs-promise": "^1.1.0"
