@@ -115,7 +115,7 @@ Signature of the progress callback.
  * `counter` (int) - index of current migration.
  * `totalMigrations` (int) - total count of migrations that will be run.
 
-### `.revert(path, toVersion, {ignoreLock, options, onProgress, isDryRun}) -> Promise<void>`
+### `.revert(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
 
 Executes backward migration to a specific version.
 
@@ -125,7 +125,7 @@ Executes backward migration to a specific version.
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to. 
  * `options` (object, optional) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.options` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
+ * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
  
@@ -168,27 +168,27 @@ every run of `jsipfs-migrations add` (manual changes should follow the same styl
 
 Each migration must follow this API. It must export an object in its `index.js` that has following properties:
 
- * `version` (int) - Number that represents the version which the repo will migrate to (eg. `migration-8` will move the repo to version 8).
+ * `version` (int) - Number that represents the version which the repo will migrate to (eg. `8` will move the repo to version 8).
  * `description` (string) - Brief description of what the migrations does.
  * `migrate` (function) - Function that performs the migration (see signature of this function below)
  * `revert` (function) - If defined then this function will revert the migration to the previous version. Otherwise it is assumed that it is not possible to revert this migration.
 
-#### `.migrate(repoPath, isBrowser)`
+#### `.migrate(repoPath, repoOptions, isBrowser)`
 
 _Do not confuse this function with the `require('ipfs-repo-migrations').migrate()` function that drives the whole migration process!_
 
 Arguments:
  * `repoPath` (string) - absolute path to the root of the repo
- * `options` (object, optional) - object containing `IPFSRepo` options, that should be used to construct a datastore instance.
+ * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct a datastore instance.
  * `isBrowser` (bool) - indicates if the migration is run in a browser environment (as opposed to NodeJS)
  
-#### `.revert(repoPath, isBrowser)`
+#### `.revert(repoPath, repoOptions, isBrowser)`
 
 _Do not confuse this function with the `require('ipfs-repo-migrations').revert()` function that drives the whole backward migration process!_
 
 Arguments:
  * `repoPath` (string) - path to the root of the repo
- * `options` (object, optional) - object containing `IPFSRepo` options, that should be used to construct the datastore instance.
+ * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct the datastore instance.
  * `isBrowser` (bool) - indicates if the migration is run in a browser environment (as opposed to NodeJS)
 
 ### Browser vs. NodeJS environments
