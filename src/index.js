@@ -4,11 +4,6 @@ const defaultMigrations = require('../migrations')
 const repoVersion = require('./repo/version')
 const repoLock = require('./repo/lock')
 const errors = require('./errors')
-const isElectron = require('is-electron')
-
-const IS_ENV_WITH_DOM = typeof window === 'object' && typeof document === 'object' && document.nodeType === 9
-const IS_ELECTRON = isElectron()
-const IS_BROWSER = IS_ENV_WITH_DOM && !IS_ELECTRON
 
 const log = require('debug')('repo-migrations:migrator')
 
@@ -98,7 +93,7 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
       counter++
       log(`Migrating version ${migration.version}`)
       try {
-        if (!isDryRun) await migration.migrate(path, repoOptions, IS_BROWSER)
+        if (!isDryRun) await migration.migrate(path, repoOptions)
       } catch (e) {
         const lastSuccessfullyMigratedVersion = migration.version - 1
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully migrated version: ${lastSuccessfullyMigratedVersion}`)
@@ -188,7 +183,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
       counter++
       log(`Reverting migration version ${migration.version}`)
       try {
-        if (!isDryRun) await migration.revert(path, repoOptions, IS_BROWSER)
+        if (!isDryRun) await migration.revert(path, repoOptions)
       } catch (e) {
         const lastSuccessfullyRevertedVersion = migration.version
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully reverted version: ${lastSuccessfullyRevertedVersion}`)

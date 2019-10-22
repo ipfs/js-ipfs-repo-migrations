@@ -173,28 +173,35 @@ Each migration must follow this API. It must export an object in its `index.js` 
  * `migrate` (function) - Function that performs the migration (see signature of this function below)
  * `revert` (function) - If defined then this function will revert the migration to the previous version. Otherwise it is assumed that it is not possible to revert this migration.
 
-#### `.migrate(repoPath, repoOptions, isBrowser)`
+#### `.migrate(repoPath, repoOptions)`
 
 _Do not confuse this function with the `require('ipfs-repo-migrations').migrate()` function that drives the whole migration process!_
 
 Arguments:
  * `repoPath` (string) - absolute path to the root of the repo
  * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct a datastore instance.
- * `isBrowser` (bool) - indicates if the migration is run in a browser environment (as opposed to NodeJS)
  
-#### `.revert(repoPath, repoOptions, isBrowser)`
+#### `.revert(repoPath, repoOptions)`
 
 _Do not confuse this function with the `require('ipfs-repo-migrations').revert()` function that drives the whole backward migration process!_
 
 Arguments:
  * `repoPath` (string) - path to the root of the repo
  * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct the datastore instance.
- * `isBrowser` (bool) - indicates if the migration is run in a browser environment (as opposed to NodeJS)
 
 ### Browser vs. NodeJS environments
 
-The migration might need to distinguish in which environment it runs (browser vs. NodeJS). For this reason there is an argument
-`isBrowser` passed to migrations functions. But with simple migrations it should not be necessary to distinguish between
+The migration might need to perform specific tasks in browser or NodeJS environment. In such a case create
+migration file `/migrations/migration-<number>/index_browser.js` which have to follow the same API is described before.
+Then add entry in `package.json` to the `browser` field as follow:
+
+```
+'./migrations/migration-<number>/index.js': './migrations/migration-<number>/index_browser.js'
+```
+
+In browser environments then `index.js` will be replaced with `index_browser.js`.
+
+Simple migrations should not need to distinguish between
 these environments as the datastore implementation will handle the main differences. 
 
 There are currently two main datastore implementations:
