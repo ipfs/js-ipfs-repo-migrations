@@ -13,7 +13,7 @@ If you run into any trouble, please feel free to [open an issue in this reposito
 The migration tool is safe -- it should not delete any data. If you have important data stored _only_ in your ipfs node, and want to be extra safe, you can back up the whole repo with:
 
 ```sh
-cp -r ~/.js-ipfs ~/.js-ipfs.bak
+cp -r ~/.jsipfs ~/.jsipfs.backup
 ```
 
 ## Step 1. Downloading the Migration
@@ -26,10 +26,10 @@ To run the migration tool:
 
 ```sh
 # to check if there are migrations that need to be applied
-js-ipfs-repo-migrations status
+jsipfs-repo-migrations status
 
 # if so, migrate to the latest version
-js-ipfs-repo-migrations migrate
+jsipfs-repo-migrations migrate
 ```
 
 ## Step 3. Done! Run IPFS.
@@ -37,5 +37,5 @@ js-ipfs-repo-migrations migrate
 If the migration completed without error, then you're done! Try running the new ipfs:
 
 ```
-js-ipfs daemon
+jsipfs daemon
 ```

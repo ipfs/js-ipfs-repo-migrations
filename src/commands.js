@@ -5,6 +5,7 @@ const path = require('path')
 const fs = require('fs')
 const process = require('process')
 const util = require('util')
+const readline = require('readline')
 
 const writeFile = util.promisify(fs.writeFile)
 const mkdir = util.promisify(fs.mkdir)
@@ -12,9 +13,24 @@ const mkdir = util.promisify(fs.mkdir)
 const chalk = require('chalk')
 
 const repoVersion = require('./repo/version')
+const migratorUtils = require('./utils')
 const migrator = require('./index')
 const templates = require('./migration-templates')
 const migrations = require('../migrations')
+
+function shouldContinueWithIrreversibleMigration () {
+  return new Promise((resolve, reject) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+
+    rl.question(chalk.yellow('There is irreversible migration in the migrations plan. Do you want to continue? [y/N]'), (answer) => {
+      rl.close()
+      resolve(answer === 'y')
+    })
+  })
+}
 
 function asyncClosure (fnc) {
   return function asyncWrapper ({ resolve, ...options }) {
@@ -29,14 +45,10 @@ function reportingClosure (action) {
 
 async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
-
-  // Import migrations if set
-  if (migrations) {
-    migrations = require(migrations)
-  }
+  migrations = migrations === undefined ? require('../migrations') : require(migrations)
 
   if (!to) {
-    to = migrator.getLatestMigrationVersion()
+    to = migrator.getLatestMigrationVersion(migrations)
   }
 
   const version = await repoVersion.getVersion(repoPath)
@@ -63,7 +75,13 @@ async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
   if (version === to) {
     return chalk.yellow('Nothing to migrate! Versions matches')
   } else if (version < to) {
-    await migrator.migrate(repoPath, options)
+    if (migratorUtils.containsIrreversibleMigration(version, to, migrations)) {
+      if (!(await shouldContinueWithIrreversibleMigration())) {
+        return 'Migration aborted'
+      }
+    }
+
+    await migrator.migrate(repoPath, to, options)
   } else if (revertOk) {
     await migrator.revert(repoPath, to, options)
   } else {

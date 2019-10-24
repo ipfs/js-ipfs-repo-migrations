@@ -16,7 +16,7 @@ const errors = require('../src/errors')
 module.exports = (setup, cleanup) => {
   it('getVersion should fail without any version in repo', async () => {
     const dir = await setup()
-    await expect(version.getVersion(dir)).to.be.eventually.rejectedWith(errors.UnknownRepoStructureError).with.property('code', errors.UnknownRepoStructureError.code)
+    await expect(version.getVersion(dir)).to.be.eventually.rejectedWith(errors.NotInitializedRepoError).with.property('code', errors.NotInitializedRepoError.code)
     return cleanup(dir)
   })
 
@@ -32,17 +32,25 @@ module.exports = (setup, cleanup) => {
 
     it('should get version number', async () => {
       // Create version file
-      const versionKey = new Key('version')
       const store = new Datastore(dir, { extension: '', createIfMissing: false })
       await store.open()
-      await store.put(versionKey, Buffer.from('7'))
+      await store.put(new Key('config'), Buffer.from('some dummy config'))
+      await store.put(new Key('version'), Buffer.from('7'))
       await store.close()
 
       expect(await version.getVersion(dir)).to.be.equal(7)
     })
 
     it('should set version number', async () => {
-      await expect(version.getVersion(dir)).to.be.eventually.rejectedWith(errors.UnknownRepoStructureError).with.property('code', errors.UnknownRepoStructureError.code)
+      await expect(version.getVersion(dir)).to.be.eventually.rejectedWith(errors.NotInitializedRepoError).with.property('code', errors.NotInitializedRepoError.code)
+
+      // Create version file
+      const store = new Datastore(dir, { extension: '', createIfMissing: false })
+      await store.open()
+      await store.put(new Key('config'), Buffer.from('some dummy config'))
+      await store.put(new Key('version'), Buffer.from('5'))
+      await store.close()
+
       await version.setVersion(dir, 7)
       expect(await version.getVersion(dir)).to.be.equal(7)
     })

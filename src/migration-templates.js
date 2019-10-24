@@ -6,8 +6,8 @@ module.exports = {
 const utils = require('../../src/utils')
 const log = require('debug')('repo-migrations:migration-{{version}}')
 
-async function migrate(repoPath, options, isBrowser) {
-  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'root')
+async function migrate(repoPath, repoOptions, isBrowser) {
+  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(repoOptions, 'root')
   const store = new StorageBackend(repoPath, storageOptions)
   store.open()
 
@@ -18,8 +18,8 @@ async function migrate(repoPath, options, isBrowser) {
   }
 }
 
-async function revert(repoPath, options, isBrowser) {
-  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'root')
+async function revert(repoPath, repoOptions, isBrowser) {
+  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(repoOptions, 'root')
   const store = new StorageBackend(repoPath, storageOptions)
   store.open()
 

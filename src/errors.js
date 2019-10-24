@@ -17,21 +17,6 @@ NonReversibleMigrationError.code = 'ERR_NON_REVERSIBLE_MIGRATION'
 exports.NonReversibleMigrationError = NonReversibleMigrationError
 
 /**
- * Exception raised when structure of a repo is not as expected.
- */
-class UnknownRepoStructureError extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'UnknownRepoStructureError'
-    this.code = 'ERR_UNKNOWN_REPO_STRUCTURE'
-    this.message = message
-  }
-}
-
-UnknownRepoStructureError.code = 'ERR_UNKNOWN_REPO_STRUCTURE'
-exports.UnknownRepoStructureError = UnknownRepoStructureError
-
-/**
  * Exception raised when repo is not initialized.
  */
 class NotInitializedRepoError extends Error {
