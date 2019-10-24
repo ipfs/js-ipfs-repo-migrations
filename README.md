@@ -266,7 +266,9 @@ This will create an empty migration with the next version.
 
 ### Module versioning notes 
 
-In order to have good overview of what version of package contains what kind of migrations, this package follows this versioning schema: `0.<versionOfLastMigration>.<patches>`.
+In order to have good overview of what version of package contains what kind of migration, to every release there
+should be appended version's metadata in format `migr-<versionOfLatestMigration>`. If for releasing is used `aegir`
+you can use the `release --metadata` option.
 
 ## Contribute
 
