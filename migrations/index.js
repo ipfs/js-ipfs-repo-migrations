@@ -11,4 +11,5 @@ const emptyMigration = {
 }
 
 module.exports = [
+  Object.assign({version: 7}, emptyMigration),
 ]
