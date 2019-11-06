@@ -68,6 +68,7 @@
     "npm": ">=6.0.0"
   },
   "contributors": [
-    "Adam Uhlir <hello@adam-uhlir.me>"
+    "Adam Uhlíř <adam@uhlir.dev>",
+    "Adam Uhlíř <hello@adam-uhlir.me>"
   ]
 }
