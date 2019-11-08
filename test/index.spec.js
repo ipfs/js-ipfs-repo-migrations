@@ -285,8 +285,45 @@ describe('index.js', () => {
       )
     })
 
-    it('should error if migrations does not exist', () => {
-      const options = createOptions()
+    it('should verify that all migrations are available', () => {
+      const options = {
+        migrations: [
+          {
+            version: 3,
+            migrate: sinon.stub().resolves(),
+            revert: sinon.stub().resolves()
+          },
+          {
+            version: 4,
+            migrate: sinon.stub().resolves(),
+            revert: sinon.stub().resolves()
+          }
+        ]
+      }
+
+      getVersionStub.returns(1)
+
+      return expect(migrator.migrate('/some/path', 3, options))
+        .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
+    })
+
+    it('should verify that all migrations are available', () => {
+      const options = {
+        migrations: [
+          {
+            version: 3,
+            migrate: sinon.stub().resolves(),
+            revert: sinon.stub().resolves()
+          },
+          {
+            version: 4,
+            migrate: sinon.stub().resolves(),
+            revert: sinon.stub().resolves()
+          }
+        ]
+      }
+
+      getVersionStub.returns(3)
 
       return expect(migrator.migrate('/some/path', 5, options))
         .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)

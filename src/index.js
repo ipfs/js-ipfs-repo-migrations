@@ -61,10 +61,6 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
     throw new errors.InvalidValueError('Version has to be positive integer!')
   }
 
-  if (toVersion > getLatestMigrationVersion(migrations)) {
-    throw new errors.InvalidValueError('The ipfs-repo-migrations package does not have migration for version: ' + toVersion)
-  }
-
   const currentVersion = await repoVersion.getVersion(path)
 
   if (currentVersion === toVersion) {
@@ -75,6 +71,8 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
   if (currentVersion > toVersion) {
     throw new errors.InvalidValueError(`Current repo's version (${currentVersion}) is higher then toVersion (${toVersion}), you probably wanted to revert it?`)
   }
+
+  verifyAvailableMigrations(migrations, currentVersion, toVersion)
 
   let lock
   if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
@@ -158,10 +156,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
     throw new errors.InvalidValueError(`Current repo's version (${currentVersion}) is lower then toVersion (${toVersion}), you probably wanted to migrate it?`)
   }
 
-  const reversibility = verifyReversibility(migrations, currentVersion, toVersion)
-  if (!reversibility.reversible) {
-    throw new errors.NonReversibleMigrationError(`It is not possible to revert to version ${toVersion} because migration version ${reversibility.version} is not reversible. Cancelling reversion.`)
-  }
+  verifyAvailableMigrations(migrations, toVersion, currentVersion, true)
 
   let lock
   if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
@@ -207,32 +202,31 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
 exports.revert = revert
 
 /**
- * Function checks if all migrations in given range supports reversion.
- * fromVersion > toVersion
+ * Function checks if all migrations in given range are available.
  *
  * @param {array} migrations
  * @param {int} fromVersion
  * @param {int} toVersion
- * @returns {object}
+ * @param {boolean} checkReversibility - Will additionally checks if all the migrations in the range are reversible
+ * @returns {void}
  */
-function verifyReversibility (migrations, fromVersion, toVersion) {
+function verifyAvailableMigrations (migrations, fromVersion, toVersion, checkReversibility = false) {
   let migrationCounter = 0
   for (const migration of migrations) {
-    if (migration.version > fromVersion) {
+    if (migration.version > toVersion) {
       break
     }
 
-    if (migration.version > toVersion) {
-      if (!migration.revert) return { reversible: false, version: migration.version }
+    if (migration.version > fromVersion) {
+      if (checkReversibility && !migration.revert) {
+        throw new errors.NonReversibleMigrationError(`It is not possible to revert to version ${fromVersion} because migration version ${migration.version} is not reversible. Cancelling reversion.`)
+      }
 
       migrationCounter++
     }
   }
 
-  if (migrationCounter !== (fromVersion - toVersion)) {
-    throw new errors.NonReversibleMigrationError(`There are not enough migrations to perform the reversion! 
-    Expected ${(fromVersion - toVersion)} migrations, but there are only ${migrationCounter} migrations.`)
+  if (migrationCounter !== (toVersion - fromVersion)) {
+    throw new errors.InvalidValueError(`The ipfs-repo-migrations package does not have all migration to migrate from version ${fromVersion} to ${toVersion}`)
   }
-
-  return { reversible: true, version: undefined }
 }
