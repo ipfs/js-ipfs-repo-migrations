@@ -11,5 +11,11 @@ const emptyMigration = {
 }
 
 module.exports = [
-  Object.assign({version: 7}, emptyMigration),
+  Object.assign({}, emptyMigration, {version: 7, revert: undefined}),
+  Object.assign({}, emptyMigration, {version: 6, revert: undefined}),
+  Object.assign({}, emptyMigration, {version: 5, revert: undefined}),
+  Object.assign({}, emptyMigration, {version: 4, revert: undefined}),
+  Object.assign({}, emptyMigration, {version: 3, revert: undefined}),
+  Object.assign({}, emptyMigration, {version: 2, revert: undefined}),
+  Object.assign({}, emptyMigration, {version: 1, revert: undefined}),
 ]
