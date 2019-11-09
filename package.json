@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo-migrations",
-  "version": "0.1.0+migr-7",
+  "version": "0.1.1+migr-7",
   "description": "Migration framework for versioning of JS IPFS Repo",
   "keywords": [
     "IPFS",
