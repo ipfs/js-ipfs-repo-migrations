@@ -1,3 +1,14 @@
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.1.0+migr-7...v0.1.1) (2019-11-09)
+
+
+### Bug Fixes
+
+* provide empty migrations for all previous versions ([6ecba01](https://github.com/ipfs/js-ipfs-repo-migrations/commit/6ecba01))
+* validate presence for all migrations in a range ([076f300](https://github.com/ipfs/js-ipfs-repo-migrations/commit/076f300))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2019-11-06)
 
