@@ -12,7 +12,7 @@ exports.isRepoInitialized = async function isRepoInitialized (path) {
   let root
   try {
     root = new Datastore(path, { extension: '', createIfMissing: false })
-
+    await root.open()
     const versionCheck = await root.has(versionKey)
     const configCheck = await root.has(configKey)
     if (!versionCheck || !configCheck) {

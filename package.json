@@ -20,7 +20,7 @@
   "main": "src/index.js",
   "browser": {
     "./src/repo/lock.js": "./src/repo/lock-memory.js",
-    "datastore-fs": "datastore-level"
+    "datastore-fs": "datastore-idb"
   },
   "bin": {
     "jsipfs-migrations": "./src/cli.js"
@@ -44,8 +44,10 @@
     "docs": "aegir docs"
   },
   "dependencies": {
+    "buffer": "^5.5.0",
     "chalk": "^2.4.2",
     "datastore-fs": "~0.9.1",
+    "datastore-idb": "ipfs/js-datastore-idb#master",
     "datastore-level": "~0.12.1",
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.0",
@@ -54,7 +56,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^20.4.1",
+    "aegir": "^21.4.5",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",

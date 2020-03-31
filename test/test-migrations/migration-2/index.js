@@ -1,7 +1,7 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const Datastore = require('datastore-fs')
-const path = require('path')
 const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
 
@@ -37,7 +37,7 @@ function datastoreFactory (repoPath, options) {
     storageBackendOptions = { extension: '' }
   }
 
-  return new StorageBackend(path.join(repoPath), storageBackendOptions)
+  return new StorageBackend(repoPath, storageBackendOptions)
 }
 
 function addNewApiAddress (config) {
@@ -78,6 +78,7 @@ function removeNewApiAddress (config) {
 
 async function migrate (repoPath, options, isBrowser) {
   const store = datastoreFactory(repoPath, options)
+  await store.open()
   try {
     const rawConfig = await store.get(CONFIG_KEY)
     let config = JSON.parse(rawConfig.toString())
@@ -97,7 +98,7 @@ async function migrate (repoPath, options, isBrowser) {
 
 async function revert (repoPath, options, isBrowser) {
   const store = datastoreFactory(repoPath, options)
-
+  await store.open()
   try {
     const rawConfig = await store.get(CONFIG_KEY)
     let config = JSON.parse(rawConfig.toString())

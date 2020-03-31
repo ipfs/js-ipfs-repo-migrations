@@ -1,5 +1,6 @@
 'use strict'
 
+const { Buffer } = require('buffer')
 const errors = require('../errors')
 const repoInit = require('./init')
 const Datastore = require('datastore-fs')

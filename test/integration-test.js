@@ -1,8 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const expect = chai.expect
+const { expect } = require('./util')
 
 const migrator = require('../src')
 const migrations = require('./test-migrations')
@@ -26,7 +25,7 @@ module.exports = (setup, cleanup) => {
     await migrator.migrate(dir, migrator.getLatestMigrationVersion(migrations), { migrations: migrations })
 
     const store = new Datastore(dir, { extension: '', createIfMissing: false })
-
+    await store.open()
     const version = await store.get(VERSION_KEY)
     expect(version.toString()).to.be.equal('2')
 
@@ -42,7 +41,7 @@ module.exports = (setup, cleanup) => {
     await migrator.revert(dir, 1, { migrations: migrations })
 
     const store = new Datastore(dir, { extension: '', createIfMissing: false })
-
+    await store.open()
     const version = await store.get(VERSION_KEY)
     expect(version.toString()).to.be.equal('1')
 
