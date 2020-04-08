@@ -47,7 +47,7 @@
     "buffer": "^5.5.0",
     "chalk": "^2.4.2",
     "datastore-fs": "~0.9.1",
-    "datastore-idb": "ipfs/js-datastore-idb#master",
+    "datastore-idb": "^1.0.0",
     "datastore-level": "~0.12.1",
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.0",
