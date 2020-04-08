@@ -45,12 +45,12 @@
   },
   "dependencies": {
     "buffer": "^5.5.0",
-    "chalk": "^2.4.2",
+    "chalk": "^4.0.0",
     "datastore-fs": "~0.9.1",
     "datastore-idb": "^1.0.0",
-    "datastore-level": "~0.12.1",
+    "datastore-level": "~0.14.1",
     "debug": "^4.1.0",
-    "interface-datastore": "~0.8.0",
+    "interface-datastore": "~0.8.3",
     "proper-lockfile": "^4.1.1",
     "yargs": "^14.2.0",
     "yargs-promise": "^1.1.0"
