@@ -1,3 +1,15 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.1.1+migr-7...v0.2.0) (2020-04-14)
+
+
+### Bug Fixes
+
+* remove datastore-level from the readme and deps ([dabab4e](https://github.com/ipfs/js-ipfs-repo-migrations/commit/dabab4e))
+* remove node globals ([8b51f8d](https://github.com/ipfs/js-ipfs-repo-migrations/commit/8b51f8d))
+* update datastore-idb ([3dc05ef](https://github.com/ipfs/js-ipfs-repo-migrations/commit/3dc05ef))
+
+
+
 <a name="0.1.1"></a>
 ## [0.1.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.1.0+migr-7...v0.1.1) (2019-11-09)
 
