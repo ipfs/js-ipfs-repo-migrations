@@ -1,7 +1,7 @@
 # Migration tool for JS IPFS Repo
 
 [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo-migrations)](https://travis-ci.com/ipfs/js-ipfs-repo-migrations)
-[![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations) 
+[![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations)
 [![Dependency Status](https://david-dm.org/ipfs/js-ipfs-repo-migrations.svg?style=flat-square)](https://david-dm.org/ipfs/js-ipfs-repo-migrations)
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
@@ -45,7 +45,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 ## Background
 
 
-As js-ipfs evolves and new technologies, algorithms and data structures are incorporated it is necessary to 
+As js-ipfs evolves and new technologies, algorithms and data structures are incorporated it is necessary to
 enable users to transition between versions. Different versions of js-ipfs may expect a different IPFS repo structure or content (see: [IPFS repo spec](https://github.com/ipfs/specs/tree/master/repo), [JS implementation](https://github.com/ipfs/js-ipfs-repo) ).
 So the IPFS repo is versioned, and this package provides a framework to create migrations to transition
 from one version of IPFS repo to the next/previous version.
@@ -94,7 +94,7 @@ if(currentRepoVersion < latestVersion){
 }
 ```
 
-To migrate your repository using the CLI, see the [how to run migrations](./run.md) tutorial. 
+To migrate your repository using the CLI, see the [how to run migrations](./run.md) tutorial.
 
 ## API
 
@@ -111,9 +111,9 @@ Executes a forward migration to a specific version, or to the latest version if 
  * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
- 
+
 #### `onProgress(migration, counter, totalMigrations)`
- 
+
 Signature of the progress callback.
 
 **Arguments:**
@@ -128,26 +128,26 @@ Executes backward migration to a specific version.
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be reverted
- * `toVersion` (int, mandatory) - version to which the repo should be reverted to. 
+ * `toVersion` (int, mandatory) - version to which the repo should be reverted to.
  * `options` (object, optional) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
  * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
- 
+
 ### `getLatestMigrationVersion() -> int`
 
 Return the version of the latest migration.
 
 ## CLI
 
-The CLI is a NodeJS binary named `jsipfs-repo-migrations`. 
+The CLI is a NodeJS binary named `jsipfs-repo-migrations`.
 It has several commands:
 
  * `migrate` - performs forward/backward migration to specific or latest version.
  * `status` - check repo for migrations that should be run.
  * `add` - bootstraps new migration.
- 
+
 For further details see the `--help` pages.
 
 ## Creating a new migration
@@ -161,7 +161,7 @@ Migrations are one of those things that can be extremely painful on users. At th
 
 If your migration has several parts, it should be fail-proof enough that if one part of migration fails the previous changes
 are reverted before propagating the error. If possible then the outcome should be consistent repo so it migration could
-be run again. 
+be run again.
 
 ### Architecture of a migration
 
@@ -169,7 +169,7 @@ All migrations are placed in the `/migrations` folder. Each folder there represe
 API.
 
 All migrations are collected in `/migrations/index.js`, which should not be edited manually. It is regenerated on
-every run of `jsipfs-migrations add` (manual changes should follow the same style of modifications). 
+every run of `jsipfs-migrations add` (manual changes should follow the same style of modifications).
 **The order of migrations is important and migrations must be sorted in ascending order**.
 
 Each migration must follow this API. It must export an object in its `index.js` that has following properties:
@@ -186,7 +186,7 @@ _Do not confuse this function with the `require('ipfs-repo-migrations').migrate(
 Arguments:
  * `repoPath` (string) - absolute path to the root of the repo
  * `repoOptions` (object, optional) - object containing `IPFSRepo` options, that should be used to construct a datastore instance.
- 
+
 #### `.revert(repoPath, repoOptions)`
 
 _Do not confuse this function with the `require('ipfs-repo-migrations').revert()` function that drives the whole backward migration process!_
@@ -208,17 +208,17 @@ Then add entry in `package.json` to the `browser` field as follow:
 In browser environments then `index.js` will be replaced with `index_browser.js`.
 
 Simple migrations should not need to distinguish between
-these environments as the datastore implementation will handle the main differences. 
+these environments as the datastore implementation will handle the main differences.
 
 There are currently two main datastore implementations:
  1. [`datastore-fs`](https://github.com/ipfs/js-datastore-fs) that is backed by file system and is used mainly in the NodeJS environment
- 2. [`datastore-level`](https://github.com/ipfs/js-datastore-level) that is backed by LevelDB and is used mainly in the browser environment
- 
- Both implementations share the same API and hence are interchangeable. 
+ 2. [`datastore-idb`](https://github.com/ipfs/js-datastore-idb) that is backed by LevelDB and is used mainly in the browser environment
 
- When the migration is run in a browser environment, `datastore-fs` is automatically replaced with `datastore-level` even 
- when it is directly imported (`require('datastore-fs')` will return `datastore-level` in a browser). 
- So with simple migrations you shouldn't worry about the difference between `datastore-fs` and `datastore-level` 
+ Both implementations share the same API and hence are interchangeable.
+
+ When the migration is run in a browser environment, `datastore-fs` is automatically replaced with `datastore-idb` even
+ when it is directly imported (`require('datastore-fs')` will return `datastore-idb` in a browser).
+ So with simple migrations you shouldn't worry about the difference between `datastore-fs` and `datastore-idb`
  and by default use the `datastore-fs` package (as the replace mechanism does not work vice versa).
 
 ### Guidelines
@@ -229,8 +229,8 @@ The recommended way to write a new migration is to first bootstrap a dummy migra
 > npm run new-migration
 ```
 
-A new folder is created with the bootstrapped migration. You can then simply fill in the required fields and 
-write the rest of the migration! 
+A new folder is created with the bootstrapped migration. You can then simply fill in the required fields and
+write the rest of the migration!
 
 ### Integration with js-ipfs
 
@@ -251,7 +251,7 @@ you will have to plug the tests into `browser.js`/`node.js` if they require spec
 
 ### Empty migrations
 
-For interop with go-ipfs it might be necessary just to bump a version of a repo without any actual 
+For interop with go-ipfs it might be necessary just to bump a version of a repo without any actual
 modification as there might not be any changes needed in the JS implementation. For that purpose you can create an "empty migration".
 
 The easiest way to do so is with the CLI:
@@ -270,7 +270,7 @@ This will create an empty migration with the next version.
 
 ## Developer
 
-### Module versioning notes 
+### Module versioning notes
 
 In order to have good overview of what version of package contains what kind of migration, to every release there
 should be appended version's metadata in format `migr-<versionOfLatestMigration>`. If for releasing is used `aegir`

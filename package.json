@@ -48,7 +48,6 @@
     "chalk": "^4.0.0",
     "datastore-fs": "~0.9.1",
     "datastore-idb": "^1.0.0",
-    "datastore-level": "~0.14.1",
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.3",
     "proper-lockfile": "^4.1.1",
