@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo-migrations",
-  "version": "0.1.1+migr-7",
+  "version": "0.2.0",
   "description": "Migration framework for versioning of JS IPFS Repo",
   "keywords": [
     "IPFS",
@@ -70,6 +70,6 @@
   },
   "contributors": [
     "Adam Uhlíř <adam@uhlir.dev>",
-    "Adam Uhlíř <hello@adam-uhlir.me>"
+    "Hugo Dias <hugomrdias@gmail.com>"
   ]
 }
