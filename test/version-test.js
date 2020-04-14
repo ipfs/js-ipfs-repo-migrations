@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const expect = chai.expect
+const { Buffer } = require('buffer')
+const { expect } = require('./util')
 
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
