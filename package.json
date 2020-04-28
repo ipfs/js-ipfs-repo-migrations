@@ -44,10 +44,10 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "buffer": "^5.5.0",
+    "buffer": "^5.6.0",
     "chalk": "^4.0.0",
-    "datastore-fs": "~0.9.1",
-    "datastore-idb": "^1.0.0",
+    "datastore-fs": "^1.0.0",
+    "datastore-idb": "^1.0.2",
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.3",
     "proper-lockfile": "^4.1.1",
@@ -55,7 +55,7 @@
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^21.4.5",
+    "aegir": "^21.9.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
