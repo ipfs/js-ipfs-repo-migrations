@@ -1,3 +1,13 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.0...v0.2.1) (2020-04-28)
+
+
+### Bug Fixes
+
+* linter ([2a20542](https://github.com/ipfs/js-ipfs-repo-migrations/commit/2a20542))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.1.1+migr-7...v0.2.0) (2020-04-14)
 
