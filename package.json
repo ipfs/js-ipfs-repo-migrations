@@ -46,7 +46,7 @@
   "dependencies": {
     "buffer": "^5.6.0",
     "chalk": "^4.0.0",
-    "datastore-fs": "~1.0.0",
+    "datastore-fs": "^1.0.0",
     "datastore-idb": "^1.0.2",
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.3",
