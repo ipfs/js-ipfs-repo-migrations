@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const expect = chai.expect
+const { Buffer } = require('buffer')
+const { expect } = require('./util')
 
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
@@ -24,7 +24,7 @@ module.exports = (setup, cleanup) => {
     const store = new Datastore(dir, { extension: '', createIfMissing: false })
     await store.open()
     await store.put(versionKey, Buffer.from('7'))
-    await store.put(configKey, '')
+    await store.put(configKey, Buffer.from('config'))
     await store.close()
 
     expect(await repoInit.isRepoInitialized(dir)).to.be.true()

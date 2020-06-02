@@ -1,8 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const expect = chai.expect
+const { expect } = require('./util')
 
 // When new lock mechanism is introduced in new version don't forget to update
 // the range (from/to) of the previous version test's description
