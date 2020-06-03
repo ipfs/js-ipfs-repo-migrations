@@ -19,6 +19,7 @@ function decode (name) {
 
   const decoder = new base32.Decoder({ type: 'rfc4648' })
   const decodedNameBuff = decoder.finalize(name.replace(KEY_PREFIX, '').toUpperCase())
+
   return Buffer.from(decodedNameBuff).toString()
 }
 
@@ -27,14 +28,19 @@ async function processFolder (store, prefix, fileNameProcessor) {
     prefix: `/${ prefix }`
   }
 
-  const files = store.query(query)
-  for await (let file of files) {
+  for await (let file of store.query(query)) {
     const name = String(file.key._buf).replace(`/${ prefix }/`, '')
     const encodedFileName = fileNameProcessor(name)
     const newKey = new Key(`${ prefix }/${ encodedFileName }`)
 
+    if (await store.has(newKey)) {
+      continue
+    }
+
     await store.delete(file.key)
+
     log(`Translating key's name '${ file.key }' into '${ newKey }'`)
+
     await store.put(newKey, file.value)
   }
 }
@@ -43,11 +49,11 @@ async function process (repoPath, options, processor) {
   const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'keys')
 
   const store = new StorageBackend(path.join(repoPath, 'keys'), storageOptions)
-  try {
-    const info = processFolder(store, 'info', processor)
-    const data = processFolder(store, 'pkcs8', processor)
+  await store.open()
 
-    return await Promise.all([info, data])
+  try {
+    await processFolder(store, 'info', processor)
+    await processFolder(store, 'pkcs8', processor)
   } finally {
     await store.close()
   }
