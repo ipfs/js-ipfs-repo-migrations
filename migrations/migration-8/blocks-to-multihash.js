@@ -6,9 +6,29 @@ const ShardingStore = core.ShardingDatastore
 const base32 = require('base32.js')
 const utils = require('../../src/utils')
 const log = require('debug')('ipfs-repo-migrations:migration-8')
+const errCode = require('err-code')
+const multihashes = require('multihashes')
+
+function isValidMultihash (buf) {
+  try {
+    multihashes.validate(buf)
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
+function isValidCid (buf) {
+  try {
+    CID.validateCID(new CID(buf))
+    return true
+  } catch (err) {
+    return false
+  }
+}
 
 // This function in js-ipfs-repo defaults to not using sharding
-// but the default value of the options.sharding is True hence this
+// but the default value of the options.sharding is true hence this
 // function defaults to use sharding.
 async function maybeWithSharding (filestore, options) {
   if (options.sharding === false) {
@@ -16,55 +36,73 @@ async function maybeWithSharding (filestore, options) {
   }
 
   const shard = new core.shard.NextToLast(2)
-  return await ShardingStore.createOrOpen(filestore, shard)
+
+  return ShardingStore.createOrOpen(filestore, shard)
 }
 
-function keyToMultihash(key){
-  // Key to CID
+function keyToMultihash (key) {
   const decoder = new base32.Decoder()
-  const buff = decoder.finalize(key.toString().slice(1))
-  const cid = new CID(Buffer.from(buff))
+  const buf = Buffer.from(decoder.finalize(key.toString().slice(1)))
 
-  // CID to multihash
+  if (isValidMultihash(buf)) {
+    throw errCode(new Error('Key is already a multihash'), 'ERR_ALREADY_MIGRATED')
+  }
+
+  // Extract multihash from CID
   const enc = new base32.Encoder()
-  return new Key('/' + enc.finalize(cid.multihash), false)
+  const multihash =  enc.finalize(new CID(buf).multihash)
+
+  return new Key(`/${multihash}`, false)
 }
 
-function keyToCid(key){
-  // Key to CID
+function keyToCid (key) {
   const decoder = new base32.Decoder()
-  const buff = decoder.write(key.toString().slice(1)).finalize()
-  const cid = new CID(1, 'raw', Buffer.from(buff))
+  const buf = Buffer.from(decoder.finalize(key.toString().slice(1)))
+
+  if (isValidCid(buf) && new CID(buf).version === 1) {
+    throw errCode(new Error('Key is already a CID'), 'ERR_ALREADY_MIGRATED')
+  }
+
+  if (!isValidMultihash(buf)) {
+    throw errCode(new Error('Key is already a CID'), 'ERR_ALREADY_MIGRATED')
+  }
 
   // CID to Key
   const enc = new base32.Encoder()
-  return new Key('/' + enc.finalize(cid.buffer), false)
+  return new Key('/' + enc.finalize(new CID(1, 'raw', buf).buffer), false)
 }
 
-async function process(repoPath, options, keyFunction){
+async function process (repoPath, options, keyFunction){
   const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'blocks')
 
   const baseStore = new StorageBackend(path.join(repoPath, 'blocks'), storageOptions)
+  await baseStore.open()
   const store = await maybeWithSharding(baseStore, storageOptions)
+  await store.open()
 
   try {
-    const batch = store.batch()
     let counter = 0
+
     for await (const block of store.query({})) {
-      const newKey = keyFunction(block.key)
+      try {
+        const newKey = keyFunction(block.key)
 
-      // If the Key is CIDv0 then it is raw multihash and nothing is changing
-      if(newKey.toString() !== block.key.toString()){
-        counter += 1
+        // If the Key is CIDv0 then it is raw multihash and nothing is changing
+        if(newKey.toString() !== block.key.toString()){
+          counter += 1
 
-        log(`Migrating Block from ${block.key.toString()} to ${newKey.toString()}`)
-        batch.delete(block.key)
-        batch.put(newKey, block.value)
+          log(`Migrating Block from ${block.key.toString()} to ${newKey.toString()}`)
+          await store.delete(block.key)
+          await store.put(newKey, block.value)
+        }
+      } catch (err) {
+        if (err.code !== 'ERR_ALREADY_MIGRATED') {
+          throw err
+        }
       }
     }
 
-    log(`Changing ${ counter } blocks`)
-    await batch.commit()
+    log(`Changed ${ counter } blocks`)
   } finally {
     await store.close()
   }

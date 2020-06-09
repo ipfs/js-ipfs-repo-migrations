@@ -7,9 +7,9 @@ const log = require('debug')('ipfs-repo-migrations:migration-8')
 async function migrate (repoPath, options) {
   await keysEncoding.migrate(repoPath, options)
 
-  try{
+  try {
     await blocksToMultihash.migrate(repoPath, options)
-  }catch (e) {
+  } catch (e) {
     log('During migration of Blockstore to multihash exception was raised! Reverting keys part of migration!')
     await keysEncoding.revert(repoPath, options)
 
@@ -20,9 +20,9 @@ async function migrate (repoPath, options) {
 async function revert (repoPath, options) {
   await keysEncoding.revert(repoPath, options)
 
-  try{
+  try {
     await blocksToMultihash.revert(repoPath, options)
-  }catch (e) {
+  } catch (e) {
     log('During reversion of Blockstore to CID exception was raised! Migrating keys part of migration!')
     await keysEncoding.migrate(repoPath, options)
 

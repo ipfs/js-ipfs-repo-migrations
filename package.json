@@ -50,9 +50,11 @@
     "cids": "^0.8.1",
     "datastore-core": "^1.1.0",
     "datastore-fs": "^1.0.0",
-    "datastore-idb": "^1.0.2",
+    "datastore-idb": "ipfs/js-datastore-idb#fix/wrap-operations-in-transaction",
     "debug": "^4.1.0",
+    "err-code": "^2.0.0",
     "interface-datastore": "^1.0.2",
+    "multihashes": "^0.4.19",
     "proper-lockfile": "^4.1.1",
     "yargs": "^15.3.1",
     "yargs-promise": "^1.1.0"

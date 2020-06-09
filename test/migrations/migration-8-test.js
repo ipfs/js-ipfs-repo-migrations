@@ -22,7 +22,8 @@ const keysFixtures = [
 ]
 
 const blocksFixtures = [
-  ['AFKREIBFG77IKIKDMBDUFDCSPK7H5TE5LNPMCSXYLPML27WSTT5YA5IUNU', 'CIQCKN76QUQUGYCHIKGFE6V6P3GJ2W26YFFPQW6YXV7NFHH3QB2RI3I']
+  ['AFKREIBFG77IKIKDMBDUFDCSPK7H5TE5LNPMCSXYLPML27WSTT5YA5IUNU',
+    'CIQCKN76QUQUGYCHIKGFE6V6P3GJ2W26YFFPQW6YXV7NFHH3QB2RI3I']
 ]
 
 async function bootstrapKeys (dir, encoded) {
@@ -43,11 +44,15 @@ async function validateKeys (dir, shouldBeEncoded) {
   const store = new Datastore(path.join(dir, 'keys'), { extension: '.data', createIfMissing: false })
   await store.open()
 
-  let name
   for (const keyNames of keysFixtures) {
-    name = shouldBeEncoded ? keyNames[1] : keyNames[0]
-    expect(await store.has(new Key(`/pkcs8/${name}`))).to.be.true(name)
-    expect(await store.has(new Key(`/info/${name}`))).to.be.true(name)
+    const newName = shouldBeEncoded ? keyNames[1] : keyNames[0]
+    const oldName = shouldBeEncoded ? keyNames[0] : keyNames[1]
+
+    expect(await store.has(new Key(`/pkcs8/${newName}`))).to.be.true(`/pkcs8/${oldName} was not migrated to /pkcs8/${newName}`)
+    expect(await store.has(new Key(`/info/${newName}`))).to.be.true(`/info/${oldName} was not migrated to /info/${newName}`)
+
+    expect(await store.has(new Key(`/pkcs8/${oldName}`))).to.be.false(`/pkcs8/${oldName} was not removed`)
+    expect(await store.has(new Key(`/info/${oldName}`))).to.be.false(`/info/${oldName} was not removed`)
   }
 
   await store.close()
@@ -56,6 +61,8 @@ async function validateKeys (dir, shouldBeEncoded) {
 async function bootstrapBlocks (dir, encoded) {
   const baseStore = new Datastore(path.join(dir, 'blocks'), { extension: '.data', createIfMissing: true })
   const shard = new core.shard.NextToLast(2)
+
+  await baseStore.open()
   const store = await ShardingStore.createOrOpen(baseStore, shard)
 
   let name
@@ -70,14 +77,16 @@ async function bootstrapBlocks (dir, encoded) {
 async function validateBlocks (dir, shouldBeEncoded) {
   const baseStore = new Datastore(path.join(dir, 'blocks'), { extension: '.data', createIfMissing: false })
   const shard = new core.shard.NextToLast(2)
+
+  await baseStore.open()
   const store = await ShardingStore.createOrOpen(baseStore, shard)
 
   let newName, oldName
   for (const blockNames of blocksFixtures) {
     newName = shouldBeEncoded ? blockNames[1] : blockNames[0]
     oldName = shouldBeEncoded ? blockNames[0] : blockNames[1]
-    expect(await store.has(new Key(oldName))).to.be.false(oldName)
-    expect(await store.has(new Key(newName))).to.be.true(newName)
+    expect(await store.has(new Key(`/${oldName}`))).to.be.false(`${oldName} was not migrated to ${newName}`)
+    expect(await store.has(new Key(`/${newName}`))).to.be.true(`${newName} was not removed`)
   }
 
   await store.close()
@@ -104,28 +113,16 @@ module.exports = (setup, cleanup) => {
       await validateKeys(dir, false)
     })
 
-    it('should fail to migrate keys backward with invalid key name', async () => {
-      const store = new Datastore(path.join(dir, 'keys'), { extension: '.data', createIfMissing: true })
-      await store.open()
-
-      await store.put(new Key('/pkcs8/mfawc'), '')
-      await store.put(new Key('/info/mfawc'), '')
-
-      await store.close()
-
-      expect(keysMigration.revert(dir)).to.eventually.rejectedWith('Unknown format of key\'s name!')
-    })
-
     it('should migrate blocks forward', async () => {
       await bootstrapBlocks(dir, false)
       await blocksMigration.migrate(dir)
       await validateBlocks(dir, true)
     })
-    //
-    // it('should migrate blocks backward', async () => {
-    //   await bootstrapKeys(dir, true)
-    //   await blocksMigration.revert(dir)
-    //   await validateKeys(dir, false)
-    // })
+
+    it('should migrate blocks backward', async () => {
+      await bootstrapBlocks(dir, true)
+      await blocksMigration.revert(dir)
+      await validateBlocks(dir, false)
+    })
   })
 }
