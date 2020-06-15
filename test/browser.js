@@ -3,7 +3,7 @@
 
 const { Buffer } = require('buffer')
 const loadFixture = require('aegir/fixtures')
-const Datastore = require('datastore-idb')
+const Datastore = require('datastore-level')
 
 const Key = require('interface-datastore').Key
 const CONFIG_KEY = new Key('config')
