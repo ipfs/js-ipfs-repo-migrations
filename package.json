@@ -51,7 +51,7 @@
     "debug": "^4.1.0",
     "interface-datastore": "~0.8.3",
     "proper-lockfile": "^4.1.1",
-    "yargs": "^14.2.0",
+    "yargs": "^15.3.1",
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
