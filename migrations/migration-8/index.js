@@ -32,7 +32,7 @@ async function revert (repoPath, options) {
 
 module.exports = {
   version: 8,
-  description: 'Transforms key\'s names into base32 encoding and converts Block store to use multihashes',
+  description: 'Transforms key names into base32 encoding and converts Block store to use bare multihashes encoded as base32',
   migrate,
   revert
 }

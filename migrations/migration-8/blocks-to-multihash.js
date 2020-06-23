@@ -87,8 +87,8 @@ async function process (repoPath, options, keyFunction){
       try {
         const newKey = keyFunction(block.key)
 
-        // If the Key is CIDv0 then it is raw multihash and nothing is changing
-        if(newKey.toString() !== block.key.toString()){
+        // If the Key is base32 CIDv0 then there's nothing to do
+        if(newKey.toString() !== block.key.toString()) {
           counter += 1
 
           log(`Migrating Block from ${block.key.toString()} to ${newKey.toString()}`)
