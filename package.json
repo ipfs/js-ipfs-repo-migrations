@@ -49,7 +49,7 @@
     "datastore-fs": "^1.0.0",
     "datastore-idb": "^1.0.2",
     "debug": "^4.1.0",
-    "interface-datastore": "~0.8.3",
+    "interface-datastore": "^1.0.4",
     "proper-lockfile": "^4.1.1",
     "yargs": "^15.3.1",
     "yargs-promise": "^1.1.0"
