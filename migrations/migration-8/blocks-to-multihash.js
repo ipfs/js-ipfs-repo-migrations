@@ -60,7 +60,7 @@ function keyToMultihash (key) {
 }
 
 function keyToCid (key) {
-  const buf = mb.decode(`b${key.toString().substring(1)}`)
+  const buf = mb.decode(`b${key.toString().slice(1)}`)
 
   if (isValidCid(buf) && new CID(buf).version === 1) {
     throw errCode(new Error('Key is already a CID'), 'ERR_ALREADY_MIGRATED')
@@ -71,8 +71,9 @@ function keyToCid (key) {
   }
 
   // CID to Key
-  const multihash = mb.encode('base32', new CID(1, 'raw', buf).buffer)
-  return new Key(`/${multihash.slice(1)}`, false)
+  const multihash = mb.encode('base32', new CID(1, 'raw', buf).buffer).slice(1)
+
+  return new Key(`/${multihash}`.toUpperCase(), false)
 }
 
 async function process (repoPath, options, keyFunction){
