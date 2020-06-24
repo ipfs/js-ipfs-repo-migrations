@@ -3,7 +3,7 @@ const CID = require('cids')
 const Key = require('interface-datastore').Key
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
-const base32 = require('base32.js')
+const mb = require('multibase')
 const utils = require('../../src/utils')
 const log = require('debug')('ipfs-repo-migrations:migration-8')
 const errCode = require('err-code')
@@ -41,23 +41,26 @@ async function maybeWithSharding (filestore, options) {
 }
 
 function keyToMultihash (key) {
-  const decoder = new base32.Decoder()
-  const buf = Buffer.from(decoder.finalize(key.toString().slice(1)))
+  const buf = mb.decode(`b${key.toString().slice(1)}`)
 
   if (isValidMultihash(buf)) {
     throw errCode(new Error('Key is already a multihash'), 'ERR_ALREADY_MIGRATED')
   }
 
   // Extract multihash from CID
-  const enc = new base32.Encoder()
-  const multihash =  enc.finalize(new CID(buf).multihash)
+  let multihash = new CID(buf).multihash
+
+  // Encode and slice off multibase codec
+  multihash = mb.encode('base32', multihash).slice(1)
+
+  // Should be uppercase for interop with go
+  multihash = multihash.toString().toUpperCase()
 
   return new Key(`/${multihash}`, false)
 }
 
 function keyToCid (key) {
-  const decoder = new base32.Decoder()
-  const buf = Buffer.from(decoder.finalize(key.toString().slice(1)))
+  const buf = mb.decode(`b${key.toString().substring(1)}`)
 
   if (isValidCid(buf) && new CID(buf).version === 1) {
     throw errCode(new Error('Key is already a CID'), 'ERR_ALREADY_MIGRATED')
@@ -68,8 +71,8 @@ function keyToCid (key) {
   }
 
   // CID to Key
-  const enc = new base32.Encoder()
-  return new Key('/' + enc.finalize(new CID(1, 'raw', buf).buffer), false)
+  const multihash = mb.encode('base32', new CID(1, 'raw', buf).buffer)
+  return new Key(`/${multihash.slice(1)}`, false)
 }
 
 async function process (repoPath, options, keyFunction){

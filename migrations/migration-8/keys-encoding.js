@@ -1,6 +1,6 @@
 const utils = require('../../src/utils')
 const path = require('path')
-const base32 = require('base32.js')
+const mb = require('multibase')
 const Key = require('interface-datastore').Key
 const log = require('debug')('ipfs-repo-migrations:migration-8')
 const errCode = require('err-code')
@@ -13,8 +13,7 @@ function encode (name) {
   }
 
   name = Buffer.from(name)
-  const encoder = new base32.Encoder({ type: 'rfc4648' })
-  return (KEY_PREFIX + encoder.finalize(name)).toLowerCase()
+  return `${KEY_PREFIX}${mb.encode('base32', name).slice(1)}`.toLowerCase()
 }
 
 function decode (name) {
@@ -22,8 +21,7 @@ function decode (name) {
     throw errCode(new Error('Key has already been decoded'), 'ERR_ALREADY_MIGRATED')
   }
 
-  const decoder = new base32.Decoder({ type: 'rfc4648' })
-  const decodedNameBuff = decoder.finalize(name.replace(KEY_PREFIX, '').toUpperCase())
+  const decodedNameBuff = mb.decode(`b${name.replace(KEY_PREFIX, '').toUpperCase()}`)
 
   return Buffer.from(decodedNameBuff).toString()
 }

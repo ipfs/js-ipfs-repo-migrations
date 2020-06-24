@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo-migrations",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Migration framework for versioning of JS IPFS Repo",
   "keywords": [
     "IPFS",
@@ -44,23 +44,23 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "base32.js": "~0.1.0",
     "buffer": "^5.6.0",
     "chalk": "^4.0.0",
-    "cids": "^0.8.1",
+    "cids": "^0.8.3",
     "datastore-core": "^1.1.0",
     "datastore-fs": "^1.0.0",
     "datastore-level": "^1.1.0",
     "debug": "^4.1.0",
-    "err-code": "^2.0.0",
+    "err-code": "^2.0.3",
     "interface-datastore": "^1.0.2",
-    "multihashes": "^0.4.19",
+    "multibase": "^1.0.1",
+    "multihashes": "^1.0.1",
     "proper-lockfile": "^4.1.1",
     "yargs": "^15.3.1",
     "yargs-promise": "^1.1.0"
   },
   "devDependencies": {
-    "aegir": "^22.0.0",
+    "aegir": "^23.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
@@ -76,6 +76,7 @@
   "contributors": [
     "Adam Uhlíř <adam@uhlir.dev>",
     "Hugo Dias <hugomrdias@gmail.com>",
-    "Hector Sanjuan <code@hector.link>"
+    "Hector Sanjuan <code@hector.link>",
+    "Bryan Stenson <bryan.stenson@gmail.com>"
   ]
 }

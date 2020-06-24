@@ -1,3 +1,13 @@
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.1...v0.2.2) (2020-06-23)
+
+
+### Bug Fixes
+
+* **ci:** add empty commit to fix lint checks on master ([cf10410](https://github.com/ipfs/js-ipfs-repo-migrations/commit/cf10410))
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.0...v0.2.1) (2020-04-28)
 
