@@ -3,7 +3,7 @@
 
 const { Buffer } = require('buffer')
 const loadFixture = require('aegir/fixtures')
-const Datastore = require('datastore-idb')
+const Datastore = require('datastore-level')
 
 const Key = require('interface-datastore').Key
 const CONFIG_KEY = new Key('config')
@@ -42,6 +42,10 @@ describe('Browser specific tests', () => {
 
   describe('version tests', () => {
     require('./version-test')(createRepo, repoCleanup)
+  })
+
+  describe('migrations tests', () => {
+    require('./migrations/migration-8-test')(createRepo, repoCleanup)
   })
 
   describe('init tests', () => {
