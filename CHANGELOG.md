@@ -1,3 +1,8 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.2...v1.0.0) (2020-06-25)
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.1...v0.2.2) (2020-06-23)
 
