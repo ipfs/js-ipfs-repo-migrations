@@ -51,10 +51,8 @@
     "datastore-fs": "^1.0.0",
     "datastore-level": "^1.1.0",
     "debug": "^4.1.0",
-    "err-code": "^2.0.3",
     "interface-datastore": "^1.0.2",
     "multibase": "^1.0.1",
-    "multihashes": "^1.0.1",
     "proper-lockfile": "^4.1.1",
     "yargs": "^15.3.1",
     "yargs-promise": "^1.1.0"

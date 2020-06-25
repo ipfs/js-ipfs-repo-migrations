@@ -8,55 +8,16 @@ chai.use(chaiAsPromised)
 const expect = chai.expect
 
 const path = require('path')
-const keysMigration = require('../../migrations/migration-8/keys-encoding')
-const blocksMigration = require('../../migrations/migration-8/blocks-to-multihash')
+const migration = require('../../migrations/migration-8')
 const Key = require('interface-datastore').Key
 const Datastore = require('datastore-fs')
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
 
-const keysFixtures = [
-  ['aAa', 'key_mfawc'],
-  ['bbb', 'key_mjrge'],
-  ['self', 'key_onswyzq']
-]
-
 const blocksFixtures = [
   ['AFKREIBFG77IKIKDMBDUFDCSPK7H5TE5LNPMCSXYLPML27WSTT5YA5IUNU',
     'CIQCKN76QUQUGYCHIKGFE6V6P3GJ2W26YFFPQW6YXV7NFHH3QB2RI3I']
 ]
-
-async function bootstrapKeys (dir, encoded) {
-  const store = new Datastore(path.join(dir, 'keys'), { extension: '.data', createIfMissing: true })
-  await store.open()
-
-  let name
-  for (const keyNames of keysFixtures) {
-    name = encoded ? keyNames[1] : keyNames[0]
-    await store.put(new Key(`/pkcs8/${name}`), '')
-    await store.put(new Key(`/info/${name}`), '')
-  }
-
-  await store.close()
-}
-
-async function validateKeys (dir, shouldBeEncoded) {
-  const store = new Datastore(path.join(dir, 'keys'), { extension: '.data', createIfMissing: false })
-  await store.open()
-
-  for (const keyNames of keysFixtures) {
-    const newName = shouldBeEncoded ? keyNames[1] : keyNames[0]
-    const oldName = shouldBeEncoded ? keyNames[0] : keyNames[1]
-
-    expect(await store.has(new Key(`/pkcs8/${newName}`))).to.be.true(`/pkcs8/${oldName} was not migrated to /pkcs8/${newName}`)
-    expect(await store.has(new Key(`/info/${newName}`))).to.be.true(`/info/${oldName} was not migrated to /info/${newName}`)
-
-    expect(await store.has(new Key(`/pkcs8/${oldName}`))).to.be.false(`/pkcs8/${oldName} was not removed`)
-    expect(await store.has(new Key(`/info/${oldName}`))).to.be.false(`/info/${oldName} was not removed`)
-  }
-
-  await store.close()
-}
 
 async function bootstrapBlocks (dir, encoded) {
   const baseStore = new Datastore(path.join(dir, 'blocks'), { extension: '.data', createIfMissing: true })
@@ -101,27 +62,15 @@ module.exports = (setup, cleanup) => {
     })
     afterEach(() => cleanup(dir))
 
-    it('should migrate keys forward', async () => {
-      await bootstrapKeys(dir, false)
-      await keysMigration.migrate(dir)
-      await validateKeys(dir, true)
-    })
-
-    it('should migrate keys backward', async () => {
-      await bootstrapKeys(dir, true)
-      await keysMigration.revert(dir)
-      await validateKeys(dir, false)
-    })
-
     it('should migrate blocks forward', async () => {
       await bootstrapBlocks(dir, false)
-      await blocksMigration.migrate(dir)
+      await migration.migrate(dir)
       await validateBlocks(dir, true)
     })
 
     it('should migrate blocks backward', async () => {
       await bootstrapBlocks(dir, true)
-      await blocksMigration.revert(dir)
+      await migration.revert(dir)
       await validateBlocks(dir, false)
     })
   })
