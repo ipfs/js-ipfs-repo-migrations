@@ -4,6 +4,7 @@ const CID = require('cids')
 const dagpb = require('ipld-dag-pb')
 const cbor = require('cbor')
 const multicodec = require('multicodec')
+const multibase = require('multibase')
 const pinset = require('./pin-set')
 const { createStore, cidToKey, PIN_DS_KEY, PinTypes } = require('./utils')
 
@@ -15,17 +16,33 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
   const pinRoot = dagpb.util.deserialize(pinRootBuf)
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.recursive)) {
-    await pinstore.put(cidToKey(cid), cbor.encode({
-      cid: cid.buffer,
-      type: PinTypes.recursive
-    }))
+    const pin = {}
+
+    if (cid.version !== 0) {
+      pin.version = version
+    }
+
+    if (cid.codec !== 'dag-pb') {
+      pin.codec = multicodec.getNumber(cid.codec)
+    }
+
+    await pinstore.put(cidToKey(cid), cbor.encode(pin))
   }
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.direct)) {
-    await pinstore.put(cidToKey(cid), cbor.encode({
-      cid: cid.buffer,
-      type: PinTypes.direct
-    }))
+    const pin = {
+      depth: 1
+    }
+
+    if (cid.version !== 0) {
+      pin.version = version
+    }
+
+    if (cid.codec !== 'dag-pb') {
+      pin.codec = multicodec.getNumber(cid.codec)
+    }
+
+    await pinstore.put(cidToKey(cid), cbor.encode(pin))
   }
 
   await blockstore.delete(cidToKey(cid))
@@ -36,15 +53,14 @@ async function pinsToDAG (blockstore, datastore, pinstore) {
   let recursivePins = []
   let directPins = []
 
-  for await (const { value } of pinstore.query({})) {
+  for await (const { key, value } of pinstore.query({})) {
     const pin = cbor.decode(value)
+    const cid = new CID(pin.version || 0, pin.codec && multicodec.getName(pin.codec) || 'dag-pb', multibase.decode('b' + key.toString().substring(1)))
 
-    if (pin.type === PinTypes.recursive) {
-      recursivePins.push(new CID(pin.cid))
-    }
-
-    if (pin.type === PinTypes.direct) {
-      directPins.push(new CID(pin.cid))
+    if (pin.depth === 1) {
+      directPins.push(cid)
+    } else {
+      recursivePins.push(cid)
     }
   }
 

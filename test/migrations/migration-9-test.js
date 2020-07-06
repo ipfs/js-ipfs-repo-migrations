@@ -14,7 +14,7 @@ const all = require('it-all')
 const cbor = require('cbor')
 
 const migration = require('../../migrations/migration-9')
-const { createStore, cidToKey, PIN_DS_KEY, DEFAULT_FANOUT, PinTypes } = require('../../migrations/migration-9/utils')
+const { createStore, cidToKey, PIN_DS_KEY, DEFAULT_FANOUT } = require('../../migrations/migration-9/utils')
 const CID = require('cids')
 
 function keyToCid (key) {
@@ -110,7 +110,7 @@ module.exports = (setup, cleanup) => {
       expect(keyToCid(key).toString()).to.equal(pinnedCid.toString())
 
       const pin = cbor.decode(pins[0].value)
-      expect(pin.type).to.equal(PinTypes.recursive)
+      expect(pin.depth).to.be.undefined()
 
       await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
     })
@@ -118,8 +118,6 @@ module.exports = (setup, cleanup) => {
     it('should migrate pins backward', async () => {
       await pinstore.open()
       pinstore.put(cidToKey(pinnedCid), cbor.encode({
-        cid: pinnedCid.buffer,
-        type: PinTypes.recursive,
         metadata: {
           foo: 'bar'
         }
