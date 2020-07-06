@@ -73,6 +73,7 @@ async function process (repoPath, options, keyFunction){
     log(`Changed ${ counter } blocks`)
   } finally {
     await store.close()
+    await baseStore.close()
   }
 }
 
