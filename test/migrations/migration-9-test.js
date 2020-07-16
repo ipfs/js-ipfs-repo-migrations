@@ -18,7 +18,7 @@ const { createStore, cidToKey, PIN_DS_KEY, DEFAULT_FANOUT } = require('../../mig
 const CID = require('cids')
 
 function keyToCid (key) {
-  const buf = Buffer.from(multibase.encoding('base32upper').decode(key.toString().substring(1)))
+  const buf = Buffer.from(multibase.encoding('base32upper').decode(key.toString().split('/').pop()))
   return new CID(buf)
 }
 
@@ -73,7 +73,7 @@ async function bootstrapBlocks (blockstore, datastore) {
   await datastore.close()
 }
 
-module.exports = (setup, cleanup) => {
+module.exports = (setup, cleanup, options) => {
   describe('migration 9', () => {
     let dir
     let datastore
@@ -83,9 +83,9 @@ module.exports = (setup, cleanup) => {
     beforeEach(async () => {
       dir = await setup()
 
-      blockstore = await createStore(dir, 'blocks')
-      datastore = await createStore(dir, 'datastore')
-      pinstore = await createStore(dir, 'pins')
+      blockstore = await createStore(dir, 'blocks', options)
+      datastore = await createStore(dir, 'datastore', options)
+      pinstore = await createStore(dir, 'pins', options)
     })
 
     afterEach(async () => {
@@ -109,7 +109,7 @@ module.exports = (setup, cleanup) => {
       })
 
       it('should migrate pins forward', async () => {
-        await migration.migrate(dir)
+        await migration.migrate(dir, options)
 
         await pinstore.open()
 
@@ -139,14 +139,13 @@ module.exports = (setup, cleanup) => {
       })
 
       it('should migrate pins backward', async () => {
-        await migration.revert(dir)
+        await migration.revert(dir, options)
 
         await datastore.open()
         await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
 
         const buf = await datastore.get(PIN_DS_KEY)
         const cid = new CID(buf)
-
         expect(cid.toString()).to.equal(pinRootCid.toString())
       })
     })

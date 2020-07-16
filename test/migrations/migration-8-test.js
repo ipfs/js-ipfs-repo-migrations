@@ -101,49 +101,28 @@ async function validateBlocks (dir, shouldBeEncoded, options) {
   await baseStore.close()
 }
 
-const CONFIGURATIONS = [{
-  name: 'with block sharding',
-  options: {
-    storageBackendOptions: {
-      blocks: {
-        sharding: true,
-        extension: '.data'
-      }
-    }
-  }
-}, {
-  name: 'without block sharding',
-  options: {
-    storageBackendOptions: {
-      blocks: {
-        sharding: false,
-        extension: '.data'
-      }
-    }
-  }
-}]
-
-module.exports = (setup, cleanup) => {
+module.exports = (setup, cleanup, options) => {
   describe('migration 8', () => {
     let dir
 
     beforeEach(async () => {
       dir = await setup()
     })
-    afterEach(() => cleanup(dir))
 
-    CONFIGURATIONS.forEach(({ name, options }) => {
-      it(`should migrate blocks forward ${name}`, async () => {
-        await bootstrapBlocks(dir, false, options.storageBackendOptions.blocks)
-        await migration.migrate(dir, options)
-        await validateBlocks(dir, true, options.storageBackendOptions.blocks)
-      })
+    afterEach(async () => {
+      await cleanup(dir)
+    })
 
-      it(`should migrate blocks backward ${name}`, async () => {
-        await bootstrapBlocks(dir, true, options.storageBackendOptions.blocks)
-        await migration.revert(dir, options)
-        await validateBlocks(dir, false, options.storageBackendOptions.blocks)
-      })
+    it('should migrate blocks forward', async () => {
+      await bootstrapBlocks(dir, false, options.storageBackendOptions.blocks)
+      await migration.migrate(dir, options)
+      await validateBlocks(dir, true, options.storageBackendOptions.blocks)
+    })
+
+    it('should migrate blocks backward', async () => {
+      await bootstrapBlocks(dir, true, options.storageBackendOptions.blocks)
+      await migration.revert(dir, options)
+      await validateBlocks(dir, false, options.storageBackendOptions.blocks)
     })
   })
 }
