@@ -55,7 +55,7 @@ async function pinsToDAG (blockstore, datastore, pinstore) {
 
   for await (const { key, value } of pinstore.query({})) {
     const pin = cbor.decode(value)
-    const cid = new CID(pin.version || 0, pin.codec && multicodec.getName(pin.codec) || 'dag-pb', multibase.decode('b' + key.toString().substring(1)))
+    const cid = new CID(pin.version || 0, pin.codec && multicodec.getName(pin.codec) || 'dag-pb', multibase.decode('b' + key.toString().split('/').pop()))
 
     if (pin.depth === 0) {
       directPins.push(cid)

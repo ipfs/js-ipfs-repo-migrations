@@ -130,7 +130,7 @@ module.exports = (setup, cleanup, options) => {
     describe('backwards', () => {
       beforeEach(async () => {
         await pinstore.open()
-        pinstore.put(cidToKey(pinnedCid), cbor.encode({
+        await pinstore.put(cidToKey(pinnedCid), cbor.encode({
           metadata: {
             foo: 'bar'
           }
