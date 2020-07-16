@@ -18,11 +18,13 @@ module.exports = (locker, setup, cleanup) => {
 
       expect(lock).to.have.property('close')
       expect(lock.close).to.be.a('function')
+      await lock.close()
     })
 
     it('should prevent acquiring multiple locks for the same dir', async () => {
-      await locker.lock(7, dir)
-      return expect(locker.lock(7, dir)).to.be.eventually.rejected()
+      const lock = await locker.lock(7, dir)
+      await expect(locker.lock(7, dir)).to.be.eventually.rejected()
+      await lock.close()
     })
 
     it('should release lock', async () => {
