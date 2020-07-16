@@ -96,43 +96,59 @@ module.exports = (setup, cleanup) => {
       cleanup(dir)
     })
 
-    it('should migrate pins forward', async () => {
-      await bootstrapBlocks(blockstore, datastore)
-      await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
+    describe('forwards', () => {
+      beforeEach(async () => {
+        await blockstore.open()
+        await bootstrapBlocks(blockstore, datastore)
 
-      await migration.migrate(dir)
-      await pinstore.open()
+        await datastore.open()
+        await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
 
-      const pins = await all(pinstore.query({}))
-      expect(pins).to.have.lengthOf(1)
+        await blockstore.close()
+        await datastore.close()
+      })
 
-      const key = pins[0].key
-      expect(keyToCid(key).toString()).to.equal(pinnedCid.toString())
+      it('should migrate pins forward', async () => {
+        await migration.migrate(dir)
 
-      const pin = cbor.decode(pins[0].value)
-      expect(pin.depth).to.be.undefined()
+        await pinstore.open()
 
-      await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
+        const pins = await all(pinstore.query({}))
+        expect(pins).to.have.lengthOf(1)
+
+        const key = pins[0].key
+        expect(keyToCid(key).toString()).to.equal(pinnedCid.toString())
+
+        const pin = cbor.decode(pins[0].value)
+        expect(pin.depth).to.be.undefined()
+
+        await datastore.open()
+        await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
+      })
     })
 
-    it('should migrate pins backward', async () => {
-      await pinstore.open()
-      pinstore.put(cidToKey(pinnedCid), cbor.encode({
-        metadata: {
-          foo: 'bar'
-        }
-      }))
-      await pinstore.close()
+    describe('backwards', () => {
+      beforeEach(async () => {
+        await pinstore.open()
+        pinstore.put(cidToKey(pinnedCid), cbor.encode({
+          metadata: {
+            foo: 'bar'
+          }
+        }))
+        await pinstore.close()
+      })
 
-      await migration.revert(dir)
+      it('should migrate pins backward', async () => {
+        await migration.revert(dir)
 
-      await datastore.open()
-      await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
+        await datastore.open()
+        await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
 
-      const buf = await datastore.get(PIN_DS_KEY)
-      const cid = new CID(buf)
+        const buf = await datastore.get(PIN_DS_KEY)
+        const cid = new CID(buf)
 
-      expect(cid.toString()).to.equal(pinRootCid.toString())
+        expect(cid.toString()).to.equal(pinRootCid.toString())
+      })
     })
   })
 }

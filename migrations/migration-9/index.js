@@ -31,7 +31,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.direct)) {
     const pin = {
-      depth: 1
+      depth: 0
     }
 
     if (cid.version !== 0) {
@@ -57,7 +57,7 @@ async function pinsToDAG (blockstore, datastore, pinstore) {
     const pin = cbor.decode(value)
     const cid = new CID(pin.version || 0, pin.codec && multicodec.getName(pin.codec) || 'dag-pb', multibase.decode('b' + key.toString().substring(1)))
 
-    if (pin.depth === 1) {
+    if (pin.depth === 0) {
       directPins.push(cid)
     } else {
       recursivePins.push(cid)

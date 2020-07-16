@@ -46,6 +46,7 @@ describe('Browser specific tests', () => {
 
   describe('migrations tests', () => {
     require('./migrations/migration-8-test')(createRepo, repoCleanup)
+    require('./migrations/migration-9-test')(createRepo, repoCleanup)
   })
 
   describe('init tests', () => {
