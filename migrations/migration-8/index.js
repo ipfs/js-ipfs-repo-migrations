@@ -1,6 +1,5 @@
 'use strict'
 
-const path = require('path')
 const CID = require('cids')
 const Key = require('interface-datastore').Key
 const core = require('datastore-core')
@@ -49,7 +48,7 @@ function keyToCid (key) {
 async function process (repoPath, options, keyFunction){
   const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'blocks')
 
-  const baseStore = new StorageBackend(path.join(repoPath, 'blocks'), storageOptions)
+  const baseStore = new StorageBackend(`${repoPath}/blocks`, storageOptions)
   await baseStore.open()
   const store = await maybeWithSharding(baseStore, storageOptions)
   await store.open()

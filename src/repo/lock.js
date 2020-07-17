@@ -1,6 +1,5 @@
 'use strict'
 
-const path = require('path')
 const debug = require('debug')
 const { lock } = require('proper-lockfile')
 
@@ -15,7 +14,7 @@ const lockFile = 'repo.lock'
  * @returns {Promise<Object>}
  */
 exports.lock = async (version, dir) => {
-  const file = path.join(dir, lockFile)
+  const file = `${dir}/${lockFile}`
   log('locking %s', file)
   const release = await lock(dir, { lockfilePath: file })
   return {
