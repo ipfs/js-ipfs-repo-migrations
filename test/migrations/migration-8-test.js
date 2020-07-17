@@ -7,7 +7,6 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
-const path = require('path')
 const migration = require('../../migrations/migration-8')
 const Key = require('interface-datastore').Key
 const Datastore = require('datastore-fs')
@@ -68,7 +67,7 @@ function maybeWithSharding (filestore, options) {
 }
 
 async function bootstrapBlocks (dir, encoded, options) {
-  const baseStore = new Datastore(path.join(dir, 'blocks'), { extension: '.data', createIfMissing: true })
+  const baseStore = new Datastore(`${dir}/blocks`, { extension: '.data', createIfMissing: true })
   await baseStore.open()
   const store = await maybeWithSharding(baseStore, options)
   await store.open()
@@ -84,7 +83,7 @@ async function bootstrapBlocks (dir, encoded, options) {
 }
 
 async function validateBlocks (dir, shouldBeEncoded, options) {
-  const baseStore = new Datastore(path.join(dir, 'blocks'), { extension: '.data', createIfMissing: false })
+  const baseStore = new Datastore(`${dir}/blocks`, { extension: '.data', createIfMissing: false })
   await baseStore.open()
   const store = await maybeWithSharding(baseStore, options)
   await store.open()
