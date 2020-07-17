@@ -1,6 +1,5 @@
 'use strict'
 
-const path = require('path')
 const core = require('datastore-core')
 const ShardingStore = core.ShardingDatastore
 const utils = require('../../src/utils')
@@ -38,7 +37,7 @@ async function maybeWithSharding (filestore, options) {
 const createStore = async (location, name, options) => {
   const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, name)
 
-  let store = new StorageBackend(path.join(location, name), storageOptions)
+  let store = new StorageBackend(`${location}/${name}`, storageOptions)
   store = maybeWithSharding(store, storageOptions)
 
   return store
