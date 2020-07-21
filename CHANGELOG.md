@@ -1,3 +1,13 @@
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v2.0.0...v2.0.1) (2020-07-21)
+
+
+### Bug Fixes
+
+* make recursive pins depth infinity ([ef95579](https://github.com/ipfs/js-ipfs-repo-migrations/commit/ef95579))
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v1.0.0...v2.0.0) (2020-07-21)
 
