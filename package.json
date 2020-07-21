@@ -54,7 +54,7 @@
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
     "interface-datastore": "^1.0.2",
-    "ipld-dag-pb": "^0.18.5",
+    "ipld-dag-pb": "^0.19.0",
     "multibase": "^1.0.1",
     "multicodec": "^1.0.3",
     "multihashing-async": "^1.0.0",
