@@ -1,4 +1,4 @@
-# Migration tool for JS IPFS Repo
+# Migration tool for JS IPFS Repo <!-- omit in toc -->
 
 [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo-migrations)](https://travis-ci.com/ipfs/js-ipfs-repo-migrations)
 [![codecov](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations/branch/master/graph/badge.svg)](https://codecov.io/gh/ipfs/js-ipfs-repo-migrations)
@@ -15,30 +15,36 @@
 
 This package is inspired by the [go-ipfs repo migration tool](https://github.com/ipfs/fs-repo-migrations/)
 
-## Lead Maintainer
+## Lead Maintainer <!-- omit in toc -->
 
-[Adam Uhlíř](https://github.com/auhau/)
+[Alex Potsides](http://github.com/achingbrain)
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Background](#background)
 - [Install](#install)
   - [npm](#npm)
   - [Use in Node.js](#use-in-nodejs)
   - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
-  - [Use in a browser Using a script tag](#use-in-a-browser-using-a-script-tag)
 - [Usage](#usage)
 - [API](#api)
+  - [`.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#migratepath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
+    - [`onProgress(migration, counter, totalMigrations)`](#onprogressmigration-counter-totalmigrations)
+  - [`.revert(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#revertpath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
+  - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
 - [CLI](#cli)
 - [Creating a new migration](#creating-a-new-migration)
   - [Architecture of a migration](#architecture-of-a-migration)
+    - [`.migrate(repoPath, repoOptions)`](#migraterepopath-repooptions)
+    - [`.revert(repoPath, repoOptions)`](#revertrepopath-repooptions)
   - [Browser vs. NodeJS environments](#browser-vs-nodejs-environments)
   - [Guidelines](#guidelines)
   - [Integration with js-ipfs](#integration-with-js-ipfs)
+  - [Tests](#tests)
   - [Empty migrations](#empty-migrations)
   - [Migrations matrix](#migrations-matrix)
 - [Developer](#developer)
-    - [Module versioning notes](#module-versioning-notes)
+  - [Module versioning notes](#module-versioning-notes)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -266,7 +272,9 @@ This will create an empty migration with the next version.
 
 | IPFS repo version  | JS IPFS version  |
 | -----------------: |:----------------:|
-|                  7 | v0.0.0 - latest  |
+|                  7 | v0.0.0           |
+|                  8 | v0.48.0          |
+|                  9 | v0.49.0          |
 
 ## Developer
 

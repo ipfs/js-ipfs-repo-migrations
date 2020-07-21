@@ -43,8 +43,8 @@ describe('Node specific tests', () => {
     require('./version-test')(createRepo, repoCleanup)
   })
 
-  describe('migrations tests', () => {
-    require('./migrations/migration-8-test')(createRepo, repoCleanup)
+  describe('migration tests', () => {
+    require('./migrations')(createRepo, repoCleanup)
   })
 
   describe('init tests', () => {
