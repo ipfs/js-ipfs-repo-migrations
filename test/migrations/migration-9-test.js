@@ -120,7 +120,7 @@ module.exports = (setup, cleanup, options) => {
         expect(keyToCid(key).toString()).to.equal(pinnedCid.toString())
 
         const pin = cbor.decode(pins[0].value)
-        expect(pin.depth).to.be.undefined()
+        expect(pin.depth).to.equal(Infinity)
 
         await datastore.open()
         await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()

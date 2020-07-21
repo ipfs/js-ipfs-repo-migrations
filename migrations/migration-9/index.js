@@ -16,7 +16,9 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
   const pinRoot = dagpb.util.deserialize(pinRootBuf)
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.recursive)) {
-    const pin = {}
+    const pin = {
+      depth: Infinity
+    }
 
     if (cid.version !== 0) {
       pin.version = version
