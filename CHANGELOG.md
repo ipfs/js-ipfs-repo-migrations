@@ -1,3 +1,13 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v1.0.0...v2.0.0) (2020-07-21)
+
+
+### Features
+
+* add migration 9 to migrate pins to the datastore and back ([#15](https://github.com/ipfs/js-ipfs-repo-migrations/issues/15)) ([2b14578](https://github.com/ipfs/js-ipfs-repo-migrations/commit/2b14578))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.2...v1.0.0) (2020-06-25)
 
