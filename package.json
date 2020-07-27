@@ -55,7 +55,7 @@
     "fnv1a": "^1.0.1",
     "interface-datastore": "^1.0.2",
     "ipld-dag-pb": "^0.18.5",
-    "multibase": "^1.0.1",
+    "multibase": "^2.0.0",
     "multicodec": "^1.0.3",
     "multihashing-async": "^1.0.0",
     "proper-lockfile": "^4.1.1",
