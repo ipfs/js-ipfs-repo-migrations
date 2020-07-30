@@ -1,9 +1,9 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
+const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
 
 const CONFIG_KEY = new Key('config')
 const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
@@ -89,7 +89,7 @@ async function migrate (repoPath, options, isBrowser) {
     // Modify allowed origin
     _set(config, 'Gateway.HTTPHeaders.Access-Control-Allow-Origin', 'some.origin.com')
 
-    const buf = Buffer.from(JSON.stringify(config, null, 2))
+    const buf = uint8ArrayFromString(JSON.stringify(config, null, 2))
     await store.put(CONFIG_KEY, buf)
   } finally {
     await store.close()
@@ -109,7 +109,7 @@ async function revert (repoPath, options, isBrowser) {
     // Reset origin
     _set(config, 'Gateway.HTTPHeaders.Access-Control-Allow-Origin', '*')
 
-    const buf = Buffer.from(JSON.stringify(config, null, 2))
+    const buf = uint8ArrayFromString(JSON.stringify(config, null, 2))
     await store.put(CONFIG_KEY, buf)
   } finally {
     await store.close()

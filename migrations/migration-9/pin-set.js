@@ -8,8 +8,11 @@ const dagpb = require('ipld-dag-pb')
 const { DAGNode, DAGLink } = dagpb
 const multicodec = require('multicodec')
 const pbSchema = require('./pin.proto')
-const { Buffer } = require('buffer')
 const { cidToKey, DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
+const uint8ArrayConcat = require('ipfs-utils/src/uint8arrays/concat')
+const uint8ArrayCompare = require('ipfs-utils/src/uint8arrays/compare')
+const uint8ArrayToString = require('ipfs-utils/src/uint8arrays/to-string')
+const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
 
 const pb = protobuf(pbSchema)
 
@@ -50,12 +53,13 @@ function readHeader (rootNode) {
 }
 
 function hash (seed, key) {
-  const buf = Buffer.alloc(4)
-  buf.writeUInt32LE(seed, 0)
-  const data = Buffer.concat([
-    buf, Buffer.from(toB58String(key))
-  ])
-  return fnv1a(data.toString('binary'))
+  const buffer = new ArrayBuffer(4)
+  const dataView = new DataView(buffer)
+  dataView.setUint32(0, seed, true)
+  const encodedKey = uint8ArrayFromString(toB58String(key))
+  const data = uint8ArrayConcat([buf, encodedKey], buf.length + encodedKey.length)
+
+  return fnv1a(uint8ArrayToString(data))
 }
 
 async function * walkItems (blockstore, node) {
@@ -106,9 +110,9 @@ function storeItems (blockstore, items) {
       fanout: DEFAULT_FANOUT,
       seed: depth
     })
-    const headerBuf = Buffer.concat([
-      Buffer.from(varint.encode(pbHeader.length)), pbHeader
-    ])
+
+    const header = varint.encode(pbHeader.length)
+    const headerBuf = uint8ArrayConcat([header, pbHeader])
     const fanoutLinks = []
 
     for (let i = 0; i < DEFAULT_FANOUT; i++) {
@@ -120,16 +124,16 @@ function storeItems (blockstore, items) {
         .map(item => {
           return ({
             link: new DAGLink('', 1, item.key),
-            data: item.data || Buffer.alloc(0)
+            data: item.data || new Uint8Array()
           })
         })
         // sorting makes any ordering of `pins` produce the same DAGNode
-        .sort((a, b) => Buffer.compare(a.link.Hash.buffer, b.link.Hash.buffer))
+        .sort((a, b) => {
+          return uint8ArrayCompare(a.link.Hash.buffer, b.link.Hash.buffer)
+        })
 
       const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))
-      const rootData = Buffer.concat(
-        [headerBuf].concat(nodes.map(item => item.data))
-      )
+      const rootData = uint8ArrayConcat([headerBuf, ...nodes.map(item => item.data)])
 
       return new DAGNode(rootData, rootLinks)
     } else {
@@ -162,13 +166,6 @@ function storeItems (blockstore, items) {
     }
 
     async function storeChild (child, binIdx) {
-      const opts = {
-        version: 0,
-        format: multicodec.DAG_PB,
-        hashAlg: multicodec.SHA2_256,
-        preload: false
-      }
-
       const buf = dagpb.util.serialize(child)
       const cid = dagpb.util.cid(buf, {
         cidVersion: 0,

@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const loadFixture = require('aegir/fixtures')
 const Datastore = require('datastore-level')
 
@@ -24,8 +23,8 @@ async function createAndLoadRepo () {
   const store = new Datastore(dir, { extension: '', createIfMissing: true })
   await store.open()
 
-  await store.put(VERSION_KEY, Buffer.from(loadFixture('test/fixtures/test-repo/version')))
-  await store.put(CONFIG_KEY, Buffer.from(loadFixture('test/fixtures/test-repo/config')))
+  await store.put(VERSION_KEY, loadFixture('test/fixtures/test-repo/version'))
+  await store.put(CONFIG_KEY, loadFixture('test/fixtures/test-repo/config'))
 
   return dir
 }
