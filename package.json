@@ -50,7 +50,7 @@
     "cids": "^0.8.3",
     "datastore-core": "^1.1.0",
     "datastore-fs": "^1.0.0",
-    "datastore-level": "^1.1.0",
+    "datastore-level": "^2.0.0",
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
     "interface-datastore": "^1.0.2",
