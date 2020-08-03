@@ -57,7 +57,7 @@
     "ipld-dag-pb": "^0.18.5",
     "multibase": "^1.0.1",
     "multicodec": "^1.0.3",
-    "multihashing-async": "^1.0.0",
+    "multihashing-async": "^2.0.0",
     "proper-lockfile": "^4.1.1",
     "protons": "^1.2.1",
     "varint": "^5.0.0",
