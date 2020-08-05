@@ -6,7 +6,7 @@ const { expect } = require('./util')
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const version = require('../src/repo/version')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const errors = require('../src/errors')
 
 // When new versioning mechanism is introduced in new version don't forget to update

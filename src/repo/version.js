@@ -3,7 +3,7 @@
 const errors = require('../errors')
 const repoInit = require('./init')
 const Datastore = require('datastore-fs')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const Key = require('interface-datastore').Key
 

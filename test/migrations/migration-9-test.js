@@ -12,7 +12,7 @@ const multicodec = require('multicodec')
 const multibase = require('multibase')
 const all = require('it-all')
 const cbor = require('cbor')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const migration = require('../../migrations/migration-9')
 const { createStore, cidToKey, PIN_DS_KEY, DEFAULT_FANOUT } = require('../../migrations/migration-9/utils')

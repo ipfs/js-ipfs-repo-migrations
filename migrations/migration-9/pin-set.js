@@ -9,10 +9,11 @@ const { DAGNode, DAGLink } = dagpb
 const multicodec = require('multicodec')
 const pbSchema = require('./pin.proto')
 const { cidToKey, DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
-const uint8ArrayConcat = require('ipfs-utils/src/uint8arrays/concat')
-const uint8ArrayCompare = require('ipfs-utils/src/uint8arrays/compare')
-const uint8ArrayToString = require('ipfs-utils/src/uint8arrays/to-string')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayConcat = require('uint8arrays/concat')
+const uint8ArrayCompare = require('uint8arrays/compare')
+const uint8ArrayToString = require('uint8arrays/to-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayEquals = require('uint8arrays/equals')
 
 const pb = protobuf(pbSchema)
 
@@ -72,7 +73,7 @@ async function * walkItems (blockstore, node) {
       // if a fanout bin is not 'empty', dig into and walk its DAGLinks
       const linkHash = link.Hash
 
-      if (!EMPTY_KEY.equals(linkHash.buffer)) {
+      if (!uint8ArrayEquals(EMPTY_KEY, linkHash.bytes)) {
         // walk the links of this fanout bin
         const buf = await blockstore.get(cidToKey(linkHash))
         const node = dagpb.util.deserialize(buf)
@@ -129,7 +130,7 @@ function storeItems (blockstore, items) {
         })
         // sorting makes any ordering of `pins` produce the same DAGNode
         .sort((a, b) => {
-          return uint8ArrayCompare(a.link.Hash.buffer, b.link.Hash.buffer)
+          return uint8ArrayCompare(a.link.Hash.bytes, b.link.Hash.bytes)
         })
 
       const rootLinks = fanoutLinks.concat(nodes.map(item => item.link))

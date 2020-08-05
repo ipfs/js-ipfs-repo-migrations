@@ -6,7 +6,7 @@ const { expect } = require('./util')
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const repoInit = require('../src/repo/init')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = (setup, cleanup) => {
   let dir

@@ -3,7 +3,7 @@
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
-const uint8ArrayFromString = require('ipfs-utils/src/uint8arrays/from-string')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const CONFIG_KEY = new Key('config')
 const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
