@@ -1,13 +1,12 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./util')
 
 const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const version = require('../src/repo/version')
-
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const errors = require('../src/errors')
 
 // When new versioning mechanism is introduced in new version don't forget to update
@@ -34,8 +33,8 @@ module.exports = (setup, cleanup) => {
       // Create version file
       const store = new Datastore(dir, { extension: '', createIfMissing: false })
       await store.open()
-      await store.put(new Key('config'), Buffer.from('some dummy config'))
-      await store.put(new Key('version'), Buffer.from('7'))
+      await store.put(new Key('config'), uint8ArrayFromString('some dummy config'))
+      await store.put(new Key('version'), uint8ArrayFromString('7'))
       await store.close()
 
       expect(await version.getVersion(dir)).to.be.equal(7)
@@ -47,8 +46,8 @@ module.exports = (setup, cleanup) => {
       // Create version file
       const store = new Datastore(dir, { extension: '', createIfMissing: false })
       await store.open()
-      await store.put(new Key('config'), Buffer.from('some dummy config'))
-      await store.put(new Key('version'), Buffer.from('5'))
+      await store.put(new Key('config'), uint8ArrayFromString('some dummy config'))
+      await store.put(new Key('version'), uint8ArrayFromString('5'))
       await store.close()
 
       await version.setVersion(dir, 7)

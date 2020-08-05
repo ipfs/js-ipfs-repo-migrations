@@ -12,13 +12,14 @@ const multicodec = require('multicodec')
 const multibase = require('multibase')
 const all = require('it-all')
 const cbor = require('cbor')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const migration = require('../../migrations/migration-9')
 const { createStore, cidToKey, PIN_DS_KEY, DEFAULT_FANOUT } = require('../../migrations/migration-9/utils')
 const CID = require('cids')
 
 function keyToCid (key) {
-  const buf = Buffer.from(multibase.encoding('base32upper').decode(key.toString().split('/').pop()))
+  const buf = multibase.encoding('base32upper').decode(key.toString().split('/').pop())
   return new CID(buf)
 }
 
@@ -49,11 +50,11 @@ async function bootstrapBlocks (blockstore, datastore) {
   )
   const bucket = new Array(DEFAULT_FANOUT).fill(0).map(() => new DAGLink('', 1, emptyBlock.Hash))
   const directLinks = await putNode(
-    new DAGNode(Buffer.from('CggBEIACHQAAAAA=', 'base64'), bucket),
+    new DAGNode(uint8ArrayFromString('CggBEIACHQAAAAA=', 'base64urlpad'), bucket),
     'QmbxHkprr5qdLSK8EZWdBzKFzNXGoKrxb7A4PHX3eH6JPp'
   )
   const recursiveLinks = await putNode(
-    new DAGNode(Buffer.from('CggBEIACHQAAAAA=', 'base64'), [
+    new DAGNode(uint8ArrayFromString('CggBEIACHQAAAAA=', 'base64urlpad'), [
       ...bucket,
       new DAGLink('', 1, pinnedCid)
     ]),
@@ -61,7 +62,7 @@ async function bootstrapBlocks (blockstore, datastore) {
   )
 
   const pinRoot = await putNode(
-    new DAGNode(Buffer.alloc(0), [
+    new DAGNode(new Uint8Array(), [
       new DAGLink('direct', directLinks.Tsize, directLinks.Hash),
       new DAGLink('recursive', recursiveLinks.Tsize, recursiveLinks.Hash)
     ]),

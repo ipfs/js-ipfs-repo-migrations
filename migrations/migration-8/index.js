@@ -7,6 +7,7 @@ const ShardingStore = core.ShardingDatastore
 const mb = require('multibase')
 const utils = require('../../src/utils')
 const log = require('debug')('ipfs-repo-migrations:migration-8')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 // This function in js-ipfs-repo defaults to not using sharding
 // but the default value of the options.sharding is true hence this
@@ -31,7 +32,7 @@ function keyToMultihash (key) {
   multihash = mb.encode('base32', multihash).slice(1)
 
   // Should be uppercase for interop with go
-  multihash = multihash.toString().toUpperCase()
+  multihash = uint8ArrayToString(multihash).toUpperCase()
 
   return new Key(`/${multihash}`, false)
 }
@@ -40,9 +41,9 @@ function keyToCid (key) {
   const buf = mb.decode(`b${key.toString().slice(1)}`)
 
   // CID to Key
-  const multihash = mb.encode('base32', new CID(1, 'raw', buf).buffer).slice(1)
+  const multihash = mb.encode('base32', new CID(1, 'raw', buf).bytes).slice(1)
 
-  return new Key(`/${multihash}`.toUpperCase(), false)
+  return new Key(`/${uint8ArrayToString(multihash)}`.toUpperCase(), false)
 }
 
 async function process (repoPath, options, keyFunction){

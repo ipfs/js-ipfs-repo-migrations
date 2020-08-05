@@ -66,7 +66,7 @@ async function pinsToDAG (blockstore, datastore, pinstore) {
     }
   }
 
-  const pinRoot = new dagpb.DAGNode(Buffer.alloc(0), [
+  const pinRoot = new dagpb.DAGNode(new Uint8Array(), [
     await pinset.storeSet(blockstore, PinTypes.recursive, recursivePins),
     await pinset.storeSet(blockstore, PinTypes.direct, directPins)
   ])

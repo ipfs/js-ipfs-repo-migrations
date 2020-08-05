@@ -1,9 +1,9 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const errors = require('../errors')
 const repoInit = require('./init')
 const Datastore = require('datastore-fs')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 const Key = require('interface-datastore').Key
 
@@ -43,7 +43,7 @@ async function getVersion (path) {
 async function setVersion (path, version) {
   const store = new Datastore(path, { extension: '', createIfMissing: false })
   await store.open()
-  await store.put(versionKey, Buffer.from(String(version)))
+  await store.put(versionKey, uint8ArrayFromString(String(version)))
   await store.close()
 }
 
