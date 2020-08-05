@@ -60,7 +60,7 @@ jobs:
       name: electron-renderer
       os: osx
       script:
-        - npx aegir test -t electron-renderer --bail --timeout 10000 -f test/browser.js
+        - npx aegir test -t electron-renderer --bail --timeout 10000 -f test/node.js
 
 notifications:
   email: false
