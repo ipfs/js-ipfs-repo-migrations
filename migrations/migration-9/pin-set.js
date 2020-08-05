@@ -54,11 +54,11 @@ function readHeader (rootNode) {
 }
 
 function hash (seed, key) {
-  const buffer = new ArrayBuffer(4)
-  const dataView = new DataView(buffer)
+  const buffer = new Uint8Array(4)
+  const dataView = new DataView(buffer.buffer)
   dataView.setUint32(0, seed, true)
   const encodedKey = uint8ArrayFromString(toB58String(key))
-  const data = uint8ArrayConcat([buf, encodedKey], buf.length + encodedKey.length)
+  const data = uint8ArrayConcat([buffer, encodedKey], buffer.byteLength + encodedKey.byteLength)
 
   return fnv1a(uint8ArrayToString(data))
 }
@@ -168,7 +168,7 @@ function storeItems (blockstore, items) {
 
     async function storeChild (child, binIdx) {
       const buf = dagpb.util.serialize(child)
-      const cid = dagpb.util.cid(buf, {
+      const cid = await dagpb.util.cid(buf, {
         cidVersion: 0,
         hashAlg: multicodec.SHA2_256,
       })

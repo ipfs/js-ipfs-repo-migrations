@@ -1,81 +1,49 @@
 /* eslint-env mocha */
+/* eslint-disable max-nested-callbacks */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const chaiAsPromised = require('chai-as-promised')
-chai.use(chaiAsPromised)
-const expect = chai.expect
-const dagpb = require('ipld-dag-pb')
-const { DAGNode, DAGLink } = dagpb
-const multicodec = require('multicodec')
-const multibase = require('multibase')
-const all = require('it-all')
+const { expect } = require('aegir/utils/chai')
 const cbor = require('cbor')
-const uint8ArrayFromString = require('uint8arrays/from-string')
-
 const migration = require('../../migrations/migration-9')
-const { createStore, cidToKey, PIN_DS_KEY, DEFAULT_FANOUT } = require('../../migrations/migration-9/utils')
+const { createStore, cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
 const CID = require('cids')
+const CarDatastore = require('datastore-car')
+const loadFixture = require('aegir/fixtures')
 
-function keyToCid (key) {
-  const buf = multibase.encoding('base32upper').decode(key.toString().split('/').pop())
-  return new CID(buf)
+const pinsets = {
+  'default pinset': {
+    car: loadFixture('test/fixtures/pinset-default.car'),
+    root: new CID('QmZ9ANfh6BMFoeinQU1WQ2BQrRea4UusEikQ1kupx3HtsY'),
+    pins: 1
+  },
+  'multiple bucket pinset': {
+    car: loadFixture('test/fixtures/pinset-multiple-buckets.car'),
+    root: new CID('QmQbqytjcSLrq5xQPAeFdEEPtTVkmrkWDjdFZwyJ2we7KU'),
+
+    // we need at least 8192 pins in order to create a new bucket
+    pins: 9000
+  }
 }
 
-const pinnedCid = new CID('QmfGBRT6BbWJd7yUc2uYdaUZJBbnEFvTqehPFoSMQ6wgdr')
-const pinRootCid = new CID('QmZ9ANfh6BMFoeinQU1WQ2BQrRea4UusEikQ1kupx3HtsY')
+async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expectedRoot }) {
+  const car = await CarDatastore.readBuffer(carBuf)
+  const [actualRoot] = await car.getRoots()
 
-// creates the pinset with the 'welcome to IPFS' files you get when you `jsipfs init`
-async function bootstrapBlocks (blockstore, datastore) {
-  async function putNode (node, expectedCid) {
-    const buf = node.serialize()
-    const cid = await dagpb.util.cid(buf, {
-      cidVersion: 0,
-      hashAlg: multicodec.SHA2_256
-    })
-    expect(cid.toString()).to.equal(expectedCid)
-    await blockstore.put(cidToKey(cid), buf)
+  expect(actualRoot.toString()).to.equal(expectedRoot.toString())
 
-    return node.toDAGLink({
-      name: '',
-      cidVersion: 0,
-      hashAlg: multicodec.SHA2_256
-    })
+  for await (const { key, value } of car.query()) {
+    await blockstore.put(cidToKey(new CID(key.toString())), value)
   }
 
-  const emptyBlock = await putNode(
-    new DAGNode(),
-    'QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n'
-  )
-  const bucket = new Array(DEFAULT_FANOUT).fill(0).map(() => new DAGLink('', 1, emptyBlock.Hash))
-  const directLinks = await putNode(
-    new DAGNode(uint8ArrayFromString('CggBEIACHQAAAAA=', 'base64urlpad'), bucket),
-    'QmbxHkprr5qdLSK8EZWdBzKFzNXGoKrxb7A4PHX3eH6JPp'
-  )
-  const recursiveLinks = await putNode(
-    new DAGNode(uint8ArrayFromString('CggBEIACHQAAAAA=', 'base64urlpad'), [
-      ...bucket,
-      new DAGLink('', 1, pinnedCid)
-    ]),
-    'QmdEtks1KYQsrgJ8FXpP1vXygnVHSqnyFTKQ3wcWVd4D2y'
-  )
-
-  const pinRoot = await putNode(
-    new DAGNode(new Uint8Array(), [
-      new DAGLink('direct', directLinks.Tsize, directLinks.Hash),
-      new DAGLink('recursive', recursiveLinks.Tsize, recursiveLinks.Hash)
-    ]),
-    pinRootCid.toString()
-  )
-
   await blockstore.close()
-  await datastore.put(PIN_DS_KEY, pinRoot.Hash.multihash)
+  await datastore.put(PIN_DS_KEY, actualRoot.multihash)
   await datastore.close()
 }
 
 module.exports = (setup, cleanup, options) => {
-  describe('migration 9', () => {
+  describe('migration 9', function () {
+    this.timeout(240 * 1000)
+
     let dir
     let datastore
     let blockstore
@@ -97,57 +65,69 @@ module.exports = (setup, cleanup, options) => {
       cleanup(dir)
     })
 
-    describe('forwards', () => {
-      beforeEach(async () => {
-        await blockstore.open()
-        await bootstrapBlocks(blockstore, datastore)
+    Object.keys(pinsets).forEach(title => {
+      const pinset = pinsets[title]
+      const pinned = {}
 
-        await datastore.open()
-        await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
+      describe(title, () => {
+        describe('forwards', () => {
+          beforeEach(async () => {
+            await blockstore.open()
+            await bootstrapBlocks(blockstore, datastore, pinset)
 
-        await blockstore.close()
-        await datastore.close()
-      })
+            await datastore.open()
+            await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
 
-      it('should migrate pins forward', async () => {
-        await migration.migrate(dir, options)
+            const buf = await datastore.get(PIN_DS_KEY)
+            const cid = new CID(buf)
+            expect(cid.toString()).to.equal(pinset.root.toString())
 
-        await pinstore.open()
+            await blockstore.close()
+            await datastore.close()
+            await pinstore.close()
+          })
 
-        const pins = await all(pinstore.query({}))
-        expect(pins).to.have.lengthOf(1)
+          it('should migrate pins forward', async () => {
+            await migration.migrate(dir, options)
 
-        const key = pins[0].key
-        expect(keyToCid(key).toString()).to.equal(pinnedCid.toString())
+            await pinstore.open()
 
-        const pin = cbor.decode(pins[0].value)
-        expect(pin.depth).to.equal(Infinity)
+            for await (const { key, value } of pinstore.query({})) {
+              pinned[key] = value
 
-        await datastore.open()
-        await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
-      })
-    })
+              const pin = cbor.decode(value)
+              expect(pin.depth).to.equal(Infinity)
+            }
 
-    describe('backwards', () => {
-      beforeEach(async () => {
-        await pinstore.open()
-        await pinstore.put(cidToKey(pinnedCid), cbor.encode({
-          metadata: {
-            foo: 'bar'
-          }
-        }))
-        await pinstore.close()
-      })
+            expect(Object.keys(pinned)).to.have.lengthOf(pinset.pins)
 
-      it('should migrate pins backward', async () => {
-        await migration.revert(dir, options)
+            await datastore.open()
+            await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
+          })
+        })
 
-        await datastore.open()
-        await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
+        describe('backwards', () => {
+          beforeEach(async () => {
+            await pinstore.open()
 
-        const buf = await datastore.get(PIN_DS_KEY)
-        const cid = new CID(buf)
-        expect(cid.toString()).to.equal(pinRootCid.toString())
+            for (const key of Object.keys(pinned)) {
+              await pinstore.put(key, pinned[key])
+            }
+
+            await pinstore.close()
+          })
+
+          it('should migrate pins backward', async () => {
+            await migration.revert(dir, options)
+
+            await datastore.open()
+            await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
+
+            const buf = await datastore.get(PIN_DS_KEY)
+            const cid = new CID(buf)
+            expect(cid).to.deep.equal(pinset.root)
+          })
+        })
       })
     })
   })
