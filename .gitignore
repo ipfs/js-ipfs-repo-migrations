@@ -28,5 +28,5 @@ node_modules
 package-lock.json
 yarn.lock
 # Tests
-test/test-repo-for*
+test-repo-for*
 test/sharness/tmp
