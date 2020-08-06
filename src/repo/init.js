@@ -1,20 +1,25 @@
 'use strict'
 
-const Datastore = require('datastore-fs')
 const log = require('debug')('repo-migrations:repo:init')
+const { CONFIG_KEY, VERSION_KEY, getDatastoreAndOptions } = require('../utils')
+const { MissingRepoOptionsError } = require('../errors')
 
-const Key = require('interface-datastore').Key
+exports.isRepoInitialized = async function isRepoInitialized (path, repoOptions) {
+  if (!repoOptions) {
+    throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
+  }
 
-const versionKey = new Key('/version')
-const configKey = new Key('/config')
-
-exports.isRepoInitialized = async function isRepoInitialized (path) {
   let root
   try {
-    root = new Datastore(path, { extension: '', createIfMissing: false })
+    const {
+      StorageBackend,
+      storageOptions
+    } = getDatastoreAndOptions(repoOptions, 'root')
+
+    root = new StorageBackend(path, storageOptions)
     await root.open()
-    const versionCheck = await root.has(versionKey)
-    const configCheck = await root.has(configKey)
+    const versionCheck = await root.has(VERSION_KEY)
+    const configCheck = await root.has(CONFIG_KEY)
     if (!versionCheck || !configCheck) {
       log(`Version entry present: ${versionCheck}`)
       log(`Config entry present: ${configCheck}`)
@@ -26,6 +31,8 @@ exports.isRepoInitialized = async function isRepoInitialized (path) {
     log('While checking if repo is initialized error was thrown: ' + e.message)
     return false
   } finally {
-    if (root !== undefined) await root.close()
+    if (root !== undefined) {
+      await root.close()
+    }
   }
 }

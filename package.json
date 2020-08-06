@@ -20,6 +20,7 @@
   "main": "src/index.js",
   "browser": {
     "./src/repo/lock.js": "./src/repo/lock-memory.js",
+    "./src/repo/default-root-options.js": "./src/repo/ldefault-root-options.browser.js",
     "datastore-fs": "datastore-level"
   },
   "bin": {

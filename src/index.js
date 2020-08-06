@@ -61,7 +61,7 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
     throw new errors.InvalidValueError('Version has to be positive integer!')
   }
 
-  const currentVersion = await repoVersion.getVersion(path)
+  const currentVersion = await repoVersion.getVersion(path, repoOptions)
 
   if (currentVersion === toVersion) {
     log('Nothing to migrate.')
@@ -105,7 +105,7 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
       log(`Migrating to version ${migration.version} finished`)
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations))
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations), repoOptions)
     log('Repo successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
     if (!isDryRun && !ignoreLock) await lock.close()
@@ -146,7 +146,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
     throw new errors.InvalidValueError('Version has to be positive integer!')
   }
 
-  const currentVersion = await repoVersion.getVersion(path)
+  const currentVersion = await repoVersion.getVersion(path, repoOptions)
   if (currentVersion === toVersion) {
     log('Nothing to revert.')
     return
@@ -182,7 +182,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
       } catch (e) {
         const lastSuccessfullyRevertedVersion = migration.version
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully reverted version: ${lastSuccessfullyRevertedVersion}`)
-        await repoVersion.setVersion(path, lastSuccessfullyRevertedVersion)
+        await repoVersion.setVersion(path, lastSuccessfullyRevertedVersion, repoOptions)
 
         e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
         throw e
@@ -192,7 +192,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
       log(`Reverting to version ${migration.version} finished`)
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion)
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion, repoOptions)
     log(`All migrations successfully reverted to version ${toVersion}!`)
   } finally {
     if (!isDryRun && !ignoreLock) await lock.close()

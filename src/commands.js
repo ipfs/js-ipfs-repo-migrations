@@ -43,7 +43,7 @@ function reportingClosure (action) {
     process.stdout.write(`${chalk.green(`[${currentlyMigrated}/${totalToMigrate}]`)} Successfully ${action} ${chalk.bold(migration.version)}: ${migration.description}\n`)
 }
 
-async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
+async function migrate ({ repoPath, repoOptions, migrations, to, dry, revertOk }) {
   repoPath = repoPath || process.env.IPFS_PATH || path.join(os.homedir(), '.jsipfs')
   migrations = migrations === undefined ? require('../migrations') : require(migrations)
 
@@ -51,7 +51,7 @@ async function migrate ({ repoPath, migrations, to, dry, revertOk }) {
     to = migrator.getLatestMigrationVersion(migrations)
   }
 
-  const version = await repoVersion.getVersion(repoPath)
+  const version = await repoVersion.getVersion(repoPath, repoOptions)
 
   let action
   if (dry) {
