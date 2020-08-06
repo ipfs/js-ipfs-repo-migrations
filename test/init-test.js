@@ -1,10 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./util')
 const { CONFIG_KEY, VERSION_KEY, getDatastoreAndOptions } = require('../src/utils')
 const repoInit = require('../src/repo/init')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 module.exports = (setup, cleanup, repoOptions) => {
   let dir
@@ -27,8 +27,8 @@ module.exports = (setup, cleanup, repoOptions) => {
       createIfMissing: false
     })
     await store.open()
-    await store.put(VERSION_KEY, Buffer.from('7'))
-    await store.put(CONFIG_KEY, Buffer.from('config'))
+    await store.put(VERSION_KEY, uint8ArrayFromString('7'))
+    await store.put(CONFIG_KEY, uint8ArrayFromString('config'))
     await store.close()
 
     expect(await repoInit.isRepoInitialized(dir, repoOptions)).to.be.true()

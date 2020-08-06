@@ -1,6 +1,6 @@
 {
   "name": "ipfs-repo-migrations",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Migration framework for versioning of JS IPFS Repo",
   "keywords": [
     "IPFS",
@@ -42,21 +42,30 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "buffer": "^5.6.0",
-    "cids": "^0.8.3",
-    "datastore-core": "^1.1.0",
-    "datastore-fs": "^1.0.0",
-    "datastore-level": "^1.1.0",
+    "cbor": "^5.0.2",
+    "cids": "^1.0.0",
+    "datastore-core": "^2.0.0",
+    "datastore-fs": "^2.0.0",
+    "datastore-level": "^2.0.0",
     "debug": "^4.1.0",
-    "interface-datastore": "^1.0.2",
-    "multibase": "^1.0.1",
-    "proper-lockfile": "^4.1.1"
+    "fnv1a": "^1.0.1",
+    "interface-datastore": "^2.0.0",
+    "ipld-dag-pb": "^0.20.0",
+    "multibase": "^3.0.0",
+    "multicodec": "^2.0.0",
+    "multihashing-async": "^2.0.0",
+    "proper-lockfile": "^4.1.1",
+    "protons": "^2.0.0",
+    "uint8arrays": "^1.0.0",
+    "varint": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^23.0.0",
+    "aegir": "^25.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "datastore-car": "^1.2.0",
     "dirty-chai": "^2.0.1",
+    "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
     "ncp": "^2.0.0",
     "rimraf": "^3.0.0",
@@ -68,9 +77,10 @@
   },
   "contributors": [
     "Adam Uhlíř <adam@uhlir.dev>",
+    "achingbrain <alex@achingbrain.net>",
     "Hugo Dias <hugomrdias@gmail.com>",
     "Hector Sanjuan <code@hector.link>",
-    "achingbrain <alex@achingbrain.net>",
+    "Vasco Santos <vasco.santos@moxy.studio>",
     "Bryan Stenson <bryan.stenson@gmail.com>"
   ]
 }

@@ -1,11 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const { Buffer } = require('buffer')
 const { expect } = require('./util')
 const { VERSION_KEY, CONFIG_KEY, getDatastoreAndOptions } = require('../src/utils')
 const version = require('../src/repo/version')
-
+const uint8ArrayFromString = require('uint8arrays/from-string')
 const errors = require('../src/errors')
 
 // When new versioning mechanism is introduced in new version don't forget to update
@@ -39,8 +38,8 @@ module.exports = (setup, cleanup, repoOptions) => {
       })
 
       await store.open()
-      await store.put(CONFIG_KEY, Buffer.from('some dummy config'))
-      await store.put(VERSION_KEY, Buffer.from('7'))
+      await store.put(CONFIG_KEY, uint8ArrayFromString('some dummy config'))
+      await store.put(VERSION_KEY, uint8ArrayFromString('7'))
       await store.close()
 
       expect(await version.getVersion(dir, repoOptions)).to.be.equal(7)
@@ -61,8 +60,8 @@ module.exports = (setup, cleanup, repoOptions) => {
       })
 
       await store.open()
-      await store.put(CONFIG_KEY, Buffer.from('some dummy config'))
-      await store.put(VERSION_KEY, Buffer.from('5'))
+      await store.put(CONFIG_KEY, uint8ArrayFromString('some dummy config'))
+      await store.put(VERSION_KEY, uint8ArrayFromString('5'))
       await store.close()
 
       await version.setVersion(dir, 7, repoOptions)

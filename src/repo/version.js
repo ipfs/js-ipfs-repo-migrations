@@ -1,9 +1,9 @@
 'use strict'
 
-const { Buffer } = require('buffer')
 const repoInit = require('./init')
 const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
 const { VERSION_KEY, getDatastoreAndOptions } = require('../utils')
+const repoInit = require('./init')
 
 exports.getVersion = getVersion
 
@@ -59,8 +59,7 @@ async function setVersion (path, version, repoOptions) {
 
   const store = new StorageBackend(path, storageOptions)
   await store.open()
-
-  await store.put(VERSION_KEY, Buffer.from(String(version)))
+  await store.put(VERSION_KEY, uint8ArrayFromString(String(version)))
   await store.close()
 }
 

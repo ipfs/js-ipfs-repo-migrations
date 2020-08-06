@@ -17,7 +17,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 
 ## Lead Maintainer <!-- omit in toc -->
 
-[Adam Uhlíř](https://github.com/auhau/)
+[Alex Potsides](http://github.com/achingbrain)
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -51,7 +51,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 ## Background
 
 As js-ipfs evolves and new technologies, algorithms and data structures are incorporated it is necessary to
-enable users to transition between versions. Different versions of js-ipfs may expect a different IPFS repo structure or content (see: [IPFS repo spec](https://github.com/ipfs/specs/tree/master/repo), [JS implementation](https://github.com/ipfs/js-ipfs-repo) ).
+enable users to transition between versions. Different versions of js-ipfs may expect a different IPFS repo structure or content (see: [IPFS repo spec](https://github.com/ipfs/specs/blob/master/REPO.md), [JS implementation](https://github.com/ipfs/js-ipfs-repo) ).
 So the IPFS repo is versioned, and this package provides a framework to create migrations to transition
 from one version of IPFS repo to the next/previous version.
 
@@ -276,7 +276,9 @@ This will create an empty migration with the next version.
 
 | IPFS repo version  | JS IPFS version  |
 | -----------------: |:----------------:|
-|                  7 | v0.0.0 - latest  |
+|                  7 | v0.0.0           |
+|                  8 | v0.48.0          |
+|                  9 | v0.49.0          |
 
 ## Developer
 

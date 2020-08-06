@@ -1,3 +1,38 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v2.0.1...v3.0.0) (2020-08-05)
+
+
+### Bug Fixes
+
+* replace node buffers with uint8arrays ([#25](https://github.com/ipfs/js-ipfs-repo-migrations/issues/25)) ([1e7592d](https://github.com/ipfs/js-ipfs-repo-migrations/commit/1e7592d))
+
+
+### BREAKING CHANGES
+
+* - node `Buffer`s have been replaced with `Uint8Array`s
+
+
+
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v2.0.0...v2.0.1) (2020-07-21)
+
+
+### Bug Fixes
+
+* make recursive pins depth infinity ([ef95579](https://github.com/ipfs/js-ipfs-repo-migrations/commit/ef95579))
+
+
+
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v1.0.0...v2.0.0) (2020-07-21)
+
+
+### Features
+
+* add migration 9 to migrate pins to the datastore and back ([#15](https://github.com/ipfs/js-ipfs-repo-migrations/issues/15)) ([2b14578](https://github.com/ipfs/js-ipfs-repo-migrations/commit/2b14578))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.2...v1.0.0) (2020-06-25)
 
