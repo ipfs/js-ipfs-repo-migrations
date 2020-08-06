@@ -3,25 +3,28 @@
 
 const promisify = require('util').promisify
 const asyncRimraf = promisify(require('rimraf'))
-const asyncNcp = promisify(require('ncp').ncp)
-const path = require('path')
-const fs = require('fs')
+const { createRepo, createAndLoadRepo } = require('./fixtures/repo')
 
-function createRepo () {
-  const testRepoPath = path.join(__dirname, 'fixtures', 'test-repo')
-  const date = Date.now().toString()
-  const dir = testRepoPath + '-for-' + date
-  fs.mkdirSync(dir)
-
-  return dir
-}
-
-async function createAndLoadRepo () {
-  const dir = createRepo()
-  const testRepoPath = path.join(__dirname, 'fixtures', 'test-repo')
-
-  await asyncNcp(testRepoPath, dir)
-  return dir
+const repoOptions = {
+  lock: 'fs',
+  storageBackends: {
+    root: require('datastore-fs'),
+    blocks: require('datastore-fs'),
+    keys: require('datastore-fs'),
+    datastore: require('datastore-level'),
+    pins: require('datastore-level')
+  },
+  storageBackendOptions: {
+    root: {
+      extension: ''
+    },
+    blocks: {
+      sharding: true,
+      extension: '.data'
+    },
+    keys: {
+    }
+  }
 }
 
 function repoCleanup (dir) {
@@ -31,27 +34,27 @@ function repoCleanup (dir) {
 describe('Node specific tests', () => {
   describe('lock.js tests', () => {
     describe('fs-lock tests', () => {
-      require('./lock-test')(require('../src/repo/lock'), createRepo, repoCleanup)
+      require('./lock-test')(require('../src/repo/lock'), () => createRepo(repoOptions), repoCleanup, repoOptions)
     })
 
     describe('mem-lock tests', () => {
-      require('./lock-test')(require('../src/repo/lock-memory'), createRepo, repoCleanup)
+      require('./lock-test')(require('../src/repo/lock-memory'), () => createRepo(repoOptions), repoCleanup, repoOptions)
     })
   })
 
   describe('version tests', () => {
-    require('./version-test')(createRepo, repoCleanup)
+    require('./version-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
   })
 
   describe('migrations tests', () => {
-    require('./migrations/migration-8-test')(createRepo, repoCleanup)
+    require('./migrations/migration-8-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
   })
 
   describe('init tests', () => {
-    require('./init-test')(createRepo, repoCleanup)
+    require('./init-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
   })
 
   describe('integration tests', () => {
-    require('./integration-test')(createAndLoadRepo, repoCleanup)
+    require('./integration-test')(() => createAndLoadRepo(repoOptions), repoCleanup, repoOptions)
   })
 })

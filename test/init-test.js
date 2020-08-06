@@ -3,12 +3,10 @@
 
 const { Buffer } = require('buffer')
 const { expect } = require('./util')
-
-const Datastore = require('datastore-fs')
-const Key = require('interface-datastore').Key
+const { CONFIG_KEY, VERSION_KEY, getDatastoreAndOptions } = require('../src/utils')
 const repoInit = require('../src/repo/init')
 
-module.exports = (setup, cleanup) => {
+module.exports = (setup, cleanup, repoOptions) => {
   let dir
 
   beforeEach(async () => {
@@ -19,38 +17,58 @@ module.exports = (setup, cleanup) => {
   )
 
   it('should return true with valid initialized repo', async () => {
-    const versionKey = new Key('version')
-    const configKey = new Key('config')
-    const store = new Datastore(dir, { extension: '', createIfMissing: false })
+    const {
+      StorageBackend,
+      storageOptions
+    } = getDatastoreAndOptions(repoOptions, 'root')
+
+    const store = new StorageBackend(dir, {
+      ...storageOptions,
+      createIfMissing: false
+    })
     await store.open()
-    await store.put(versionKey, Buffer.from('7'))
-    await store.put(configKey, Buffer.from('config'))
+    await store.put(VERSION_KEY, Buffer.from('7'))
+    await store.put(CONFIG_KEY, Buffer.from('config'))
     await store.close()
 
-    expect(await repoInit.isRepoInitialized(dir)).to.be.true()
+    expect(await repoInit.isRepoInitialized(dir, repoOptions)).to.be.true()
   })
 
   it('should return false with missing version key', async () => {
-    const configKey = new Key('config')
-    const store = new Datastore(dir, { extension: '', createIfMissing: false })
+    const {
+      StorageBackend,
+      storageOptions
+    } = getDatastoreAndOptions(repoOptions, 'root')
+
+    const store = new StorageBackend(dir, {
+      ...storageOptions,
+      createIfMissing: false
+    })
     await store.open()
-    await store.put(configKey, '')
+    await store.put(CONFIG_KEY, '')
     await store.close()
 
-    expect(await repoInit.isRepoInitialized(dir)).to.be.false()
+    expect(await repoInit.isRepoInitialized(dir, repoOptions)).to.be.false()
   })
 
   it('should return false with missing config key', async () => {
-    const versionKey = new Key('version')
-    const store = new Datastore(dir, { extension: '', createIfMissing: false })
+    const {
+      StorageBackend,
+      storageOptions
+    } = getDatastoreAndOptions(repoOptions, 'root')
+
+    const store = new StorageBackend(dir, {
+      ...storageOptions,
+      createIfMissing: false
+    })
     await store.open()
-    await store.put(versionKey, '')
+    await store.put(VERSION_KEY, '')
     await store.close()
 
-    expect(await repoInit.isRepoInitialized(dir)).to.be.false()
+    expect(await repoInit.isRepoInitialized(dir, repoOptions)).to.be.false()
   })
 
   it('should return false if the repo does not exists', async () => {
-    return expect(await repoInit.isRepoInitialized('/some/random/dirrr')).to.be.false()
+    return expect(await repoInit.isRepoInitialized('/some/random/dirrr', repoOptions)).to.be.false()
   })
 }

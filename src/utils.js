@@ -1,6 +1,10 @@
 'use strict'
 
 const Datastore = require('datastore-fs')
+const Key = require('interface-datastore').Key
+
+exports.CONFIG_KEY = new Key('/config')
+exports.VERSION_KEY = new Key('/version')
 
 exports.getDatastoreAndOptions = function getDatastoreAndOptions (options, key, defaultDatastore = Datastore) {
   let StorageBackend, storageBackendOptions
