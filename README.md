@@ -32,7 +32,6 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
     - [`onProgress(migration, counter, totalMigrations)`](#onprogressmigration-counter-totalmigrations)
   - [`.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
   - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
-- [CLI](#cli)
 - [Creating a new migration](#creating-a-new-migration)
   - [Architecture of a migration](#architecture-of-a-migration)
     - [`.migrate(repoPath, repoOptions)`](#migraterepopath-repooptions)
@@ -149,17 +148,6 @@ Executes backward migration to a specific version.
 
 Return the version of the latest migration.
 
-## CLI
-
-The CLI is a NodeJS binary named `jsipfs-repo-migrations`.
-It has several commands:
-
- * `migrate` - performs forward/backward migration to specific or latest version.
- * `status` - check repo for migrations that should be run.
- * `add` - bootstraps new migration.
-
-For further details see the `--help` pages.
-
 ## Creating a new migration
 
 Migrations are one of those things that can be extremely painful on users. At the end of the day, we want users never to have to think about it. The process should be:
@@ -178,8 +166,8 @@ be run again.
 All migrations are placed in the `/migrations` folder. Each folder there represents one migration that follows the migration
 API.
 
-All migrations are collected in `/migrations/index.js`, which should not be edited manually. It is regenerated on
-every run of `jsipfs-migrations add` (manual changes should follow the same style of modifications).
+All migrations are collected in `/migrations/index.js`, which should not be edited manually.
+
 **The order of migrations is important and migrations must be sorted in ascending order**.
 
 Each migration must follow this API. It must export an object in its `index.js` that has following properties:
