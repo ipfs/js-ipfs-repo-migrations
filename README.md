@@ -28,7 +28,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
   - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
 - [Usage](#usage)
 - [API](#api)
-  - [`.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#migratepath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
+  - [`.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
     - [`onProgress(migration, counter, totalMigrations)`](#onprogressmigration-counter-totalmigrations)
   - [`.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
   - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
@@ -107,7 +107,7 @@ To migrate your repository using the CLI, see the [how to run migrations](./run.
 
 ## API
 
-### `.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
+### `.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`
 
 Executes a forward migration to a specific version, or to the latest version if a specific version is not specified.
 
