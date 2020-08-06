@@ -68,6 +68,7 @@
     "aegir": "^25.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "datastore-car": "^1.2.0",
     "dirty-chai": "^2.0.1",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",

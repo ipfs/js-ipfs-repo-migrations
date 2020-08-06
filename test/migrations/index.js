@@ -1,9 +1,14 @@
 /* eslint-env mocha */
 'use strict'
 
+const DatastoreLevel = require('datastore-level')
+
 const CONFIGURATIONS = [{
   name: 'with sharding',
   options: {
+    storageBackends: {
+      pins: DatastoreLevel
+    },
     storageBackendOptions: {
       root: {
         sharding: true,
@@ -21,7 +26,7 @@ const CONFIGURATIONS = [{
         sharding: true,
         extension: '.data'
       },
-      pinstore: {
+      pins: {
         sharding: true,
         extension: '.data'
       }
@@ -30,6 +35,9 @@ const CONFIGURATIONS = [{
 }, {
   name: 'without sharding',
   options: {
+    storageBackends: {
+      pins: DatastoreLevel
+    },
     storageBackendOptions: {
       root: {
         sharding: false,
@@ -47,7 +55,7 @@ const CONFIGURATIONS = [{
         sharding: false,
         extension: '.data'
       },
-      pinstore: {
+      pins: {
         sharding: false,
         extension: '.data'
       }

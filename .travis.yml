@@ -54,13 +54,13 @@ jobs:
       name: electron-main
       os: osx
       script:
-        - npx aegir test -t electron-main --bail --timeout 10000
+        - npx aegir test -t electron-main --bail --timeout 10000 -f test/node.js
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npx aegir test -t electron-renderer --bail --timeout 10000
+        - npx aegir test -t electron-renderer --bail --timeout 10000 -f test/node.js
 
 notifications:
   email: false

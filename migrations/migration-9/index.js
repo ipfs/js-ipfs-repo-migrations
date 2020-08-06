@@ -21,7 +21,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
     }
 
     if (cid.version !== 0) {
-      pin.version = version
+      pin.version = cid.version
     }
 
     if (cid.codec !== 'dag-pb') {
@@ -37,7 +37,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
     }
 
     if (cid.version !== 0) {
-      pin.version = version
+      pin.version = cid.version
     }
 
     if (cid.codec !== 'dag-pb') {

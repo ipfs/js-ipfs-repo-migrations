@@ -1,11 +1,7 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-chai.use(require('dirty-chai'))
-const chaiAsPromised = require('chai-as-promised')
-chai.use(chaiAsPromised)
-const expect = chai.expect
+const { expect } = require('aegir/utils/chai')
 
 const migration = require('../../migrations/migration-8')
 const Key = require('interface-datastore').Key
