@@ -3,7 +3,7 @@
 const repoInit = require('./init')
 const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
 const { VERSION_KEY, getDatastoreAndOptions } = require('../utils')
-const repoInit = require('./init')
+const uint8ArrayFromString = require('uint8arrays/from-string')
 
 exports.getVersion = getVersion
 

@@ -30,7 +30,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 - [API](#api)
   - [`.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#migratepath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
     - [`onProgress(migration, counter, totalMigrations)`](#onprogressmigration-counter-totalmigrations)
-  - [`.revert(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#revertpath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
+  - [`.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
   - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
 - [CLI](#cli)
 - [Creating a new migration](#creating-a-new-migration)
@@ -115,10 +115,10 @@ Executes a forward migration to a specific version, or to the latest version if 
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be migrated
+ * `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `toVersion` (int, mandatory) - version to which the repo should be migrated.
- * `options` (object, mandatory) - options for the migration
+ * `options` (object, optional) - options for the migration
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
@@ -131,17 +131,17 @@ Signature of the progress callback.
  * `counter` (int) - index of current migration.
  * `totalMigrations` (int) - total count of migrations that will be run.
 
-### `.revert(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
+### `.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`
 
 Executes backward migration to a specific version.
 
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be reverted
+ * `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to.
- * `options` (object, mandatory) - options for the reversion
+ * `options` (object, optional) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 

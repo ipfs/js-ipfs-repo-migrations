@@ -18,9 +18,8 @@ module.exports = (setup, cleanup, repoOptions) => {
   )
 
   it('migrate forward', async () => {
-    await migrator.migrate(dir, migrator.getLatestMigrationVersion(migrations), {
-      migrations: migrations,
-      repoOptions
+    await migrator.migrate(dir, repoOptions, migrator.getLatestMigrationVersion(migrations), {
+      migrations: migrations
     })
 
     const {
@@ -41,14 +40,12 @@ module.exports = (setup, cleanup, repoOptions) => {
   })
 
   it('revert', async () => {
-    await migrator.migrate(dir, migrator.getLatestMigrationVersion(migrations), {
-      migrations: migrations,
-      repoOptions
+    await migrator.migrate(dir, repoOptions, migrator.getLatestMigrationVersion(migrations), {
+      migrations: migrations
     })
 
-    await migrator.revert(dir, 1, {
-      migrations: migrations,
-      repoOptions
+    await migrator.revert(dir, repoOptions, 1, {
+      migrations: migrations
     })
 
     const {
