@@ -43,7 +43,6 @@
   },
   "dependencies": {
     "buffer": "^5.6.0",
-    "chalk": "^4.0.0",
     "cids": "^0.8.3",
     "datastore-core": "^1.1.0",
     "datastore-fs": "^1.0.0",
