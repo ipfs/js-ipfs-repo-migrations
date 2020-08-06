@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>ipfs-repo-migrations 3.0.0 | Documentation</title>
+  <title>ipfs-repo-migrations 1.0.1 | Documentation</title>
   <meta name='description' content='Migration framework for versioning of JS IPFS Repo'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>ipfs-repo-migrations</h3>
-          <div class='mb1'><code>3.0.0</code></div>
+          <div class='mb1'><code>1.0.1</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -137,6 +137,16 @@
                 
                 </li>
               
+                
+                <li><a
+                  href='#missingrepooptionserror'
+                  class="">
+                  MissingRepoOptionsError
+                  
+                </a>
+                
+                </li>
+              
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
@@ -157,7 +167,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/index.js#L20-L28'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/index.js#L20-L28'>
       <span>src/index.js</span>
       </a>
     
@@ -234,7 +244,7 @@ If no migrations are present returns 0.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/index.js#L48-L113'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/index.js#L48-L113'>
       <span>src/index.js</span>
       </a>
     
@@ -395,7 +405,7 @@ It acquire lock on the provided path before doing any migrations.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/index.js#L133-L200'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/index.js#L133-L200'>
       <span>src/index.js</span>
       </a>
     
@@ -556,7 +566,7 @@ It acquire lock on the provided path before doing any migrations.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/index.js#L213-L232'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/index.js#L213-L232'>
       <span>src/index.js</span>
       </a>
     
@@ -657,7 +667,7 @@ It acquire lock on the provided path before doing any migrations.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/repo/version.js#L22-L34'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/repo/version.js#L19-L40'>
       <span>src/repo/version.js</span>
       </a>
     
@@ -668,7 +678,7 @@ It acquire lock on the provided path before doing any migrations.</p>
 This function needs to be cross-repo-version functional to be able to fetch any version number,
 even in case of change of repo's versioning.</p>
 
-    <div class='pre p1 fill-light mt0'>getVersion(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;int></div>
+    <div class='pre p1 fill-light mt0'>getVersion(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, repoOptions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;int></div>
   
   
 
@@ -687,6 +697,15 @@ even in case of change of repo's versioning.</p>
           <div>
             <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>repoOptions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    Options used to create a repo, the same as pased to ipfs-repo
+
           </div>
           
         </div>
@@ -734,7 +753,7 @@ even in case of change of repo's versioning.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/repo/version.js#L43-L48'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/repo/version.js#L50-L65'>
       <span>src/repo/version.js</span>
       </a>
     
@@ -743,7 +762,7 @@ even in case of change of repo's versioning.</p>
 
   <p>Function for setting a version in cross-repo-version manner.</p>
 
-    <div class='pre p1 fill-light mt0'>setVersion(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, version: int): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></div>
+    <div class='pre p1 fill-light mt0'>setVersion(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, version: int, repoOptions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></div>
   
   
 
@@ -770,6 +789,15 @@ even in case of change of repo's versioning.</p>
           <div>
             <span class='code bold'>version</span> <code class='quiet'>(int)</code>
 	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>repoOptions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    Options used to create a repo, the same as pased to ipfs-repo
+
           </div>
           
         </div>
@@ -817,7 +845,7 @@ even in case of change of repo's versioning.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/repo/lock.js#L16-L26'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/repo/lock.js#L17-L27'>
       <span>src/repo/lock.js</span>
       </a>
     
@@ -900,7 +928,7 @@ even in case of change of repo's versioning.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/errors.js#L7-L14'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/errors.js#L7-L14'>
       <span>src/errors.js</span>
       </a>
     
@@ -975,7 +1003,7 @@ to revert.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/errors.js#L22-L29'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/errors.js#L22-L29'>
       <span>src/errors.js</span>
       </a>
     
@@ -1049,7 +1077,7 @@ to revert.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/errors.js#L37-L44'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/errors.js#L37-L44'>
       <span>src/errors.js</span>
       </a>
     
@@ -1123,7 +1151,7 @@ to revert.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/749f042a5b0656dad902127e133eddd52adae1d0/src/errors.js#L52-L59'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/errors.js#L52-L59'>
       <span>src/errors.js</span>
       </a>
     
@@ -1133,6 +1161,80 @@ to revert.</p>
   <p>Exception raised when value is not valid.</p>
 
     <div class='pre p1 fill-light mt0'>new InvalidValueError(message: any)</div>
+  
+  
+    <p>
+      Extends
+      
+        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
+      
+    </p>
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>message</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='missingrepooptionserror'>
+      MissingRepoOptionsError
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/6628328319d32d3bdc5c5225322f52c38db69dd2/src/errors.js#L67-L74'>
+      <span>src/errors.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Exception raised when config is not passed.</p>
+
+    <div class='pre p1 fill-light mt0'>new MissingRepoOptionsError(message: any)</div>
   
   
     <p>
