@@ -1,3 +1,13 @@
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v1.0.0...v1.0.1) (2020-08-06)
+
+
+### Bug Fixes
+
+* require passing repo options to migrator ([#30](https://github.com/ipfs/js-ipfs-repo-migrations/issues/30)) ([d1faaa2](https://github.com/ipfs/js-ipfs-repo-migrations/commit/d1faaa2))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v0.2.2...v1.0.0) (2020-06-25)
 
