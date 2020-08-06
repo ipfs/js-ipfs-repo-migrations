@@ -116,9 +116,9 @@ Executes a forward migration to a specific version, or to the latest version if 
 
  * `path` (string, mandatory) - path to the repo to be migrated
  * `toVersion` (int, mandatory) - version to which the repo should be migrated.
- * `options` (object, optional) - options for the migration
+ * `options` (object, mandatory) - options for the migration
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
+ * `options.repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
@@ -139,9 +139,9 @@ Executes backward migration to a specific version.
 
  * `path` (string, mandatory) - path to the repo to be reverted
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to.
- * `options` (object, optional) - options for the reversion
+ * `options` (object, mandatory) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
+ * `options.repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
