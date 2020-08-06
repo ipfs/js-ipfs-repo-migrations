@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-disable no-console */
+
 // nb. must be ipfs@0.48.0 or below
 const IPFS = require('ipfs')
 const {
@@ -80,7 +82,7 @@ const main = async () => {
 
   await writeCar('multiple buckets pinset')
 
-  console.info(`}`)
+  console.info('}')
 
   await ipfs.stop()
 
@@ -104,12 +106,12 @@ const main = async () => {
 
     let pins = 0
 
-    for await (const _ of ipfs.pin.ls()) {
+    for await (const _ of ipfs.pin.ls()) { // eslint-disable-line no-unused-vars
       pins++
     }
 
     console.info(`    pins: ${pins}`)
-    console.info(`  }${more ? ',' :''}`)
+    console.info(`  }${more ? ',' : ''}`)
 
     await car.close()
   }

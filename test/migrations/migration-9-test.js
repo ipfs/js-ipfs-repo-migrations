@@ -89,7 +89,7 @@ async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expe
 }
 
 module.exports = (setup, cleanup, options) => {
-  describe.only('migration 9', function () {
+  describe('migration 9', function () {
     this.timeout(240 * 1000)
 
     let dir
