@@ -38,13 +38,6 @@ jobs:
       script: npx aegir test -t browser -- --browsers FirefoxHeadless
 
     - stage: test
-      name: sharness
-      os:
-        - linux
-        - osx
-      script: cd ./test/sharness && make
-
-    - stage: test
       name: electron-main
       os: osx
       script:

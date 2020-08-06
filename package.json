@@ -23,9 +23,6 @@
     "./src/repo/default-root-options.js": "./src/repo/ldefault-root-options.browser.js",
     "datastore-fs": "datastore-level"
   },
-  "bin": {
-    "jsipfs-migrations": "./src/cli.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/js-ipfs-repo-migrations.git"
@@ -54,9 +51,7 @@
     "debug": "^4.1.0",
     "interface-datastore": "^1.0.2",
     "multibase": "^1.0.1",
-    "proper-lockfile": "^4.1.1",
-    "yargs": "^15.3.1",
-    "yargs-promise": "^1.1.0"
+    "proper-lockfile": "^4.1.1"
   },
   "devDependencies": {
     "aegir": "^23.0.0",
