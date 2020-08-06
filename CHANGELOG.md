@@ -1,3 +1,19 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v3.0.0...v4.0.0) (2020-08-06)
+
+
+### Bug Fixes
+
+* require passing repo options to migrator ([#31](https://github.com/ipfs/js-ipfs-repo-migrations/issues/31)) ([725f821](https://github.com/ipfs/js-ipfs-repo-migrations/commit/725f821))
+
+
+### BREAKING CHANGES
+
+* - `migrator.migrate(path, version, opts)` has changed to `migrator.migrate(path, repoOpts, version, opts)`
+- `migrator.revert(path, version, opts)` has changed to `migrator.revert(path, repoOpts, version, opts)`
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v2.0.1...v3.0.0) (2020-08-05)
 
