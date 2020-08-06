@@ -36,21 +36,25 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
+ * @param {Object} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {int} toVersion - Version to which the repo should be migrated.
- * @param {Object} options - Options for migration
+ * @param {Object?} options - Options for migration
  * @param {boolean?} options.ignoreLock - Won't lock the repo for applying the migrations. Use with caution.
- * @param {object?} options.repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {function?} options.onProgress - Callback which will be called after each executed migration to report progress
  * @param {boolean?} options.isDryRun - Allows to simulate the execution of the migrations without any effect.
  * @param {array?} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
+async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
   onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
+  }
+
+  if (!repoOptions) {
+    throw new errors.RequiredParameterError('repoOptions argument is required!')
   }
 
   if (!toVersion) {
@@ -61,7 +65,7 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
     throw new errors.InvalidValueError('Version has to be positive integer!')
   }
 
-  const currentVersion = await repoVersion.getVersion(path)
+  const currentVersion = await repoVersion.getVersion(path, repoOptions)
 
   if (currentVersion === toVersion) {
     log('Nothing to migrate.')
@@ -105,7 +109,7 @@ async function migrate (path, toVersion, { ignoreLock = false, repoOptions, onPr
       log(`Migrating to version ${migration.version} finished`)
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations))
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations), repoOptions)
     log('Repo successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
     if (!isDryRun && !ignoreLock) await lock.close()
@@ -121,21 +125,25 @@ exports.migrate = migrate
  * Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
+ * @param {Object} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {int} toVersion - Version to which the repo will be reverted.
- * @param {Object} options - Options for the reversion
+ * @param {Object?} options - Options for the reversion
  * @param {function?} options.onProgress - Callback which will be called after each reverted migration to report progress
- * @param {object?} options.repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {boolean?} options.isDryRun - Allows to simulate the execution of the reversion without any effects. Make sense to utilize onProgress with this argument.
  * @param {boolean?} options.ignoreLock - Won't lock the repo for reverting the migrations. Use with caution.
  * @param {array?} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  * @returns {Promise<void>}
  */
-async function revert (path, toVersion, { ignoreLock = false, repoOptions, onProgress, isDryRun = false, migrations }) {
+async function revert (path, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
   onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
+  }
+
+  if (!repoOptions) {
+    throw new errors.RequiredParameterError('repoOptions argument is required!')
   }
 
   if (!toVersion) {
@@ -146,7 +154,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
     throw new errors.InvalidValueError('Version has to be positive integer!')
   }
 
-  const currentVersion = await repoVersion.getVersion(path)
+  const currentVersion = await repoVersion.getVersion(path, repoOptions)
   if (currentVersion === toVersion) {
     log('Nothing to revert.')
     return
@@ -182,7 +190,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
       } catch (e) {
         const lastSuccessfullyRevertedVersion = migration.version
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully reverted version: ${lastSuccessfullyRevertedVersion}`)
-        await repoVersion.setVersion(path, lastSuccessfullyRevertedVersion)
+        await repoVersion.setVersion(path, lastSuccessfullyRevertedVersion, repoOptions)
 
         e.message = `During reversion to version ${migration.version} exception was raised: ${e.message}`
         throw e
@@ -192,7 +200,7 @@ async function revert (path, toVersion, { ignoreLock = false, repoOptions, onPro
       log(`Reverting to version ${migration.version} finished`)
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion)
+    if (!isDryRun) await repoVersion.setVersion(path, toVersion, repoOptions)
     log(`All migrations successfully reverted to version ${toVersion}!`)
   } finally {
     if (!isDryRun && !ignoreLock) await lock.close()

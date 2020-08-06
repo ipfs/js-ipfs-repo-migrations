@@ -28,11 +28,10 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
   - [Use in a browser with browserify, webpack or any other bundler](#use-in-a-browser-with-browserify-webpack-or-any-other-bundler)
 - [Usage](#usage)
 - [API](#api)
-  - [`.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#migratepath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
+  - [`.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
     - [`onProgress(migration, counter, totalMigrations)`](#onprogressmigration-counter-totalmigrations)
-  - [`.revert(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`](#revertpath-toversion-ignorelock-repooptions-onprogress-isdryrun---promisevoid)
+  - [`.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
   - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
-- [CLI](#cli)
 - [Creating a new migration](#creating-a-new-migration)
   - [Architecture of a migration](#architecture-of-a-migration)
     - [`.migrate(repoPath, repoOptions)`](#migraterepopath-repooptions)
@@ -49,7 +48,6 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 - [License](#license)
 
 ## Background
-
 
 As js-ipfs evolves and new technologies, algorithms and data structures are incorporated it is necessary to
 enable users to transition between versions. Different versions of js-ipfs may expect a different IPFS repo structure or content (see: [IPFS repo spec](https://github.com/ipfs/specs/blob/master/REPO.md), [JS implementation](https://github.com/ipfs/js-ipfs-repo) ).
@@ -93,10 +91,15 @@ const migrations = require('ipfs-repo-migrations')
 const repoPath = 'some/repo/path'
 const currentRepoVersion = 7
 const latestVersion = migrations.getLatestMigrationVersion()
+const repoOptions = {
+  ... // the same storage backend/storage options passed to `ipfs-repo`
+}
 
 if(currentRepoVersion < latestVersion){
   // Old repo! Lets migrate to latest version!
-  await migrations.migrate(repoPath, latestVersion)
+  await migrations.migrate(repoPath, latestVersion, {
+    repoOptions
+  })
 }
 ```
 
@@ -104,17 +107,17 @@ To migrate your repository using the CLI, see the [how to run migrations](./run.
 
 ## API
 
-### `.migrate(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
+### `.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`
 
 Executes a forward migration to a specific version, or to the latest version if a specific version is not specified.
 
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be migrated
+ * `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `toVersion` (int, mandatory) - version to which the repo should be migrated.
  * `options` (object, optional) - options for the migration
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
@@ -127,34 +130,23 @@ Signature of the progress callback.
  * `counter` (int) - index of current migration.
  * `totalMigrations` (int) - total count of migrations that will be run.
 
-### `.revert(path, toVersion, {ignoreLock, repoOptions, onProgress, isDryRun}) -> Promise<void>`
+### `.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`
 
 Executes backward migration to a specific version.
 
 **Arguments:**
 
  * `path` (string, mandatory) - path to the repo to be reverted
+ * `repoOptions` (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to.
  * `options` (object, optional) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.repoOptions` (object, optional) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
 ### `getLatestMigrationVersion() -> int`
 
 Return the version of the latest migration.
-
-## CLI
-
-The CLI is a NodeJS binary named `jsipfs-repo-migrations`.
-It has several commands:
-
- * `migrate` - performs forward/backward migration to specific or latest version.
- * `status` - check repo for migrations that should be run.
- * `add` - bootstraps new migration.
-
-For further details see the `--help` pages.
 
 ## Creating a new migration
 
@@ -174,8 +166,8 @@ be run again.
 All migrations are placed in the `/migrations` folder. Each folder there represents one migration that follows the migration
 API.
 
-All migrations are collected in `/migrations/index.js`, which should not be edited manually. It is regenerated on
-every run of `jsipfs-migrations add` (manual changes should follow the same style of modifications).
+All migrations are collected in `/migrations/index.js`, which should not be edited manually.
+
 **The order of migrations is important and migrations must be sorted in ascending order**.
 
 Each migration must follow this API. It must export an object in its `index.js` that has following properties:

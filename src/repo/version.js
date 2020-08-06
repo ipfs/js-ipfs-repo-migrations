@@ -1,13 +1,9 @@
 'use strict'
 
-const errors = require('../errors')
 const repoInit = require('./init')
-const Datastore = require('datastore-fs')
+const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
+const { VERSION_KEY, getDatastoreAndOptions } = require('../utils')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-
-const Key = require('interface-datastore').Key
-
-const versionKey = new Key('version')
 
 exports.getVersion = getVersion
 
@@ -17,17 +13,27 @@ exports.getVersion = getVersion
  * even in case of change of repo's versioning.
  *
  * @param {string} path
+ * @param {Object} repoOptions Options used to create a repo, the same as pased to ipfs-repo
  * @returns {Promise<int>}
  */
-async function getVersion (path) {
-  if (!(await repoInit.isRepoInitialized(path))) {
-    throw new errors.NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
+async function getVersion (path, repoOptions) {
+  if (!(await repoInit.isRepoInitialized(path, repoOptions))) {
+    throw new NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
   }
 
-  const store = new Datastore(path, { extension: '', createIfMissing: false })
+  if (!repoOptions) {
+    throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
+  }
+
+  const {
+    StorageBackend,
+    storageOptions
+  } = getDatastoreAndOptions(repoOptions, 'root')
+
+  const store = new StorageBackend(path, storageOptions)
   await store.open()
 
-  const version = parseInt(await store.get(versionKey))
+  const version = parseInt(await store.get(VERSION_KEY))
   await store.close()
 
   return version
@@ -38,12 +44,22 @@ async function getVersion (path) {
  *
  * @param {string} path
  * @param {int} version
+ * @param {Object} repoOptions Options used to create a repo, the same as pased to ipfs-repo
  * @returns {Promise<void>}
  */
-async function setVersion (path, version) {
-  const store = new Datastore(path, { extension: '', createIfMissing: false })
+async function setVersion (path, version, repoOptions) {
+  if (!repoOptions) {
+    throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
+  }
+
+  const {
+    StorageBackend,
+    storageOptions
+  } = getDatastoreAndOptions(repoOptions, 'root')
+
+  const store = new StorageBackend(path, storageOptions)
   await store.open()
-  await store.put(versionKey, uint8ArrayFromString(String(version)))
+  await store.put(VERSION_KEY, uint8ArrayFromString(String(version)))
   await store.close()
 }
 

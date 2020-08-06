@@ -60,3 +60,18 @@ class InvalidValueError extends Error {
 
 InvalidValueError.code = 'ERR_INVALID_VALUE'
 exports.InvalidValueError = InvalidValueError
+
+/**
+ * Exception raised when config is not passed.
+ */
+class MissingRepoOptionsError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'MissingRepoOptionsError'
+    this.code = 'ERR_MISSING_REPO_OPTIONS'
+    this.message = message
+  }
+}
+
+MissingRepoOptionsError.code = 'ERR_MISSING_REPO_OPTIONS'
+exports.MissingRepoOptionsError = MissingRepoOptionsError
