@@ -5,7 +5,7 @@ const repoVersion = require('./repo/version')
 const repoLock = require('./repo/lock')
 const errors = require('./errors')
 
-const log = require('debug')('repo-migrations:migrator')
+const log = require('debug')('ipfs:repo:migrator')
 
 exports.getCurrentRepoVersion = repoVersion.getVersion
 exports.errors = errors

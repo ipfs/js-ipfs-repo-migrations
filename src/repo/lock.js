@@ -3,7 +3,7 @@
 const debug = require('debug')
 const { lock } = require('proper-lockfile')
 
-const log = debug('repo-migrations:repo_fs_lock')
+const log = debug('ipfs:repo:migrator:repo_fs_lock')
 const lockFile = 'repo.lock'
 
 /**
