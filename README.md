@@ -29,7 +29,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 - [Usage](#usage)
 - [API](#api)
   - [`.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
-    - [`onProgress(versionFrom, versionTo, percent, message)`](#onprogressversionfrom-versionto-percent-message)
+    - [`onProgress(version, percent, message)`](#onprogressversion-percent-message)
   - [`.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
   - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
 - [Creating a new migration](#creating-a-new-migration)
@@ -118,10 +118,10 @@ Executes a forward migration to a specific version, or to the latest version if 
  * `toVersion` (int, mandatory) - version to which the repo should be migrated.
  * `options` (object, optional) - options for the migration
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
+ * `options.onProgress` (function, optional) - callback that is called during each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
-#### `onProgress(versionFrom, versionTo, percent, message)`
+#### `onProgress(version, percent, message)`
 
 Signature of the progress callback.
 
@@ -141,7 +141,7 @@ Executes backward migration to a specific version.
  * `toVersion` (int, mandatory) - version to which the repo should be reverted to.
  * `options` (object, optional) - options for the reversion
  * `options.ignoreLock` (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.
- * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
+ * `options.onProgress` (function, optional) - callback that is called during each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
 ### `getLatestMigrationVersion() -> int`

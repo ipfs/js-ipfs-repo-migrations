@@ -265,7 +265,7 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.onProgress.getCall(0).calledWith(4, 3, '50.00', 'hello')).to.be.true()
+      expect(options.onProgress.getCall(0).calledWith(3, '50.00', 'hello')).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {
@@ -454,7 +454,7 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', repoOptions, 4, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.onProgress.getCall(0).calledWith(2, 3, '50.00', 'hello')).to.be.true()
+      expect(options.onProgress.getCall(0).calledWith(3, '50.00', 'hello')).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {

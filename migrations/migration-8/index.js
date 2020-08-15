@@ -39,7 +39,14 @@ async function process (repoPath, repoOptions, onProgress, keyFunction) {
   let blockCount
 
   if (onProgress) {
-    blockCount = await length(blockstore.query({ keysOnly: true }))
+    blockCount = await length(blockstore.query({
+      keysOnly: true,
+      filters: [({ key }) => {
+        const newKey = keyFunction(key)
+
+        return newKey.toString() !== key.toString()
+      }]
+    }))
   }
 
   try {
