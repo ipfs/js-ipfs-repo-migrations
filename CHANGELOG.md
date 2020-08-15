@@ -1,3 +1,13 @@
+<a name="5.0.2"></a>
+## [5.0.2](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.1...v5.0.2) (2020-08-15)
+
+
+### Bug Fixes
+
+* null-guard progress and enable migration 9 ([#34](https://github.com/ipfs/js-ipfs-repo-migrations/issues/34)) ([a42e671](https://github.com/ipfs/js-ipfs-repo-migrations/commit/a42e671))
+
+
+
 <a name="5.0.1"></a>
 ## [5.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.0...v5.0.1) (2020-08-15)
 
