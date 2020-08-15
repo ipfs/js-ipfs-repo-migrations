@@ -30,22 +30,19 @@ function getDatastoreAndOptions (name, options) {
   }
 }
 
-// This function in js-ipfs-repo defaults to not using sharding
-// but the default value of the options.sharding is true hence this
-// function defaults to use sharding.
-function maybeWithSharding (store, options) {
-  if (options.sharding === false) {
-    return store
-  }
-
-  const shard = new core.shard.NextToLast(2)
-  return ShardingStore.createOrOpen(store, shard)
-}
-
 async function createStore (location, name, options) {
   const { StorageBackend, storageOptions } = getDatastoreAndOptions(name, options)
-  let store = new StorageBackend(`${location}/${name}`, storageOptions)
-  store = await maybeWithSharding(store, storageOptions)
+
+  if (name !== 'root') {
+    location = `${location}/${name}`
+  }
+
+  let store = new StorageBackend(location, storageOptions)
+
+  if (storageOptions.sharding) {
+    const shard = new core.shard.NextToLast(2)
+    store = await ShardingStore.createOrOpen(store, shard)
+  }
 
   await store.close()
 
