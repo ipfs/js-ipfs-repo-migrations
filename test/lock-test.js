@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./util')
+const { expect } = require('aegir/utils/chai')
 
 // When new lock mechanism is introduced in new version don't forget to update
 // the range (from/to) of the previous version test's description
 
 module.exports = (locker, setup, cleanup) => {
-  describe('version 7 and bellow', () => {
+  describe('version 7 and below', () => {
     let dir
 
     beforeEach(async () => { dir = await setup() })

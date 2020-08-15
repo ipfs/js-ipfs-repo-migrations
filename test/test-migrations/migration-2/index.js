@@ -1,9 +1,9 @@
 'use strict'
 
-const Datastore = require('datastore-fs')
 const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const { createStore } = require('../../../src/utils')
 
 const CONFIG_KEY = new Key('config')
 const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
@@ -16,29 +16,6 @@ const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
  * 1) Changes 'Addresses.API' to Array with new IPv6 localhost
  * 2) Changes 'Gateway.HTTPHeaders.Access-Control-Allow-Origin' to specific origin
  */
-
-function datastoreFactory (repoPath, options) {
-  let StorageBackend, storageBackendOptions
-  if (options !== undefined &&
-    options.storageBackends !== undefined &&
-    options.storageBackends.root !== undefined
-  ) {
-    StorageBackend = options.storageBackends.root
-  } else {
-    StorageBackend = Datastore
-  }
-
-  if (options !== undefined &&
-    options.storageBackendOptions !== undefined &&
-    options.storageBackendOptions.root !== undefined
-  ) {
-    storageBackendOptions = options.storageBackendOptions.root
-  } else {
-    storageBackendOptions = { extension: '' }
-  }
-
-  return new StorageBackend(repoPath, storageBackendOptions)
-}
 
 function addNewApiAddress (config) {
   let apiAddrs = config.Addresses.API
@@ -76,9 +53,10 @@ function removeNewApiAddress (config) {
   return config
 }
 
-async function migrate (repoPath, options, isBrowser) {
-  const store = datastoreFactory(repoPath, options)
+async function migrate (repoPath, repoOptions, onProgress) {
+  const store = await createStore(repoPath, 'root', repoOptions)
   await store.open()
+
   try {
     const rawConfig = await store.get(CONFIG_KEY)
     let config = JSON.parse(rawConfig.toString())
@@ -94,11 +72,14 @@ async function migrate (repoPath, options, isBrowser) {
   } finally {
     await store.close()
   }
+
+  onProgress(100, 'done!')
 }
 
-async function revert (repoPath, options, isBrowser) {
-  const store = datastoreFactory(repoPath, options)
+async function revert (repoPath, repoOptions, onProgress) {
+  const store = await createStore(repoPath, 'root', repoOptions)
   await store.open()
+
   try {
     const rawConfig = await store.get(CONFIG_KEY)
     let config = JSON.parse(rawConfig.toString())
@@ -114,6 +95,8 @@ async function revert (repoPath, options, isBrowser) {
   } finally {
     await store.close()
   }
+
+  onProgress(100, 'done!')
 }
 
 module.exports = {

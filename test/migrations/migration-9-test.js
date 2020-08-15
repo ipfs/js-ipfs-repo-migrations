@@ -5,7 +5,8 @@
 const { expect } = require('aegir/utils/chai')
 const cbor = require('cbor')
 const migration = require('../../migrations/migration-9')
-const { createStore, cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
+const { cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
+const { createStore } = require('../../src/utils')
 const CID = require('cids')
 const CarDatastore = require('datastore-car')
 const loadFixture = require('aegir/fixtures')
@@ -78,19 +79,30 @@ async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expe
   const [actualRoot] = await car.getRoots()
 
   expect(actualRoot.toString()).to.equal(expectedRoot.toString())
+  await blockstore.open()
 
   for await (const { key, value } of car.query()) {
     await blockstore.put(cidToKey(new CID(key.toString())), value)
   }
 
   await blockstore.close()
+
+  await datastore.open()
   await datastore.put(PIN_DS_KEY, actualRoot.multihash)
   await datastore.close()
 }
 
-module.exports = (setup, cleanup, options) => {
+async function assertPinsetRootIsPresent (datastore, pinset) {
+  await datastore.open()
+  const buf = await datastore.get(PIN_DS_KEY)
+  await datastore.close()
+  const cid = new CID(buf)
+  expect(cid.toString()).to.equal(pinset.root.toString())
+}
+
+module.exports = (setup, cleanup, repoOptions) => {
   describe('migration 9', function () {
-    this.timeout(240 * 1000)
+    this.timeout(480 * 1000)
 
     let dir
     let datastore
@@ -100,17 +112,13 @@ module.exports = (setup, cleanup, options) => {
     beforeEach(async () => {
       dir = await setup()
 
-      blockstore = await createStore(dir, 'blocks', options)
-      datastore = await createStore(dir, 'datastore', options)
-      pinstore = await createStore(dir, 'pins', options)
+      blockstore = await createStore(dir, 'blocks', repoOptions)
+      datastore = await createStore(dir, 'datastore', repoOptions)
+      pinstore = await createStore(dir, 'pins', repoOptions)
     })
 
     afterEach(async () => {
-      await pinstore.close()
-      await datastore.close()
-      await blockstore.close()
-
-      cleanup(dir)
+      await cleanup(dir)
     })
 
     Object.keys(pinsets).forEach(title => {
@@ -120,23 +128,13 @@ module.exports = (setup, cleanup, options) => {
       describe(title, () => {
         describe('forwards', () => {
           beforeEach(async () => {
-            await blockstore.open()
             await bootstrapBlocks(blockstore, datastore, pinset)
-
-            await datastore.open()
-            await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
-
-            const buf = await datastore.get(PIN_DS_KEY)
-            const cid = new CID(buf)
-            expect(cid.toString()).to.equal(pinset.root.toString())
-
-            await blockstore.close()
-            await datastore.close()
-            await pinstore.close()
+            await assertPinsetRootIsPresent(datastore, pinset)
           })
 
           it('should migrate pins forward', async () => {
-            await migration.migrate(dir, options)
+            await migration.migrate(dir, repoOptions, () => {})
+
             await pinstore.open()
             let migratedDirect = 0
             let migratedNonDagPBRecursive = 0
@@ -160,12 +158,15 @@ module.exports = (setup, cleanup, options) => {
               }
             }
 
+            await pinstore.close()
+
             expect(migratedDirect).to.equal(directPins.length + nonDagPbDirectPins.length)
             expect(migratedNonDagPBRecursive).to.equal(nonDagPbRecursivePins.length)
             expect(Object.keys(pinned)).to.have.lengthOf(pinset.pins)
 
             await datastore.open()
             await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
+            await datastore.close()
           })
         })
 
@@ -181,14 +182,9 @@ module.exports = (setup, cleanup, options) => {
           })
 
           it('should migrate pins backward', async () => {
-            await migration.revert(dir, options)
+            await migration.revert(dir, repoOptions, () => {})
 
-            await datastore.open()
-            await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.true()
-
-            const buf = await datastore.get(PIN_DS_KEY)
-            const cid = new CID(buf)
-            expect(cid).to.deep.equal(pinset.root)
+            await assertPinsetRootIsPresent(datastore, pinset)
           })
         })
       })

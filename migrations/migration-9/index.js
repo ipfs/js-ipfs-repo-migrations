@@ -6,16 +6,21 @@ const cbor = require('cbor')
 const multicodec = require('multicodec')
 const multibase = require('multibase')
 const pinset = require('./pin-set')
-const { createStore, cidToKey, PIN_DS_KEY, PinTypes } = require('./utils')
+const { createStore } = require('../../src/utils')
+const { cidToKey, PIN_DS_KEY, PinTypes } = require('./utils')
+const length = require('it-length')
 
-async function pinsToDatastore (blockstore, datastore, pinstore) {
+async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
   const mh = await datastore.get(PIN_DS_KEY)
   const cid = new CID(mh)
-
   const pinRootBuf = await blockstore.get(cidToKey(cid))
   const pinRoot = dagpb.util.deserialize(pinRootBuf)
 
+  const pinCount = (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.recursive))) + (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.direct)))
+  let counter = 0
+
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.recursive)) {
+    counter++
     const pin = {
       depth: Infinity
     }
@@ -29,9 +34,12 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
     }
 
     await pinstore.put(cidToKey(cid), cbor.encode(pin))
+
+    onProgress((counter / pinCount) * 100, `Migrated recursive pin ${cid}`)
   }
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.direct)) {
+    counter++
     const pin = {
       depth: 0
     }
@@ -45,27 +53,47 @@ async function pinsToDatastore (blockstore, datastore, pinstore) {
     }
 
     await pinstore.put(cidToKey(cid), cbor.encode(pin))
+
+    onProgress((counter / pinCount) * 100, `Migrated direct pin ${cid}`)
   }
 
   await blockstore.delete(cidToKey(cid))
   await datastore.delete(PIN_DS_KEY)
 }
 
-async function pinsToDAG (blockstore, datastore, pinstore) {
+async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
   let recursivePins = []
   let directPins = []
 
+  let pinCount
+
+  if (onProgress) {
+    pinCount = await length(pinstore.query({ keysOnly: true }))
+  }
+
+  let counter = 0
+
   for await (const { key, value } of pinstore.query({})) {
+    counter++
     const pin = cbor.decode(value)
     const cid = new CID(pin.version || 0, pin.codec && multicodec.getName(pin.codec) || 'dag-pb', multibase.decode('b' + key.toString().split('/').pop()))
 
     if (pin.depth === 0) {
+      if (onProgress) {
+        onProgress((counter / pinCount) * 100, `Reverted direct pin ${cid}`)
+      }
+
       directPins.push(cid)
     } else {
+      if (onProgress) {
+        onProgress((counter / pinCount) * 100, `Reverted recursive pin ${cid}`)
+      }
+
       recursivePins.push(cid)
     }
   }
 
+  onProgress(100, 'Updating pin root')
   const pinRoot = new dagpb.DAGNode(new Uint8Array(), [
     await pinset.storeSet(blockstore, PinTypes.recursive, recursivePins),
     await pinset.storeSet(blockstore, PinTypes.direct, directPins)
@@ -79,17 +107,17 @@ async function pinsToDAG (blockstore, datastore, pinstore) {
   await datastore.put(PIN_DS_KEY, cid.multihash)
 }
 
-async function process (repoPath, options, fn) {
-  const blockstore = await createStore(repoPath, 'blocks', options)
-  const datastore = await createStore(repoPath, 'datastore', options)
-  const pinstore = await createStore(repoPath, 'pins', options)
+async function process (repoPath, repoOptions, onProgress, fn) {
+  const blockstore = await createStore(repoPath, 'blocks', repoOptions)
+  const datastore = await createStore(repoPath, 'datastore', repoOptions)
+  const pinstore = await createStore(repoPath, 'pins', repoOptions)
 
   await blockstore.open()
   await datastore.open()
   await pinstore.open()
 
   try {
-    await fn(blockstore, datastore, pinstore)
+    await fn(blockstore, datastore, pinstore, onProgress)
   } finally {
     await pinstore.close()
     await datastore.close()
@@ -100,10 +128,10 @@ async function process (repoPath, options, fn) {
 module.exports = {
   version: 9,
   description: 'Migrates pins to datastore',
-  migrate: (repoPath, options = {}) => {
-    return process(repoPath, options, pinsToDatastore)
+  migrate: (repoPath, repoOptions, onProgress) => {
+    return process(repoPath, repoOptions, onProgress, pinsToDatastore)
   },
-  revert: (repoPath, options = {}) => {
-    return process(repoPath, options, pinsToDAG)
+  revert: (repoPath, repoOptions, onProgress) => {
+    return process(repoPath, repoOptions, onProgress, pinsToDAG)
   }
 }

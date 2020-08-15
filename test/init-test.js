@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./util')
-const { CONFIG_KEY, VERSION_KEY, getDatastoreAndOptions } = require('../src/utils')
+const { expect } = require('aegir/utils/chai')
+const { CONFIG_KEY, VERSION_KEY, createStore } = require('../src/utils')
 const repoInit = require('../src/repo/init')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
@@ -17,15 +17,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   )
 
   it('should return true with valid initialized repo', async () => {
-    const {
-      StorageBackend,
-      storageOptions
-    } = getDatastoreAndOptions(repoOptions, 'root')
-
-    const store = new StorageBackend(dir, {
-      ...storageOptions,
-      createIfMissing: false
-    })
+    const store = await createStore(dir, 'root', repoOptions)
     await store.open()
     await store.put(VERSION_KEY, uint8ArrayFromString('7'))
     await store.put(CONFIG_KEY, uint8ArrayFromString('config'))
@@ -35,15 +27,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   })
 
   it('should return false with missing version key', async () => {
-    const {
-      StorageBackend,
-      storageOptions
-    } = getDatastoreAndOptions(repoOptions, 'root')
-
-    const store = new StorageBackend(dir, {
-      ...storageOptions,
-      createIfMissing: false
-    })
+    const store = await createStore(dir, 'root', repoOptions)
     await store.open()
     await store.put(CONFIG_KEY, '')
     await store.close()
@@ -52,15 +36,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   })
 
   it('should return false with missing config key', async () => {
-    const {
-      StorageBackend,
-      storageOptions
-    } = getDatastoreAndOptions(repoOptions, 'root')
-
-    const store = new StorageBackend(dir, {
-      ...storageOptions,
-      createIfMissing: false
-    })
+    const store = await createStore(dir, 'root', repoOptions)
     await store.open()
     await store.put(VERSION_KEY, '')
     await store.close()

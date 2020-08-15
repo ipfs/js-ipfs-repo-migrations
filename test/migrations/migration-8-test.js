@@ -3,11 +3,9 @@
 
 const { expect } = require('aegir/utils/chai')
 
+const { createStore } = require('../../src/utils')
 const migration = require('../../migrations/migration-8')
 const Key = require('interface-datastore').Key
-const Datastore = require('datastore-fs')
-const core = require('datastore-core')
-const ShardingStore = core.ShardingDatastore
 
 const blocksFixtures = [
   ['AFKREIBFG77IKIKDMBDUFDCSPK7H5TE5LNPMCSXYLPML27WSTT5YA5IUNU',
@@ -52,52 +50,35 @@ const blocksFixtures = [
     'CIQFTFEEHEDF6KLBT32BFAGLXEZL4UWFNWM4LFTLMXQBCERZ6CMLX3Y']
 ]
 
-function maybeWithSharding (filestore, options) {
-  if (options.sharding === false) {
-    return filestore
-  }
-
-  const shard = new core.shard.NextToLast(2)
-
-  return ShardingStore.createOrOpen(filestore, shard)
-}
-
-async function bootstrapBlocks (dir, encoded, options) {
-  const baseStore = new Datastore(`${dir}/blocks`, { extension: '.data', createIfMissing: true })
-  await baseStore.open()
-  const store = await maybeWithSharding(baseStore, options)
+async function bootstrapBlocks (dir, encoded, repoOptions) {
+  const store = await createStore(dir, 'blocks', repoOptions)
   await store.open()
 
-  let name
   for (const blocksNames of blocksFixtures) {
-    name = encoded ? blocksNames[1] : blocksNames[0]
+    const name = encoded ? blocksNames[1] : blocksNames[0]
     await store.put(new Key(name), '')
   }
 
   await store.close()
-  await baseStore.open()
 }
 
-async function validateBlocks (dir, shouldBeEncoded, options) {
-  const baseStore = new Datastore(`${dir}/blocks`, { extension: '.data', createIfMissing: false })
-  await baseStore.open()
-  const store = await maybeWithSharding(baseStore, options)
+async function validateBlocks (dir, encoded, repoOptions) {
+  const store = await createStore(dir, 'blocks', repoOptions)
   await store.open()
 
-  let newName, oldName
   for (const blockNames of blocksFixtures) {
-    newName = shouldBeEncoded ? blockNames[1] : blockNames[0]
-    oldName = shouldBeEncoded ? blockNames[0] : blockNames[1]
+    const newName = encoded ? blockNames[1] : blockNames[0]
+    const oldName = encoded ? blockNames[0] : blockNames[1]
     expect(await store.has(new Key(`/${oldName}`))).to.be.false(`${oldName} was not migrated to ${newName}`)
     expect(await store.has(new Key(`/${newName}`))).to.be.true(`${newName} was not removed`)
   }
 
   await store.close()
-  await baseStore.close()
 }
 
-module.exports = (setup, cleanup, options) => {
-  describe('migration 8', () => {
+module.exports = (setup, cleanup, repoOptions) => {
+  describe('migration 8', function () {
+    this.timeout(240 * 1000)
     let dir
 
     beforeEach(async () => {
@@ -109,15 +90,15 @@ module.exports = (setup, cleanup, options) => {
     })
 
     it('should migrate blocks forward', async () => {
-      await bootstrapBlocks(dir, false, options.storageBackendOptions.blocks)
-      await migration.migrate(dir, options)
-      await validateBlocks(dir, true, options.storageBackendOptions.blocks)
+      await bootstrapBlocks(dir, false, repoOptions)
+      await migration.migrate(dir, repoOptions, () => {})
+      await validateBlocks(dir, true, repoOptions)
     })
 
     it('should migrate blocks backward', async () => {
-      await bootstrapBlocks(dir, true, options.storageBackendOptions.blocks)
-      await migration.revert(dir, options)
-      await validateBlocks(dir, false, options.storageBackendOptions.blocks)
+      await bootstrapBlocks(dir, true, repoOptions)
+      await migration.revert(dir, repoOptions, () => {})
+      await validateBlocks(dir, false, repoOptions)
     })
   })
 }

@@ -3,12 +3,11 @@
 module.exports = {
   indexJs: `'use strict'
 
-const utils = require('../../src/utils')
+const { createStore } = require('../../src/utils')
 const log = require('debug')('repo-migrations:migration-{{version}}')
 
-async function migrate(repoPath, repoOptions, isBrowser) {
-  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(repoOptions, 'root')
-  const store = new StorageBackend(repoPath, storageOptions)
+async function migrate(repoPath, { repoOptions, onProgress }) {
+  const store = await createStore(repoPath, 'root', repoOptions)
   store.open()
 
   try {
@@ -18,9 +17,8 @@ async function migrate(repoPath, repoOptions, isBrowser) {
   }
 }
 
-async function revert(repoPath, repoOptions, isBrowser) {
-  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(repoOptions, 'root')
-  const store = new StorageBackend(repoPath, storageOptions)
+async function revert(repoPath, { repoOptions, onProgress }) {
+  const store = await createStore(repoPath, 'root', repoOptions)
   store.open()
 
   try {

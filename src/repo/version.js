@@ -2,7 +2,7 @@
 
 const repoInit = require('./init')
 const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
-const { VERSION_KEY, getDatastoreAndOptions } = require('../utils')
+const { VERSION_KEY, createStore } = require('../utils')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 
 exports.getVersion = getVersion
@@ -25,12 +25,7 @@ async function getVersion (path, repoOptions) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
 
-  const {
-    StorageBackend,
-    storageOptions
-  } = getDatastoreAndOptions(repoOptions, 'root')
-
-  const store = new StorageBackend(path, storageOptions)
+  const store = await createStore(path, 'root', repoOptions)
   await store.open()
 
   const version = parseInt(await store.get(VERSION_KEY))
@@ -52,12 +47,7 @@ async function setVersion (path, version, repoOptions) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
 
-  const {
-    StorageBackend,
-    storageOptions
-  } = getDatastoreAndOptions(repoOptions, 'root')
-
-  const store = new StorageBackend(path, storageOptions)
+  const store = await createStore(path, 'root', repoOptions)
   await store.open()
   await store.put(VERSION_KEY, uint8ArrayFromString(String(version)))
   await store.close()

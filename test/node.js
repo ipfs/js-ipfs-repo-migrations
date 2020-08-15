@@ -23,6 +23,8 @@ const repoOptions = {
       extension: '.data'
     },
     keys: {
+    },
+    pins: {
     }
   }
 }
