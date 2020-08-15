@@ -54,10 +54,10 @@ async function process (repoPath, repoOptions, onProgress, keyFunction) {
 
     for await (const block of blockstore.query({})) {
       const newKey = keyFunction(block.key)
-      counter += 1
 
       // If the Key is base32 CIDv0 then there's nothing to do
       if(newKey.toString() !== block.key.toString()) {
+        counter += 1
         log(`Migrating Block from ${block.key} to ${newKey}`)
         await blockstore.delete(block.key)
         await blockstore.put(newKey, block.value)
