@@ -47,7 +47,6 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  */
 async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
-  onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
@@ -79,23 +78,33 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
   verifyAvailableMigrations(migrations, currentVersion, toVersion)
 
   let lock
-  if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
+
+  if (!isDryRun && !ignoreLock) {
+    lock = await repoLock.lock(currentVersion, path)
+  }
 
   try {
-    let counter = 0
-    const totalMigrations = toVersion - currentVersion
     for (const migration of migrations) {
       if (toVersion !== undefined && migration.version > toVersion) {
         break
       }
+
       if (migration.version <= currentVersion) {
         continue
       }
 
-      counter++
       log(`Migrating version ${migration.version}`)
+
       try {
-        if (!isDryRun) await migration.migrate(path, repoOptions)
+        if (!isDryRun) {
+          let progressCallback
+
+          if (onProgress) { // eslint-disable-line max-depth
+            progressCallback = (percent, message) => onProgress(currentVersion, migration.version, percent.toFixed(2), message)
+          }
+
+          await migration.migrate(path, repoOptions, progressCallback)
+        }
       } catch (e) {
         const lastSuccessfullyMigratedVersion = migration.version - 1
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully migrated version: ${lastSuccessfullyMigratedVersion}`)
@@ -105,14 +114,18 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
         throw e
       }
 
-      onProgress(migration, counter, totalMigrations) // Reports on migration process
       log(`Migrating to version ${migration.version} finished`)
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations), repoOptions)
+    if (!isDryRun) {
+      await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations), repoOptions)
+    }
+
     log('Repo successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
-    if (!isDryRun && !ignoreLock) await lock.close()
+    if (!isDryRun && !ignoreLock) {
+      await lock.close()
+    }
   }
 }
 
@@ -136,7 +149,6 @@ exports.migrate = migrate
  */
 async function revert (path, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
-  onProgress = onProgress || (() => {})
 
   if (!path) {
     throw new errors.RequiredParameterError('Path argument is required!')
@@ -155,6 +167,7 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
   }
 
   const currentVersion = await repoVersion.getVersion(path, repoOptions)
+
   if (currentVersion === toVersion) {
     log('Nothing to revert.')
     return
@@ -170,10 +183,10 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
   if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
 
   log(`Reverting from version ${currentVersion} to ${toVersion}`)
+
   try {
-    let counter = 0
-    const totalMigrations = currentVersion - toVersion
     const reversedMigrationArray = migrations.slice().reverse()
+
     for (const migration of reversedMigrationArray) {
       if (migration.version <= toVersion) {
         break
@@ -183,10 +196,18 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
         continue
       }
 
-      counter++
       log(`Reverting migration version ${migration.version}`)
+
       try {
-        if (!isDryRun) await migration.revert(path, repoOptions)
+        if (!isDryRun) {
+          let progressCallback
+
+          if (onProgress) { // eslint-disable-line max-depth
+            progressCallback = (percent, message) => onProgress(currentVersion, migration.version, percent.toFixed(2), message)
+          }
+
+          await migration.revert(path, repoOptions, progressCallback)
+        }
       } catch (e) {
         const lastSuccessfullyRevertedVersion = migration.version
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully reverted version: ${lastSuccessfullyRevertedVersion}`)
@@ -196,14 +217,18 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
         throw e
       }
 
-      onProgress(migration, counter, totalMigrations) // Reports on migration process
       log(`Reverting to version ${migration.version} finished`)
     }
 
-    if (!isDryRun) await repoVersion.setVersion(path, toVersion, repoOptions)
+    if (!isDryRun) {
+      await repoVersion.setVersion(path, toVersion, repoOptions)
+    }
+
     log(`All migrations successfully reverted to version ${toVersion}!`)
   } finally {
-    if (!isDryRun && !ignoreLock) await lock.close()
+    if (!isDryRun && !ignoreLock) {
+      await lock.close()
+    }
   }
 }
 

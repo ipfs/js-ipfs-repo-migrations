@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const { expect } = require('./util')
-const { VERSION_KEY, CONFIG_KEY, getDatastoreAndOptions } = require('../src/utils')
+const { expect } = require('aegir/utils/chai')
+const { VERSION_KEY, CONFIG_KEY, createStore } = require('../src/utils')
 const version = require('../src/repo/version')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const errors = require('../src/errors')
@@ -24,19 +24,10 @@ module.exports = (setup, cleanup, repoOptions) => {
       .with.property('code', errors.NotInitializedRepoError.code)
   })
 
-  describe('version 7 and bellow', () => {
+  describe('version 7 and below', () => {
     it('should get version number', async () => {
       // Create version file
-      const {
-        StorageBackend,
-        storageOptions
-      } = getDatastoreAndOptions(repoOptions, 'root')
-
-      const store = new StorageBackend(dir, {
-        ...storageOptions,
-        createIfMissing: false
-      })
-
+      const store = await createStore(dir, 'root', repoOptions)
       await store.open()
       await store.put(CONFIG_KEY, uint8ArrayFromString('some dummy config'))
       await store.put(VERSION_KEY, uint8ArrayFromString('7'))
@@ -49,16 +40,7 @@ module.exports = (setup, cleanup, repoOptions) => {
       await expect(version.getVersion(dir, repoOptions)).to.be.eventually.rejectedWith(errors.NotInitializedRepoError).with.property('code', errors.NotInitializedRepoError.code)
 
       // Create version file
-      const {
-        StorageBackend,
-        storageOptions
-      } = getDatastoreAndOptions(repoOptions, 'root')
-
-      const store = new StorageBackend(dir, {
-        ...storageOptions,
-        createIfMissing: false
-      })
-
+      const store = await createStore(dir, 'root', repoOptions)
       await store.open()
       await store.put(CONFIG_KEY, uint8ArrayFromString('some dummy config'))
       await store.put(VERSION_KEY, uint8ArrayFromString('5'))

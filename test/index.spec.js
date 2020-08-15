@@ -1,11 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const expect = chai.expect
+const { expect } = require('aegir/utils/chai')
 const sinon = require('sinon')
-chai.use(require('chai-as-promised'))
-chai.use(require('dirty-chai'))
 
 const migrator = require('../src/index')
 const repoVersion = require('../src/repo/version')
@@ -261,11 +258,14 @@ describe('index.js', () => {
       options.onProgress = sinon.stub()
       getVersionStub.returns(4)
 
+      options.migrations[2].revert = (path, repoOptions, onProgress) => {
+        onProgress(50, 'hello')
+      }
+
       await expect(migrator.revert('/some/path', repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.onProgress.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
-      expect(options.onProgress.getCall(1).calledWith(sinon.match.any, 2, 2)).to.be.true()
+      expect(options.onProgress.getCall(0).calledWith(4, 3, '50.00', 'hello')).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {
@@ -447,11 +447,14 @@ describe('index.js', () => {
       const repoOptions = createRepoOptions()
       getVersionStub.returns(2)
 
+      options.migrations[2].migrate = (path, repoOptions, onProgress) => {
+        onProgress(50, 'hello')
+      }
+
       await expect(migrator.migrate('/some/path', repoOptions, 4, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.onProgress.getCall(0).calledWith(sinon.match.any, 1, 2)).to.be.true()
-      expect(options.onProgress.getCall(1).calledWith(sinon.match.any, 2, 2)).to.be.true()
+      expect(options.onProgress.getCall(0).calledWith(2, 3, '50.00', 'hello')).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {

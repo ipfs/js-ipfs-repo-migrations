@@ -29,7 +29,7 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
 - [Usage](#usage)
 - [API](#api)
   - [`.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
-    - [`onProgress(migration, counter, totalMigrations)`](#onprogressmigration-counter-totalmigrations)
+    - [`onProgress(versionFrom, versionTo, percent, message)`](#onprogressversionfrom-versionto-percent-message)
   - [`.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -> Promise<void>`](#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid)
   - [`getLatestMigrationVersion() -> int`](#getlatestmigrationversion---int)
 - [Creating a new migration](#creating-a-new-migration)
@@ -121,7 +121,7 @@ Executes a forward migration to a specific version, or to the latest version if 
  * `options.onProgress` (function, optional) - callback that is called after finishing execution of each migration to report progress.
  * `options.isDryRun` (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.
 
-#### `onProgress(migration, counter, totalMigrations)`
+#### `onProgress(versionFrom, versionTo, percent, message)`
 
 Signature of the progress callback.
 

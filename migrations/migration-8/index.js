@@ -2,25 +2,11 @@
 
 const CID = require('cids')
 const Key = require('interface-datastore').Key
-const core = require('datastore-core')
-const ShardingStore = core.ShardingDatastore
 const mb = require('multibase')
-const utils = require('../../src/utils')
 const log = require('debug')('ipfs-repo-migrations:migration-8')
 const uint8ArrayToString = require('uint8arrays/to-string')
-
-// This function in js-ipfs-repo defaults to not using sharding
-// but the default value of the options.sharding is true hence this
-// function defaults to use sharding.
-async function maybeWithSharding (filestore, options) {
-  if (options.sharding === false) {
-    return filestore
-  }
-
-  const shard = new core.shard.NextToLast(2)
-
-  return ShardingStore.createOrOpen(filestore, shard)
-}
+const { createStore } = require('../../src/utils')
+const length = require('it-length')
 
 function keyToMultihash (key) {
   const buf = mb.decode(`b${key.toString().slice(1)}`)
@@ -46,44 +32,46 @@ function keyToCid (key) {
   return new Key(`/${uint8ArrayToString(multihash)}`.toUpperCase(), false)
 }
 
-async function process (repoPath, options, keyFunction){
-  const { StorageBackend, storageOptions } = utils.getDatastoreAndOptions(options, 'blocks')
+async function process (repoPath, repoOptions, onProgress, keyFunction) {
+  const blockstore = await createStore(repoPath, 'blocks', repoOptions)
+  await blockstore.open()
 
-  const baseStore = new StorageBackend(`${repoPath}/blocks`, storageOptions)
-  await baseStore.open()
-  const store = await maybeWithSharding(baseStore, storageOptions)
-  await store.open()
+  let blockCount
+
+  if (onProgress) {
+    blockCount = await length(blockstore.query({ keysOnly: true }))
+  }
 
   try {
     let counter = 0
 
-    for await (const block of store.query({})) {
+    for await (const block of blockstore.query({})) {
       const newKey = keyFunction(block.key)
+      counter += 1
 
       // If the Key is base32 CIDv0 then there's nothing to do
       if(newKey.toString() !== block.key.toString()) {
-        counter += 1
+        log(`Migrating Block from ${block.key} to ${newKey}`)
+        await blockstore.delete(block.key)
+        await blockstore.put(newKey, block.value)
 
-        log(`Migrating Block from ${block.key.toString()} to ${newKey.toString()}`)
-        await store.delete(block.key)
-        await store.put(newKey, block.value)
+        if (onProgress) {
+          onProgress((counter / blockCount) * 100, `Migrated Block from ${block.key} to ${newKey}`)
+        }
       }
     }
-
-    log(`Changed ${ counter } blocks`)
   } finally {
-    await store.close()
-    await baseStore.close()
+    await blockstore.close()
   }
 }
 
 module.exports = {
   version: 8,
   description: 'Transforms key names into base32 encoding and converts Block store to use bare multihashes encoded as base32',
-  migrate: (repoPath, options = {}) => {
-    return process(repoPath, options, keyToMultihash)
+  migrate: (repoPath, repoOptions, onProgress) => {
+    return process(repoPath, repoOptions, onProgress, keyToMultihash)
   },
-  revert: (repoPath, options = {}) => {
-    return process(repoPath, options, keyToCid)
+  revert: (repoPath, repoOptions, onProgress) => {
+    return process(repoPath, repoOptions, onProgress, keyToCid)
   }
 }

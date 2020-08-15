@@ -1,7 +1,7 @@
 'use strict'
 
 const log = require('debug')('repo-migrations:repo:init')
-const { CONFIG_KEY, VERSION_KEY, getDatastoreAndOptions } = require('../utils')
+const { CONFIG_KEY, VERSION_KEY, createStore } = require('../utils')
 const { MissingRepoOptionsError } = require('../errors')
 
 exports.isRepoInitialized = async function isRepoInitialized (path, repoOptions) {
@@ -11,12 +11,7 @@ exports.isRepoInitialized = async function isRepoInitialized (path, repoOptions)
 
   let root
   try {
-    const {
-      StorageBackend,
-      storageOptions
-    } = getDatastoreAndOptions(repoOptions, 'root')
-
-    root = new StorageBackend(path, storageOptions)
+    root = await createStore(path, 'root', repoOptions)
     await root.open()
     const versionCheck = await root.has(VERSION_KEY)
     const configCheck = await root.has(CONFIG_KEY)
