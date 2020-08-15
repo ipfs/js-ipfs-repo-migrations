@@ -1,3 +1,13 @@
+<a name="5.0.3"></a>
+## [5.0.3](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.2...v5.0.3) (2020-08-15)
+
+
+### Bug Fixes
+
+* pass repo options when migration error occurs ([267e718](https://github.com/ipfs/js-ipfs-repo-migrations/commit/267e718))
+
+
+
 <a name="5.0.2"></a>
 ## [5.0.2](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.1...v5.0.2) (2020-08-15)
 
