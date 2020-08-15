@@ -1,3 +1,18 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v4.0.0...v5.0.0) (2020-08-15)
+
+
+### Features
+
+* report migration progress ([#33](https://github.com/ipfs/js-ipfs-repo-migrations/issues/33)) ([051c0a4](https://github.com/ipfs/js-ipfs-repo-migrations/commit/051c0a4)), closes [#32](https://github.com/ipfs/js-ipfs-repo-migrations/issues/32)
+
+
+### BREAKING CHANGES
+
+* - The signature of the `onProgress` callback has changed
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v3.0.0...v4.0.0) (2020-08-06)
 
