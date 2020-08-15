@@ -3,7 +3,7 @@
 const CID = require('cids')
 const Key = require('interface-datastore').Key
 const mb = require('multibase')
-const log = require('debug')('ipfs-repo-migrations:migration-8')
+const log = require('debug')('ipfs:repo:migrator:migration-8')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const { createStore } = require('../../src/utils')
 const length = require('it-length')

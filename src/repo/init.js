@@ -1,6 +1,6 @@
 'use strict'
 
-const log = require('debug')('repo-migrations:repo:init')
+const log = require('debug')('ipfs:repo:migrator:repo:init')
 const { CONFIG_KEY, VERSION_KEY, createStore } = require('../utils')
 const { MissingRepoOptionsError } = require('../errors')
 

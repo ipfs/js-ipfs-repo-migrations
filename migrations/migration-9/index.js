@@ -15,9 +15,12 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
   const cid = new CID(mh)
   const pinRootBuf = await blockstore.get(cidToKey(cid))
   const pinRoot = dagpb.util.deserialize(pinRootBuf)
-
-  const pinCount = (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.recursive))) + (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.direct)))
   let counter = 0
+  let pinCount
+
+  if (onProgress) {
+    pinCount = (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.recursive))) + (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.direct)))
+  }
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.recursive)) {
     counter++
@@ -35,7 +38,9 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
 
     await pinstore.put(cidToKey(cid), cbor.encode(pin))
 
-    onProgress((counter / pinCount) * 100, `Migrated recursive pin ${cid}`)
+    if (onProgress) {
+      onProgress((counter / pinCount) * 100, `Migrated recursive pin ${cid}`)
+    }
   }
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.direct)) {
@@ -64,14 +69,12 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
 async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
   let recursivePins = []
   let directPins = []
-
+  let counter = 0
   let pinCount
 
   if (onProgress) {
     pinCount = await length(pinstore.query({ keysOnly: true }))
   }
-
-  let counter = 0
 
   for await (const { key, value } of pinstore.query({})) {
     counter++

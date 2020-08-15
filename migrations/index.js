@@ -1,8 +1,5 @@
 'use strict'
 
-// Do not modify this file manually as it will be overridden when running 'add' CLI command.
-// Modify migration-templates.js file
-
 const emptyMigration = {
   description: 'Empty migration.',
   migrate: () => {},
@@ -18,5 +15,6 @@ module.exports = [
   Object.assign({version: 5}, emptyMigration),
   Object.assign({version: 6}, emptyMigration),
   Object.assign({version: 7}, emptyMigration),
-  require('./migration-8')
+  require('./migration-8'),
+  require('./migration-9')
 ]

@@ -1,11 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-
-const log = debug('repo-migrations:repo_mem_lock')
-
+const log = debug('ipfs:repo:migrator:repo_mem_lock')
 const lockFile = 'repo.lock'
-
 const LOCKS = {}
 
 /**
