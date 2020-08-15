@@ -1,3 +1,13 @@
+<a name="5.0.1"></a>
+## [5.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.0...v5.0.1) (2020-08-15)
+
+
+### Bug Fixes
+
+* root is not a store inside the store ([e4c9a9f](https://github.com/ipfs/js-ipfs-repo-migrations/commit/e4c9a9f))
+
+
+
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v4.0.0...v5.0.0) (2020-08-15)
 
