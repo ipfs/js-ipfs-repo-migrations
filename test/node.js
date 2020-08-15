@@ -4,6 +4,7 @@
 const promisify = require('util').promisify
 const asyncRimraf = promisify(require('rimraf'))
 const { createRepo, createAndLoadRepo } = require('./fixtures/repo')
+const os = require('os')
 
 const repoOptions = {
   lock: 'fs',
@@ -36,27 +37,27 @@ function repoCleanup (dir) {
 describe('Node specific tests', () => {
   describe('lock.js tests', () => {
     describe('fs-lock tests', () => {
-      require('./lock-test')(require('../src/repo/lock'), () => createRepo(repoOptions), repoCleanup, repoOptions)
+      require('./lock-test')(require('../src/repo/lock'), () => createRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
     })
 
     describe('mem-lock tests', () => {
-      require('./lock-test')(require('../src/repo/lock-memory'), () => createRepo(repoOptions), repoCleanup, repoOptions)
+      require('./lock-test')(require('../src/repo/lock-memory'), () => createRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
     })
   })
 
   describe('version tests', () => {
-    require('./version-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
+    require('./version-test')(() => createRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
   })
 
   describe('migrations tests', () => {
-    require('./migrations')(() => createRepo(repoOptions), repoCleanup, repoOptions)
+    require('./migrations')(() => createRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
   })
 
   describe('init tests', () => {
-    require('./init-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
+    require('./init-test')(() => createRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
   })
 
   describe('integration tests', () => {
-    require('./integration-test')(() => createAndLoadRepo(repoOptions), repoCleanup, repoOptions)
+    require('./integration-test')(() => createAndLoadRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
   })
 })

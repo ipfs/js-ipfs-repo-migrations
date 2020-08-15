@@ -3,18 +3,18 @@
 const loadFixture = require('aegir/fixtures')
 const { CONFIG_KEY, VERSION_KEY, createStore } = require('../../src/utils')
 
-async function createRepo (repoOptions) {
+async function createRepo (repoOptions, prefix) {
   const date = Date.now().toString()
-  const dir = 'test-repo-for-' + date
+  const dir = `${prefix ? `${prefix}/` : ''}test-repo-for-${date}`
   const store = await createStore(dir, 'root', repoOptions)
   await store.open()
   await store.close()
   return dir
 }
 
-async function createAndLoadRepo (repoOptions) {
+async function createAndLoadRepo (repoOptions, prefix) {
   const date = Date.now().toString()
-  const dir = 'test-repo-for-' + date
+  const dir = `${prefix ? `${prefix}/` : ''}test-repo-for-${date}`
   const store = await createStore(dir, 'root', repoOptions)
   await store.open()
 
