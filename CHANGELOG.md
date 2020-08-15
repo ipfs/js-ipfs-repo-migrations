@@ -1,3 +1,13 @@
+<a name="5.0.4"></a>
+## [5.0.4](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.3...v5.0.4) (2020-08-15)
+
+
+### Bug Fixes
+
+* only count migrated blocks ([d49f338](https://github.com/ipfs/js-ipfs-repo-migrations/commit/d49f338))
+
+
+
 <a name="5.0.3"></a>
 ## [5.0.3](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.2...v5.0.3) (2020-08-15)
 
