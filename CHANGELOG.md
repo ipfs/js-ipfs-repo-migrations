@@ -1,3 +1,13 @@
+<a name="5.0.5"></a>
+## [5.0.5](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.4...v5.0.5) (2020-08-17)
+
+
+### Bug Fixes
+
+* migrate empty repos ([#35](https://github.com/ipfs/js-ipfs-repo-migrations/issues/35)) ([e48efad](https://github.com/ipfs/js-ipfs-repo-migrations/commit/e48efad))
+
+
+
 <a name="5.0.4"></a>
 ## [5.0.4](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.3...v5.0.4) (2020-08-15)
 
