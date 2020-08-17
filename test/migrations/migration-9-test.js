@@ -121,6 +121,20 @@ module.exports = (setup, cleanup, repoOptions) => {
       await cleanup(dir)
     })
 
+    describe('empty repo', () => {
+      describe('forwards', () => {
+        it('should migrate pins forward', async () => {
+          await migration.migrate(dir, repoOptions, () => {})
+        })
+      })
+
+      describe('backwards', () => {
+        it('should migrate pins backward', async () => {
+          await migration.revert(dir, repoOptions, () => {})
+        })
+      })
+    })
+
     Object.keys(pinsets).forEach(title => {
       const pinset = pinsets[title]
       const pinned = {}

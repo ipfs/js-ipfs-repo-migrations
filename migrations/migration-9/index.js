@@ -11,6 +11,10 @@ const { cidToKey, PIN_DS_KEY, PinTypes } = require('./utils')
 const length = require('it-length')
 
 async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
+  if (!await datastore.has(PIN_DS_KEY)) {
+    return
+  }
+
   const mh = await datastore.get(PIN_DS_KEY)
   const cid = new CID(mh)
   const pinRootBuf = await blockstore.get(cidToKey(cid))
