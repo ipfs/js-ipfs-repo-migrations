@@ -107,11 +107,11 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
         }
       } catch (e) {
         const lastSuccessfullyMigratedVersion = migration.version - 1
+
         log(`An exception was raised during execution of migration. Setting the repo's version to last successfully migrated version: ${lastSuccessfullyMigratedVersion}`)
         await repoVersion.setVersion(path, lastSuccessfullyMigratedVersion, repoOptions)
 
-        e.message = `During migration to version ${migration.version} exception was raised: ${e.message}`
-        throw e
+        throw new Error(`During migration to version ${migration.version} exception was raised: ${e.stack || e.message || e}`)
       }
 
       log(`Migrating to version ${migration.version} finished`)

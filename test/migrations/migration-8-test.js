@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+/* eslint-disable max-nested-callbacks */
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
@@ -87,6 +88,20 @@ module.exports = (setup, cleanup, repoOptions) => {
 
     afterEach(async () => {
       await cleanup(dir)
+    })
+
+    describe('empty repo', () => {
+      describe('forwards', () => {
+        it('should migrate pins forward', async () => {
+          await migration.migrate(dir, repoOptions, () => {})
+        })
+      })
+
+      describe('backwards', () => {
+        it('should migrate pins backward', async () => {
+          await migration.revert(dir, repoOptions, () => {})
+        })
+      })
     })
 
     it('should migrate blocks forward', async () => {
