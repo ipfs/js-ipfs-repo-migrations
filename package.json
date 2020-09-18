@@ -48,7 +48,7 @@
     "fnv1a": "^1.0.1",
     "interface-datastore": "^2.0.0",
     "ipld-dag-pb": "^0.20.0",
-    "it-length": "0.0.2",
+    "it-length": "1.0.1",
     "multibase": "^3.0.0",
     "multicodec": "^2.0.0",
     "multihashing-async": "^2.0.0",
