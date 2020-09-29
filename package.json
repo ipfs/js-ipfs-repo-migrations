@@ -55,7 +55,7 @@
     "proper-lockfile": "^4.1.1",
     "protons": "^2.0.0",
     "uint8arrays": "^1.0.0",
-    "varint": "^5.0.0"
+    "varint": "^6.0.0"
   },
   "devDependencies": {
     "aegir": "^26.0.0",
