@@ -58,7 +58,7 @@
     "varint": "^5.0.0"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^30.2.0",
     "datastore-car": "^1.2.0",
     "datastore-fs": "^2.0.1",
     "datastore-level": "^2.0.0",
