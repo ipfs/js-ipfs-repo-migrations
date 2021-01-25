@@ -43,7 +43,7 @@
   "dependencies": {
     "cbor": "^5.0.2",
     "cids": "^1.0.0",
-    "datastore-core": "^2.0.0",
+    "datastore-core": "^3.0.0",
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
     "interface-datastore": "^2.0.0",
