@@ -61,7 +61,7 @@
     "aegir": "^26.0.0",
     "datastore-car": "^1.2.0",
     "datastore-fs": "^2.0.1",
-    "datastore-level": "^2.0.0",
+    "datastore-level": "^3.0.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
     "ncp": "^2.0.0",
