@@ -54,7 +54,7 @@ function removeNewApiAddress (config) {
 }
 
 async function migrate (repoPath, repoOptions, onProgress) {
-  const store = await createStore(repoPath, 'root', repoOptions)
+  const store = createStore(repoPath, 'root', repoOptions)
   await store.open()
 
   try {
@@ -77,7 +77,7 @@ async function migrate (repoPath, repoOptions, onProgress) {
 }
 
 async function revert (repoPath, repoOptions, onProgress) {
-  const store = await createStore(repoPath, 'root', repoOptions)
+  const store = createStore(repoPath, 'root', repoOptions)
   await store.open()
 
   try {

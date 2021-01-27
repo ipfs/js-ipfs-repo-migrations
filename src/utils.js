@@ -30,7 +30,7 @@ function getDatastoreAndOptions (name, options) {
   }
 }
 
-async function createStore (location, name, options) {
+function createStore (location, name, options) {
   const { StorageBackend, storageOptions } = getDatastoreAndOptions(name, options)
 
   if (name !== 'root') {
@@ -40,11 +40,8 @@ async function createStore (location, name, options) {
   let store = new StorageBackend(location, storageOptions)
 
   if (storageOptions.sharding) {
-    const shard = new core.shard.NextToLast(2)
-    store = await ShardingStore.createOrOpen(store, shard)
+    store = new ShardingStore(store, new core.shard.NextToLast(2))
   }
-
-  await store.close()
 
   return store
 }

@@ -52,7 +52,7 @@ const blocksFixtures = [
 ]
 
 async function bootstrapBlocks (dir, encoded, repoOptions) {
-  const store = await createStore(dir, 'blocks', repoOptions)
+  const store = createStore(dir, 'blocks', repoOptions)
   await store.open()
 
   for (const blocksNames of blocksFixtures) {
@@ -64,7 +64,7 @@ async function bootstrapBlocks (dir, encoded, repoOptions) {
 }
 
 async function validateBlocks (dir, encoded, repoOptions) {
-  const store = await createStore(dir, 'blocks', repoOptions)
+  const store = createStore(dir, 'blocks', repoOptions)
   await store.open()
 
   for (const blockNames of blocksFixtures) {

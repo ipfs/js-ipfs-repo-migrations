@@ -115,9 +115,9 @@ async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
 }
 
 async function process (repoPath, repoOptions, onProgress, fn) {
-  const blockstore = await createStore(repoPath, 'blocks', repoOptions)
-  const datastore = await createStore(repoPath, 'datastore', repoOptions)
-  const pinstore = await createStore(repoPath, 'pins', repoOptions)
+  const blockstore = createStore(repoPath, 'blocks', repoOptions)
+  const datastore = createStore(repoPath, 'datastore', repoOptions)
+  const pinstore = createStore(repoPath, 'pins', repoOptions)
 
   await blockstore.open()
   await datastore.open()

@@ -23,7 +23,7 @@ module.exports = (setup, cleanup, repoOptions) => {
       onProgress: () => {}
     })
 
-    const store = await createStore(dir, 'root', repoOptions)
+    const store = createStore(dir, 'root', repoOptions)
     await store.open()
     const version = await store.get(VERSION_KEY)
     expect(version.toString()).to.be.equal('2')
@@ -45,7 +45,7 @@ module.exports = (setup, cleanup, repoOptions) => {
       onProgress: () => {}
     })
 
-    const store = await createStore(dir, 'root', repoOptions)
+    const store = createStore(dir, 'root', repoOptions)
     await store.open()
     const version = await store.get(VERSION_KEY)
     expect(version.toString()).to.be.equal('1')

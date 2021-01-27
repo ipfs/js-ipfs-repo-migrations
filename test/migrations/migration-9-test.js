@@ -112,9 +112,9 @@ module.exports = (setup, cleanup, repoOptions) => {
     beforeEach(async () => {
       dir = await setup()
 
-      blockstore = await createStore(dir, 'blocks', repoOptions)
-      datastore = await createStore(dir, 'datastore', repoOptions)
-      pinstore = await createStore(dir, 'pins', repoOptions)
+      blockstore = createStore(dir, 'blocks', repoOptions)
+      datastore = createStore(dir, 'datastore', repoOptions)
+      pinstore = createStore(dir, 'pins', repoOptions)
     })
 
     afterEach(async () => {

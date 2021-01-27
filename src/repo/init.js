@@ -11,7 +11,7 @@ exports.isRepoInitialized = async function isRepoInitialized (path, repoOptions)
 
   let root
   try {
-    root = await createStore(path, 'root', repoOptions)
+    root = createStore(path, 'root', repoOptions)
     await root.open()
     const versionCheck = await root.has(VERSION_KEY)
     const configCheck = await root.has(CONFIG_KEY)

@@ -13,7 +13,7 @@ exports.getVersion = getVersion
  * even in case of change of repo's versioning.
  *
  * @param {string} path
- * @param {Object} repoOptions Options used to create a repo, the same as pased to ipfs-repo
+ * @param {Object} repoOptions - Options used to create a repo, the same as pased to ipfs-repo
  * @returns {Promise<int>}
  */
 async function getVersion (path, repoOptions) {
@@ -25,7 +25,7 @@ async function getVersion (path, repoOptions) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
 
-  const store = await createStore(path, 'root', repoOptions)
+  const store = createStore(path, 'root', repoOptions)
   await store.open()
 
   const version = parseInt(await store.get(VERSION_KEY))
@@ -39,7 +39,7 @@ async function getVersion (path, repoOptions) {
  *
  * @param {string} path
  * @param {int} version
- * @param {Object} repoOptions Options used to create a repo, the same as pased to ipfs-repo
+ * @param {Object} repoOptions - Options used to create a repo, the same as pased to ipfs-repo
  * @returns {Promise<void>}
  */
 async function setVersion (path, version, repoOptions) {
@@ -47,7 +47,7 @@ async function setVersion (path, version, repoOptions) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
 
-  const store = await createStore(path, 'root', repoOptions)
+  const store = createStore(path, 'root', repoOptions)
   await store.open()
   await store.put(VERSION_KEY, uint8ArrayFromString(String(version)))
   await store.close()
