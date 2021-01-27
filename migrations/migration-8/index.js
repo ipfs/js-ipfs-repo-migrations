@@ -33,7 +33,7 @@ function keyToCid (key) {
 }
 
 async function process (repoPath, repoOptions, onProgress, keyFunction) {
-  const blockstore = await createStore(repoPath, 'blocks', repoOptions)
+  const blockstore = createStore(repoPath, 'blocks', repoOptions)
   await blockstore.open()
 
   let blockCount

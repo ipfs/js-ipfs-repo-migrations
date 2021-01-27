@@ -7,6 +7,7 @@ const LOCKS = {}
 
 /**
  * Lock the repo in the given dir and for given repo version.
+ *
  * @param {int} version
  * @param {string} dir
  * @returns {Promise<Object>}

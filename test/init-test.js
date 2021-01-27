@@ -17,7 +17,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   )
 
   it('should return true with valid initialized repo', async () => {
-    const store = await createStore(dir, 'root', repoOptions)
+    const store = createStore(dir, 'root', repoOptions)
     await store.open()
     await store.put(VERSION_KEY, uint8ArrayFromString('7'))
     await store.put(CONFIG_KEY, uint8ArrayFromString('config'))
@@ -27,7 +27,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   })
 
   it('should return false with missing version key', async () => {
-    const store = await createStore(dir, 'root', repoOptions)
+    const store = createStore(dir, 'root', repoOptions)
     await store.open()
     await store.put(CONFIG_KEY, '')
     await store.close()
@@ -36,7 +36,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   })
 
   it('should return false with missing config key', async () => {
-    const store = await createStore(dir, 'root', repoOptions)
+    const store = createStore(dir, 'root', repoOptions)
     await store.open()
     await store.put(VERSION_KEY, '')
     await store.close()

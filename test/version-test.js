@@ -27,7 +27,7 @@ module.exports = (setup, cleanup, repoOptions) => {
   describe('version 7 and below', () => {
     it('should get version number', async () => {
       // Create version file
-      const store = await createStore(dir, 'root', repoOptions)
+      const store = createStore(dir, 'root', repoOptions)
       await store.open()
       await store.put(CONFIG_KEY, uint8ArrayFromString('some dummy config'))
       await store.put(VERSION_KEY, uint8ArrayFromString('7'))
@@ -40,7 +40,7 @@ module.exports = (setup, cleanup, repoOptions) => {
       await expect(version.getVersion(dir, repoOptions)).to.be.eventually.rejectedWith(errors.NotInitializedRepoError).with.property('code', errors.NotInitializedRepoError.code)
 
       // Create version file
-      const store = await createStore(dir, 'root', repoOptions)
+      const store = createStore(dir, 'root', repoOptions)
       await store.open()
       await store.put(CONFIG_KEY, uint8ArrayFromString('some dummy config'))
       await store.put(VERSION_KEY, uint8ArrayFromString('5'))
