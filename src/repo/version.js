@@ -4,6 +4,7 @@ const repoInit = require('./init')
 const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
 const { VERSION_KEY, createStore } = require('../utils')
 const uint8ArrayFromString = require('uint8arrays/from-string')
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 exports.getVersion = getVersion
 
@@ -28,7 +29,14 @@ async function getVersion (path, repoOptions) {
   const store = createStore(path, 'root', repoOptions)
   await store.open()
 
-  const version = parseInt(await store.get(VERSION_KEY))
+  let version = await store.get(VERSION_KEY)
+
+  if (version instanceof Uint8Array) {
+    version = uint8ArrayToString(version)
+  }
+
+  version = parseInt(version)
+
   await store.close()
 
   return version

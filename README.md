@@ -42,6 +42,11 @@ This package is inspired by the [go-ipfs repo migration tool](https://github.com
   - [Tests](#tests)
   - [Empty migrations](#empty-migrations)
   - [Migrations matrix](#migrations-matrix)
+  - [Migrations](#migrations)
+    - [7](#7)
+    - [8](#8)
+    - [9](#9)
+    - [10](#10)
 - [Developer](#developer)
   - [Module versioning notes](#module-versioning-notes)
 - [Contribute](#contribute)
@@ -267,6 +272,24 @@ This will create an empty migration with the next version.
 |                  7 | v0.0.0           |
 |                  8 | v0.48.0          |
 |                  9 | v0.49.0          |
+
+### Migrations
+
+#### 7
+
+This is the initial version of the datastore, inherited from go-IPFS in an attempt to maintain cross-compatibility between the two implementations.
+
+#### 8
+
+Blockstore keys are transformed into base32 representations of the multihash from the CID of the block.
+
+#### 9
+
+Pins were migrated from a DAG to a Datastore - see [ipfs/js-ipfs#2771](https://github.com/ipfs/js-ipfs/pull/2771)
+
+#### 10
+
+`level@6.x.x` upgrades the `level-js` dependency from `4.x.x` to `5.x.x`.  This update requires a database migration to convert all string keys/values into buffers. Only runs in the browser, node is unaffected. See [Level/level-js#179](https://github.com/Level/level-js/pull/179)
 
 ## Developer
 

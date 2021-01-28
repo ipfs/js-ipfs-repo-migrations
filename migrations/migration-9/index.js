@@ -135,10 +135,10 @@ async function process (repoPath, repoOptions, onProgress, fn) {
 module.exports = {
   version: 9,
   description: 'Migrates pins to datastore',
-  migrate: (repoPath, repoOptions, onProgress) => {
+  migrate: (repoPath, repoOptions, onProgress = () => {}) => {
     return process(repoPath, repoOptions, onProgress, pinsToDatastore)
   },
-  revert: (repoPath, repoOptions, onProgress) => {
+  revert: (repoPath, repoOptions, onProgress = () => {}) => {
     return process(repoPath, repoOptions, onProgress, pinsToDAG)
   }
 }
