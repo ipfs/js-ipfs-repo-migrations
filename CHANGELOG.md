@@ -1,3 +1,12 @@
+# [6.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.6...v6.0.0) (2021-01-29)
+
+
+### Features
+
+* migration 10 to allow upgrading level in the browser ([#59](https://github.com/ipfs/js-ipfs-repo-migrations/issues/59)) ([7dc562b](https://github.com/ipfs/js-ipfs-repo-migrations/commit/7dc562b05eeeaa8db2de5a95a4b3bcbab6f17d5c)), closes [Level/level-js#179](https://github.com/Level/level-js/issues/179)
+
+
+
 ## [5.0.6](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.5...v5.0.6) (2021-01-27)
 
 
