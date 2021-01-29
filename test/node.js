@@ -1,6 +1,8 @@
 /* eslint-env mocha */
 'use strict'
 
+const DatastoreFS = require('datastore-fs')
+const DatastoreLevel = require('datastore-level')
 const promisify = require('util').promisify
 const asyncRimraf = promisify(require('rimraf'))
 const { createRepo, createAndLoadRepo } = require('./fixtures/repo')
@@ -9,11 +11,11 @@ const os = require('os')
 const repoOptions = {
   lock: 'fs',
   storageBackends: {
-    root: require('datastore-fs'),
-    blocks: require('datastore-fs'),
-    keys: require('datastore-fs'),
-    datastore: require('datastore-level'),
-    pins: require('datastore-level')
+    root: DatastoreFS,
+    blocks: DatastoreFS,
+    keys: DatastoreFS,
+    datastore: DatastoreLevel,
+    pins: DatastoreLevel
   },
   storageBackendOptions: {
     root: {
@@ -50,7 +52,7 @@ describe('Node specific tests', () => {
   })
 
   describe('migrations tests', () => {
-    require('./migrations')(() => createRepo(repoOptions, os.tmpdir()), repoCleanup, repoOptions)
+    require('./migrations')(() => createRepo(repoOptions, os.tmpdir()), repoCleanup)
   })
 
   describe('init tests', () => {

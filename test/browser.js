@@ -1,16 +1,17 @@
 /* eslint-env mocha */
 'use strict'
 
+const DatastoreLevel = require('datastore-level')
 const { createRepo, createAndLoadRepo } = require('./fixtures/repo')
 
 const repoOptions = {
   lock: 'memory',
   storageBackends: {
-    root: require('datastore-level'),
-    blocks: require('datastore-level'),
-    keys: require('datastore-level'),
-    datastore: require('datastore-level'),
-    pins: require('datastore-level')
+    root: DatastoreLevel,
+    blocks: DatastoreLevel,
+    keys: DatastoreLevel,
+    datastore: DatastoreLevel,
+    pins: DatastoreLevel
   },
   storageBackendOptions: {
     root: {
@@ -51,7 +52,7 @@ describe('Browser specific tests', () => {
   })
 
   describe('migrations tests', () => {
-    require('./migrations')(() => createRepo(repoOptions), repoCleanup, repoOptions)
+    require('./migrations')(() => createRepo(repoOptions), repoCleanup)
   })
 
   describe('init tests', () => {

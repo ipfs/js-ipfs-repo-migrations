@@ -16,5 +16,6 @@ module.exports = [
   Object.assign({version: 6}, emptyMigration),
   Object.assign({version: 7}, emptyMigration),
   require('./migration-8'),
-  require('./migration-9')
+  require('./migration-9'),
+  require('./migration-10')
 ]

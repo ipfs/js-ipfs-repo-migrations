@@ -121,7 +121,7 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
       await repoVersion.setVersion(path, toVersion || getLatestMigrationVersion(migrations), repoOptions)
     }
 
-    log('Repo successfully migrated ', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
+    log('Repo successfully migrated', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
     if (!isDryRun && !ignoreLock) {
       await lock.close()

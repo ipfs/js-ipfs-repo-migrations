@@ -77,6 +77,7 @@ module.exports = (createRepo, repoCleanup) => {
     describe(name, () => {
       require('./migration-8-test')(createRepo, repoCleanup, options)
       require('./migration-9-test')(createRepo, repoCleanup, options)
+      require('./migration-10-test')(createRepo, repoCleanup, options)
     })
   })
 }

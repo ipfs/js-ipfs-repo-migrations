@@ -75,10 +75,10 @@ async function process (repoPath, repoOptions, onProgress, keyFunction) {
 module.exports = {
   version: 8,
   description: 'Transforms key names into base32 encoding and converts Block store to use bare multihashes encoded as base32',
-  migrate: (repoPath, repoOptions, onProgress) => {
+  migrate: (repoPath, repoOptions, onProgress = () => {}) => {
     return process(repoPath, repoOptions, onProgress, keyToMultihash)
   },
-  revert: (repoPath, repoOptions, onProgress) => {
+  revert: (repoPath, repoOptions, onProgress = () => {}) => {
     return process(repoPath, repoOptions, onProgress, keyToCid)
   }
 }
