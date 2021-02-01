@@ -61,7 +61,7 @@
     "aegir": "^30.3.0",
     "datastore-car": "^1.2.0",
     "datastore-fs": "^3.0.0",
-    "datastore-level": "^3.0.0",
+    "datastore-level": "^4.0.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
     "level-5": "npm:level@^5.0.0",
