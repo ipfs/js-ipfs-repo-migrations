@@ -41,7 +41,7 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "cbor": "^6.0.1",
+    "cbor": "^7.0.1",
     "cids": "^1.0.0",
     "datastore-core": "^3.0.0",
     "debug": "^4.1.0",
