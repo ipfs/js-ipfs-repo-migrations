@@ -1,6 +1,6 @@
 'use strict'
 
-const loadFixture = require('aegir/fixtures')
+const loadFixture = require('aegir/utils/fixtures')
 const { CONFIG_KEY, VERSION_KEY, createStore } = require('../../src/utils')
 
 async function createRepo (repoOptions, prefix) {

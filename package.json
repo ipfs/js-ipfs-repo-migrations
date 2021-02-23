@@ -41,13 +41,13 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "cbor": "^6.0.1",
+    "cbor": "^7.0.2",
     "cids": "^1.0.0",
     "datastore-core": "^3.0.0",
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
     "interface-datastore": "^3.0.3",
-    "ipld-dag-pb": "^0.20.0",
+    "ipld-dag-pb": "^0.21.0",
     "it-length": "^1.0.1",
     "multibase": "^3.0.0",
     "multicodec": "^2.0.0",
@@ -58,17 +58,21 @@
     "varint": "^6.0.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
+    "aegir": "^31.0.0",
+    "assert": "^2.0.0",
     "datastore-car": "^1.2.0",
     "datastore-fs": "^3.0.0",
-    "datastore-level": "^3.0.0",
+    "datastore-level": "^4.0.0",
+    "events": "^3.2.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
     "level-5": "npm:level@^5.0.0",
     "level-6": "npm:level@^6.0.0",
     "ncp": "^2.0.0",
+    "readable-stream": "^3.6.0",
     "rimraf": "^3.0.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.2",
+    "util": "^0.12.3"
   },
   "engines": {
     "node": ">=10.0.0",

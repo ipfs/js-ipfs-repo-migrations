@@ -9,7 +9,7 @@ const { cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
 const { createStore } = require('../../src/utils')
 const CID = require('cids')
 const CarDatastore = require('datastore-car')
-const loadFixture = require('aegir/fixtures')
+const loadFixture = require('aegir/utils/fixtures')
 const multibase = require('multibase')
 
 function pinToCid (key, pin) {
