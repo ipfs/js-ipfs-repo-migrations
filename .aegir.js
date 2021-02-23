@@ -12,23 +12,19 @@ const esbuild = {
         build.onResolve({ filter: /^stream$/ }, () => {
           return { path: require.resolve('readable-stream') }
         })
-        build.onResolve({ filter: /^assert$/ }, () => {
-          return { path: require.resolve('assert') }
-        })
-        build.onResolve({ filter: /^util$/ }, () => {
-          return { path: require.resolve('util') }
-        })
-        build.onResolve({ filter: /^events$/ }, () => {
-          return { path: require.resolve('events') }
-        })
       }
     }
   ]
 }
 
+/** @type {import('aegir').PartialOptions} */
 module.exports = {
   test: {
-    browser: esbuild
+    browser: {
+      config: {
+        buildConfig: esbuild
+      }
+    }
   },
   build: {
     config: esbuild
