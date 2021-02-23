@@ -34,13 +34,13 @@ jobs:
       name: chrome
       addons:
         chrome: stable
-      script: npx aegir test -t browser
+      script: npx aegir test -t browser --debug
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -- --browsers firefox
+      script: npx aegir test -t browser -- --browsers firefox --debug
 
     - stage: test
       name: electron-main

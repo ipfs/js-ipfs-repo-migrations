@@ -102,7 +102,7 @@ async function assertPinsetRootIsPresent (datastore, pinset) {
 
 module.exports = (setup, cleanup, repoOptions) => {
   describe('migration 9', function () {
-    this.timeout(480 * 1000)
+    this.timeout(1000 * 1000)
 
     let dir
     let datastore
