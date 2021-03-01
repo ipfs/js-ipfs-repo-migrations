@@ -49,7 +49,7 @@
     "interface-datastore": "^3.0.3",
     "ipld-dag-pb": "^0.20.0",
     "it-length": "^1.0.1",
-    "multibase": "^3.0.0",
+    "multibase": "^4.0.1",
     "multicodec": "^2.0.0",
     "multihashing-async": "^2.0.0",
     "proper-lockfile": "^4.1.1",
