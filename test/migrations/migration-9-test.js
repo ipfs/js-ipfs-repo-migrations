@@ -3,7 +3,7 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const cbor = require('cbor')
+const cbor = require('borc')
 const migration = require('../../migrations/migration-9')
 const { cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
 const { createStore } = require('../../src/utils')

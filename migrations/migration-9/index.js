@@ -2,7 +2,7 @@
 
 const CID = require('cids')
 const dagpb = require('ipld-dag-pb')
-const cbor = require('cbor')
+const cbor = require('borc')
 const multicodec = require('multicodec')
 const multibase = require('multibase')
 const pinset = require('./pin-set')
