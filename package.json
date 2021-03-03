@@ -50,7 +50,7 @@
     "ipld-dag-pb": "^0.20.0",
     "it-length": "^1.0.1",
     "multibase": "^3.0.0",
-    "multicodec": "^2.0.0",
+    "multicodec": "^3.0.1",
     "multihashing-async": "^2.0.0",
     "proper-lockfile": "^4.1.1",
     "protons": "^2.0.0",
