@@ -1,12 +1,16 @@
 'use strict'
 
 const CID = require('cids')
+// @ts-ignore
 const protobuf = require('protons')
+// @ts-ignore
 const fnv1a = require('fnv1a')
 const varint = require('varint')
 const dagpb = require('ipld-dag-pb')
-const { DAGNode, DAGLink } = dagpb
-const multicodec = require('multicodec')
+const DAGNode = require('ipld-dag-pb/src/dag-node/dagNode')
+const DAGLink = require('ipld-dag-pb/src/dag-link/dagLink')
+const multihash = require('multihashing-async').multihash
+// @ts-ignore
 const pbSchema = require('./pin.proto')
 const { cidToKey, DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
 const uint8ArrayConcat = require('uint8arrays/concat')
@@ -17,10 +21,24 @@ const uint8ArrayEquals = require('uint8arrays/equals')
 
 const pb = protobuf(pbSchema)
 
+/**
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ *
+ * @typedef {object} Pin
+ * @property {CID} key
+ * @property {Uint8Array} [data]
+ */
+
+/**
+ * @param {Uint8Array | CID} hash
+ */
 function toB58String (hash) {
   return new CID(hash).toBaseEncodedString()
 }
 
+/**
+ * @param {DAGNode} rootNode
+ */
 function readHeader (rootNode) {
   // rootNode.data should be a buffer of the format:
   // < varint(headerLength) | header | itemData... >
@@ -53,6 +71,10 @@ function readHeader (rootNode) {
   }
 }
 
+/**
+ * @param {number} seed
+ * @param {CID} key
+ */
 function hash (seed, key) {
   const buffer = new Uint8Array(4)
   const dataView = new DataView(buffer.buffer)
@@ -63,6 +85,11 @@ function hash (seed, key) {
   return fnv1a(uint8ArrayToString(data))
 }
 
+/**
+ * @param {Datastore} blockstore
+ * @param {DAGNode} node
+ * @returns {AsyncGenerator<CID, void, undefined>}
+ */
 async function * walkItems (blockstore, node) {
   const pbh = readHeader(node)
   let idx = 0
@@ -89,6 +116,11 @@ async function * walkItems (blockstore, node) {
   }
 }
 
+/**
+ * @param {Datastore} blockstore
+ * @param {DAGNode} rootNode
+ * @param {string} name
+ */
 async function * loadSet (blockstore, rootNode, name) {
   const link = rootNode.Links.find(l => l.Name === name)
 
@@ -102,9 +134,17 @@ async function * loadSet (blockstore, rootNode, name) {
   yield * walkItems(blockstore, node)
 }
 
+/**
+ * @param {Datastore} blockstore
+ * @param {Pin[]} items
+ */
 function storeItems (blockstore, items) {
   return storePins(items, 0)
 
+  /**
+   * @param {Pin[]} pins
+   * @param {number} depth
+   */
   async function storePins (pins, depth) {
     const pbHeader = pb.Set.encode({
       version: 1,
@@ -148,8 +188,10 @@ function storeItems (blockstore, items) {
       // (using go-ipfs' "wasteful but simple" approach for consistency)
       // https://github.com/ipfs/go-ipfs/blob/master/pin/set.go#L57
 
+      /** @type {Pin[][]} */
       const bins = pins.reduce((bins, pin) => {
         const n = hash(depth, pin.key) % DEFAULT_FANOUT
+        // @ts-ignore
         bins[n] = n in bins ? bins[n].concat([pin]) : [pin]
         return bins
       }, [])
@@ -166,11 +208,15 @@ function storeItems (blockstore, items) {
       return new DAGNode(headerBuf, fanoutLinks)
     }
 
+    /**
+     * @param {DAGNode} child
+     * @param {number} binIdx
+     */
     async function storeChild (child, binIdx) {
       const buf = dagpb.util.serialize(child)
       const cid = await dagpb.util.cid(buf, {
         cidVersion: 0,
-        hashAlg: multicodec.SHA2_256,
+        hashAlg: multihash.names['sha2-256']
       })
       await blockstore.put(cidToKey(cid), buf)
 
@@ -179,17 +225,21 @@ function storeItems (blockstore, items) {
   }
 }
 
+/**
+ * @param {Datastore} blockstore
+ * @param {string} type
+ * @param {CID[]} cids
+ */
 async function storeSet (blockstore, type, cids) {
   const rootNode = await storeItems(blockstore, cids.map(cid => {
     return {
-      key: cid,
-      data: null
+      key: cid
     }
   }))
-  const buf = rootNode.serialize(rootNode)
+  const buf = rootNode.serialize()
   const cid = await dagpb.util.cid(buf, {
     cidVersion: 0,
-    hashAlg: multicodec.SHA2_256
+    hashAlg: multihash.names['sha2-256']
   })
 
   await blockstore.put(cidToKey(cid), buf)

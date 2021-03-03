@@ -1,26 +1,30 @@
 'use strict'
 
 const debug = require('debug')
-const { lock } = require('proper-lockfile')
+// @ts-ignore
+const { lock: properLock } = require('proper-lockfile')
 
 const log = debug('ipfs:repo:migrator:repo_fs_lock')
 const lockFile = 'repo.lock'
 
 /**
- * Lock the repo in the given dir and given repo's version.
+ * Lock the repo in the given dir and given version.
  *
- * @param {int} version
+ * @param {number} version
  * @param {string} dir
- * @returns {Promise<Object>}
  */
-exports.lock = async (version, dir) => {
+async function lock (version, dir) {
   const file = `${dir}/${lockFile}`
   log('locking %s', file)
-  const release = await lock(dir, { lockfilePath: file })
+  const release = await properLock(dir, { lockfilePath: file })
   return {
     close: () => {
       log('releasing lock %s', file)
       return release()
     }
   }
+}
+
+module.exports = {
+  lock
 }

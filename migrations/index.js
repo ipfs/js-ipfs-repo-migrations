@@ -1,8 +1,13 @@
 'use strict'
 
+/**
+ * @type {import('../src/types').Migration}
+ */
 const emptyMigration = {
   description: 'Empty migration.',
+  // @ts-ignore
   migrate: () => {},
+  // @ts-ignore
   revert: () => {},
   empty: true
 }

@@ -5,6 +5,9 @@
  * to revert.
  */
 class NonReversibleMigrationError extends Error {
+  /**
+   * @param {string} message
+   */
   constructor (message) {
     super(message)
     this.name = 'NonReversibleMigrationError'
@@ -12,14 +15,15 @@ class NonReversibleMigrationError extends Error {
     this.message = message
   }
 }
-
 NonReversibleMigrationError.code = 'ERR_NON_REVERSIBLE_MIGRATION'
-exports.NonReversibleMigrationError = NonReversibleMigrationError
 
 /**
  * Exception raised when repo is not initialized.
  */
 class NotInitializedRepoError extends Error {
+  /**
+   * @param {string} message
+   */
   constructor (message) {
     super(message)
     this.name = 'NotInitializedRepoError'
@@ -27,14 +31,15 @@ class NotInitializedRepoError extends Error {
     this.message = message
   }
 }
-
 NotInitializedRepoError.code = 'ERR_NOT_INITIALIZED_REPO'
-exports.NotInitializedRepoError = NotInitializedRepoError
 
 /**
  * Exception raised when required parameter is not provided.
  */
 class RequiredParameterError extends Error {
+  /**
+   * @param {string} message
+   */
   constructor (message) {
     super(message)
     this.name = 'RequiredParameterError'
@@ -42,14 +47,15 @@ class RequiredParameterError extends Error {
     this.message = message
   }
 }
-
 RequiredParameterError.code = 'ERR_REQUIRED_PARAMETER'
-exports.RequiredParameterError = RequiredParameterError
 
 /**
  * Exception raised when value is not valid.
  */
 class InvalidValueError extends Error {
+  /**
+   * @param {string} message
+   */
   constructor (message) {
     super(message)
     this.name = 'InvalidValueError'
@@ -57,14 +63,15 @@ class InvalidValueError extends Error {
     this.message = message
   }
 }
-
 InvalidValueError.code = 'ERR_INVALID_VALUE'
-exports.InvalidValueError = InvalidValueError
 
 /**
  * Exception raised when config is not passed.
  */
 class MissingRepoOptionsError extends Error {
+  /**
+   * @param {string} message
+   */
   constructor (message) {
     super(message)
     this.name = 'MissingRepoOptionsError'
@@ -72,6 +79,12 @@ class MissingRepoOptionsError extends Error {
     this.message = message
   }
 }
-
 MissingRepoOptionsError.code = 'ERR_MISSING_REPO_OPTIONS'
-exports.MissingRepoOptionsError = MissingRepoOptionsError
+
+module.exports = {
+  NonReversibleMigrationError,
+  NotInitializedRepoError,
+  RequiredParameterError,
+  InvalidValueError,
+  MissingRepoOptionsError
+}

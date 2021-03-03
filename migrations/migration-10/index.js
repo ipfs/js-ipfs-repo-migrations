@@ -4,10 +4,24 @@ const {
   createStore,
   findLevelJs
 } = require('../../src/utils')
-const { Key } = require('interface-datastore')
 const fromString = require('uint8arrays/from-string')
 const toString = require('uint8arrays/to-string')
 
+/**
+ * @typedef {import('../../src/types').Migration} Migration
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
+ *
+ * @typedef {{ type: 'del', key: string | Uint8Array } | { type: 'put', key: string | Uint8Array, value: Uint8Array }} Operation
+ * @typedef {function (string, Uint8Array): Operation[]} UpgradeFunction
+ * @typedef {function (Uint8Array, Uint8Array): Operation[]} DowngradeFunction
+ */
+
+ /**
+  * @param {string} name
+  * @param {Datastore} store
+  * @param {(message: string) => void} onProgress
+  */
 async function keysToBinary (name, store, onProgress = () => {}) {
   let db = findLevelJs(store)
 
@@ -20,14 +34,24 @@ async function keysToBinary (name, store, onProgress = () => {}) {
 
   onProgress(`Upgrading ${name}`)
 
-  await withEach(db, (key, value) => {
+  /**
+   * @type {UpgradeFunction}
+   */
+  const upgrade = (key, value) => {
     return [
       { type: 'del', key: key },
       { type: 'put', key: fromString(key), value: value }
     ]
-  })
+  }
+
+  await withEach(db, upgrade)
 }
 
+ /**
+  * @param {string} name
+  * @param {Datastore} store
+  * @param {(message: string) => void} onProgress
+  */
 async function keysToStrings (name, store, onProgress = () => {}) {
   let db = findLevelJs(store)
 
@@ -40,14 +64,26 @@ async function keysToStrings (name, store, onProgress = () => {}) {
 
   onProgress(`Downgrading ${name}`)
 
-  await withEach(db, (key, value) => {
+  /**
+   * @type {DowngradeFunction}
+   */
+  const downgrade = (key, value) => {
     return [
       { type: 'del', key: key },
       { type: 'put', key: toString(key), value: value }
     ]
-  })
+  }
+
+  await withEach(db, downgrade)
 }
 
+/**
+ *
+ * @param {string} repoPath
+ * @param {any} repoOptions
+ * @param {MigrationProgressCallback} onProgress
+ * @param {*} fn
+ */
 async function process (repoPath, repoOptions, onProgress, fn) {
   const datastores = Object.keys(repoOptions.storageBackends)
     .filter(key => repoOptions.storageBackends[key].name === 'LevelDatastore')
@@ -63,9 +99,14 @@ async function process (repoPath, repoOptions, onProgress, fn) {
     await store.open()
 
     try {
-      await fn(name, store, (message) => {
-        onProgress(parseInt((migrated / datastores.length) * 100), message)
-      })
+      /**
+       * @param {string} message
+       */
+      const progress = (message) => {
+        onProgress(Math.round((migrated / datastores.length) * 100), message)
+      }
+
+      await fn(name, store, progress)
     } finally {
       migrated++
       store.close()
@@ -75,6 +116,7 @@ async function process (repoPath, repoOptions, onProgress, fn) {
   onProgress(100, `Migrated ${datastores.length} dbs`)
 }
 
+/** @type {Migration} */
 module.exports = {
   version: 10,
   description: 'Migrates datastore-level keys to binary',
@@ -87,23 +129,25 @@ module.exports = {
 }
 
 /**
- * @typedef {Uint8Array|string} Key
- * @typedef {Uint8Array} Value
- * @typedef {{ type: 'del', key: Key } | { type: 'put', key: Key, value: Value }} Operation
- *
  * Uses the upgrade strategy from level-js@5.x.x - note we can't call the `.upgrade` command
  * directly because it will be removed in level-js@6.x.x and we can't guarantee users will
  * have migrated by then - e.g. they may jump from level-js@4.x.x straight to level-js@6.x.x
  * so we have to duplicate the code here.
  *
- * @param {import('interface-datastore').Datastore} db
- * @param {function (Key, Value): Operation[]} fn
+ * @param {any} db
+ * @param {UpgradeFunction | DowngradeFunction} fn
+ * @return {Promise<void>}
  */
 function withEach (db, fn) {
+  /**
+   * @param {Operation[]} operations
+   * @param {(error?: Error) => void} next
+   */
   function batch (operations, next) {
     const store = db.store('readwrite')
     const transaction = store.transaction
     let index = 0
+    /** @type {Error | undefined} */
     let error
 
     transaction.onabort = () => next(error || transaction.error || new Error('aborted by user'))
@@ -132,26 +176,43 @@ function withEach (db, fn) {
   return new Promise((resolve, reject) => {
     const it = db.iterator()
     // raw keys and values only
-    it._deserializeKey = it._deserializeValue = (data) => data
+    /**
+     * @template T
+     * @param {T} data
+     */
+    const id = (data) => data
+    it._deserializeKey = it._deserializeValue = id
     next()
 
     function next () {
-      it.next((err, key, value) => {
+      /**
+       * @param {Error | undefined} err
+       * @param {string | undefined} key
+       * @param {Uint8Array} value
+       */
+      const handleNext = (err, key, value) => {
         if (err || key === undefined) {
-          it.end((err2) => {
+          /**
+           * @param {Error | undefined} err2
+           */
+          const handleEnd = (err2) => {
             if (err2) {
               reject(err2)
               return
             }
 
             resolve()
-          })
+          }
+
+          it.end(handleEnd)
 
           return
         }
 
+        // @ts-ignore
         batch(fn(key, value), next)
-      })
+      }
+      it.next(handleNext)
     }
   })
 }

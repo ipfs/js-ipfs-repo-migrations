@@ -3,14 +3,17 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const cbor = require('borc')
+const cbor = require('cborg')
 const migration = require('../../migrations/migration-9')
 const { cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
 const { createStore } = require('../../src/utils')
 const CID = require('cids')
-const CarDatastore = require('datastore-car')
+const { CarReader } = require('@ipld/car')
 const loadFixture = require('aegir/utils/fixtures')
 const multibase = require('multibase')
+const parallelBatch = require('it-parallel-batch')
+const map = require('it-map')
+const drain = require('it-drain')
 
 function pinToCid (key, pin) {
   const buf = multibase.encoding('base32upper').decode(key.toString().split('/').pop())
@@ -75,20 +78,34 @@ const nonDagPbDirectPins = [
 ]
 
 async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expectedRoot }) {
-  const car = await CarDatastore.readBuffer(carBuf)
+  const car = await CarReader.fromBytes(carBuf)
   const [actualRoot] = await car.getRoots()
 
   expect(actualRoot.toString()).to.equal(expectedRoot.toString())
   await blockstore.open()
 
-  for await (const { key, value } of car.query()) {
-    await blockstore.put(cidToKey(new CID(key.toString())), value)
+  const concurrency = 50
+
+  /**
+   * @param {CID} cid
+   * @param {Uint8Array} bytes
+   */
+  const put = (cid, bytes) => {
+    return blockstore.put(cidToKey(new CID(cid.toString())), bytes)
   }
+
+  // do the puts in parallel batches to make it faster
+  await drain(
+    parallelBatch(
+      map(car.blocks(), ({ cid, bytes }) => () => put(cid, bytes)),
+      concurrency
+    )
+  )
 
   await blockstore.close()
 
   await datastore.open()
-  await datastore.put(PIN_DS_KEY, actualRoot.multihash)
+  await datastore.put(PIN_DS_KEY, actualRoot.multihash.bytes)
   await datastore.close()
 }
 

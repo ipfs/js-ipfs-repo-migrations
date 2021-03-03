@@ -1,3 +1,4 @@
+/* eslint complexity: ["error", 27] */
 'use strict'
 
 const defaultMigrations = require('../migrations')
@@ -7,6 +8,12 @@ const errors = require('./errors')
 
 const log = require('debug')('ipfs:repo:migrator')
 
+/**
+ * @typedef {import('./types').Migration} Migration
+ * @typedef {import('./types').ProgressCallback} ProgressCallback
+ * @typedef {import('./types').MigrationProgressCallback} MigrationProgressCallback
+ */
+
 exports.getCurrentRepoVersion = repoVersion.getVersion
 exports.errors = errors
 
@@ -14,8 +21,7 @@ exports.errors = errors
  * Returns the version of latest migration.
  * If no migrations are present returns 0.
  *
- * @param {?Array} migrations - Array of migrations to consider. If undefined, the bundled migrations are used. Mainly for testing purpose.
- * @returns {int}
+ * @param {Migration[]} [migrations] - Array of migrations to consider. If undefined, the bundled migrations are used. Mainly for testing purpose.
  */
 function getLatestMigrationVersion (migrations) {
   migrations = migrations || defaultMigrations
@@ -36,14 +42,13 @@ exports.getLatestMigrationVersion = getLatestMigrationVersion
  * Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
- * @param {Object} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
- * @param {int} toVersion - Version to which the repo should be migrated.
- * @param {Object?} options - Options for migration
- * @param {boolean?} options.ignoreLock - Won't lock the repo for applying the migrations. Use with caution.
- * @param {?Function} options.onProgress - Callback which will be called after each executed migration to report progress
- * @param {boolean?} options.isDryRun - Allows to simulate the execution of the migrations without any effect.
- * @param {?Array} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
- * @returns {Promise<void>}
+ * @param {object} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
+ * @param {number} toVersion - Version to which the repo should be migrated.
+ * @param {object} [options] - Options for migration
+ * @param {boolean} [options.ignoreLock] - Won't lock the repo for applying the migrations. Use with caution.
+ * @param {ProgressCallback} [options.onProgress] - Callback which will be called after each executed migration to report progress
+ * @param {boolean} [options.isDryRun] - Allows to simulate the execution of the migrations without any effect.
+ * @param {Migration[]} [options.migrations] - Array of migrations to perform. If undefined, the bundled migrations are used. Mainly for testing purpose.
  */
 async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
@@ -97,7 +102,8 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
 
       try {
         if (!isDryRun) {
-          let progressCallback
+          /** @type {MigrationProgressCallback} */
+          let progressCallback = () => {}
 
           if (onProgress) { // eslint-disable-line max-depth
             progressCallback = (percent, message) => onProgress(migration.version, percent.toFixed(2), message)
@@ -123,7 +129,7 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
 
     log('Repo successfully migrated', toVersion !== undefined ? `to version ${toVersion}!` : 'to latest version!')
   } finally {
-    if (!isDryRun && !ignoreLock) {
+    if (!isDryRun && !ignoreLock && lock) {
       await lock.close()
     }
   }
@@ -138,14 +144,13 @@ exports.migrate = migrate
  * Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)
  *
  * @param {string} path - Path to initialized (!) JS-IPFS repo
- * @param {Object} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
- * @param {int} toVersion - Version to which the repo will be reverted.
- * @param {Object?} options - Options for the reversion
- * @param {?Function} options.onProgress - Callback which will be called after each reverted migration to report progress
- * @param {boolean?} options.isDryRun - Allows to simulate the execution of the reversion without any effects. Make sense to utilize onProgress with this argument.
- * @param {boolean?} options.ignoreLock - Won't lock the repo for reverting the migrations. Use with caution.
- * @param {?Array} options.migrations - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
- * @returns {Promise<void>}
+ * @param {object} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
+ * @param {number} toVersion - Version to which the repo will be reverted.
+ * @param {object} [options] - Options for the reversion
+ * @param {ProgressCallback} [options.onProgress] - Callback which will be called after each reverted migration to report progress
+ * @param {boolean} [options.isDryRun] - Allows to simulate the execution of the reversion without any effects. Make sense to utilize onProgress with this argument.
+ * @param {boolean} [options.ignoreLock] - Won't lock the repo for reverting the migrations. Use with caution.
+ * @param {Migration[]} [options.migrations] - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
  */
 async function revert (path, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
@@ -200,7 +205,8 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
 
       try {
         if (!isDryRun) {
-          let progressCallback
+          /** @type {MigrationProgressCallback} */
+          let progressCallback = () => {}
 
           if (onProgress) { // eslint-disable-line max-depth
             progressCallback = (percent, message) => onProgress(migration.version, percent.toFixed(2), message)
@@ -226,7 +232,7 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
 
     log(`All migrations successfully reverted to version ${toVersion}!`)
   } finally {
-    if (!isDryRun && !ignoreLock) {
+    if (!isDryRun && !ignoreLock && lock) {
       await lock.close()
     }
   }
@@ -237,11 +243,10 @@ exports.revert = revert
 /**
  * Function checks if all migrations in given range are available.
  *
- * @param {Array} migrations
- * @param {int} fromVersion
- * @param {int} toVersion
+ * @param {Migration[]} migrations
+ * @param {number} fromVersion
+ * @param {number} toVersion
  * @param {boolean} checkReversibility - Will additionally checks if all the migrations in the range are reversible
- * @returns {void}
  */
 function verifyAvailableMigrations (migrations, fromVersion, toVersion, checkReversibility = false) {
   let migrationCounter = 0
