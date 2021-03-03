@@ -6,5 +6,8 @@
   "include": [
     "src",
     "migrations"
+  ],
+  "exclude": [
+    "migrations/migration-9/pin.js"
   ]
 }

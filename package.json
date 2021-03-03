@@ -29,7 +29,10 @@
     "url": "https://github.com/ipfs/js-ipfs-repo-migrations.git"
   },
   "scripts": {
-    "prepare": "aegir build --no-bundle",
+    "prepare": "run-s prepare:*",
+    "prepare:proto": "pbjs -t static-module -w commonjs --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o migrations/migration-9/pin.js migrations/migration-9/pin.proto",
+    "prepare:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
+    "prepare:types": "aegir build --no-bundle",
     "new-migration": "./src/cli.js add",
     "test": "aegir test",
     "test:node": "aegir test --target node",
@@ -56,7 +59,6 @@
     "multicodec": "^3.0.1",
     "multihashing-async": "^2.0.0",
     "proper-lockfile": "^4.1.1",
-    "protons": "^2.0.0",
     "uint8arrays": "^2.0.5",
     "varint": "^6.0.0"
   },
@@ -77,6 +79,7 @@
     "level-5": "npm:level@^5.0.0",
     "level-6": "npm:level@^6.0.0",
     "ncp": "^2.0.0",
+    "npm-run-all": "^4.1.5",
     "readable-stream": "^3.6.0",
     "rimraf": "^3.0.0",
     "sinon": "^9.0.2",

@@ -1,8 +1,14 @@
 'use strict'
 
 const CID = require('cids')
-// @ts-ignore
-const protobuf = require('protons')
+const {
+  ipfs: {
+    pin: {
+      Set: PinSet
+    }
+  }
+} = require('./pin')
+
 // @ts-ignore
 const fnv1a = require('fnv1a')
 const varint = require('varint')
@@ -10,16 +16,12 @@ const dagpb = require('ipld-dag-pb')
 const DAGNode = require('ipld-dag-pb/src/dag-node/dagNode')
 const DAGLink = require('ipld-dag-pb/src/dag-link/dagLink')
 const multihash = require('multihashing-async').multihash
-// @ts-ignore
-const pbSchema = require('./pin.proto')
 const { cidToKey, DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const uint8ArrayCompare = require('uint8arrays/compare')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayEquals = require('uint8arrays/equals')
-
-const pb = protobuf(pbSchema)
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
@@ -55,7 +57,12 @@ function readHeader (rootNode) {
   }
 
   const hdrSlice = rootData.slice(vBytes, hdrLength + vBytes)
-  const header = pb.Set.decode(hdrSlice)
+  const header = PinSet.toObject(PinSet.decode(hdrSlice), {
+    defaults: false,
+    arrays: true,
+    longs: Number,
+    objects: false
+  })
 
   if (header.version !== 1) {
     throw new Error(`Unsupported Set version: ${header.version}`)
@@ -146,11 +153,11 @@ function storeItems (blockstore, items) {
    * @param {number} depth
    */
   async function storePins (pins, depth) {
-    const pbHeader = pb.Set.encode({
+    const pbHeader = PinSet.encode({
       version: 1,
       fanout: DEFAULT_FANOUT,
       seed: depth
-    })
+    }).finish()
 
     const header = varint.encode(pbHeader.length)
     const headerBuf = uint8ArrayConcat([header, pbHeader])
