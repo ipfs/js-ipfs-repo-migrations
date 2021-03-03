@@ -11,9 +11,7 @@ const CID = require('cids')
 const { CarReader } = require('@ipld/car')
 const loadFixture = require('aegir/utils/fixtures')
 const multibase = require('multibase')
-const parallelBatch = require('it-parallel-batch')
-const map = require('it-map')
-const drain = require('it-drain')
+const batch = require('it-batch')
 
 function pinToCid (key, pin) {
   const buf = multibase.encoding('base32upper').decode(key.toString().split('/').pop())
@@ -86,21 +84,15 @@ async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expe
 
   const concurrency = 50
 
-  /**
-   * @param {CID} cid
-   * @param {Uint8Array} bytes
-   */
-  const put = (cid, bytes) => {
-    return blockstore.put(cidToKey(new CID(cid.toString())), bytes)
-  }
+  for await (const b of batch(car.blocks(), concurrency)) {
+    const batch = blockstore.batch()
 
-  // do the puts in parallel batches to make it faster
-  await drain(
-    parallelBatch(
-      map(car.blocks(), ({ cid, bytes }) => () => put(cid, bytes)),
-      concurrency
-    )
-  )
+    for await (const { cid, bytes } of b) {
+      batch.put(cidToKey(new CID(cid.toString())), bytes)
+    }
+
+    await batch.commit()
+  }
 
   await blockstore.close()
 
