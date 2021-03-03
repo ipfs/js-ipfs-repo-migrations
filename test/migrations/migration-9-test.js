@@ -163,7 +163,9 @@ module.exports = (setup, cleanup, repoOptions) => {
           })
 
           it('should migrate pins forward', async () => {
-            await migration.migrate(dir, repoOptions, () => {})
+            await migration.migrate(dir, repoOptions, (percent, message) => {
+              console.info(Math.round(percent) + '%', message) // eslint-disable-line no-console
+            })
 
             await pinstore.open()
             let migratedDirect = 0
@@ -212,7 +214,9 @@ module.exports = (setup, cleanup, repoOptions) => {
           })
 
           it('should migrate pins backward', async () => {
-            await migration.revert(dir, repoOptions, () => {})
+            await migration.revert(dir, repoOptions, (percent, message) => {
+              console.info(Math.round(percent) + '%', message) // eslint-disable-line no-console
+            })
 
             await assertPinsetRootIsPresent(datastore, pinset)
           })
