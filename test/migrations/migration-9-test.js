@@ -83,15 +83,22 @@ async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expe
   await blockstore.open()
 
   const concurrency = 50
+  let blocks = 0
 
   for await (const b of batch(car.blocks(), concurrency)) {
+    const start = Date.now()
     const batch = blockstore.batch()
 
     for await (const { cid, bytes } of b) {
       batch.put(cidToKey(new CID(cid.toString())), bytes)
+      blocks++
     }
 
     await batch.commit()
+
+    const took = Date.now() - start
+
+    console.info('wrote', blocks, 'blocks in', (took / 1000), 's', Math.round(took / blocks), 'ms per block') // eslint-disable-line no-console
   }
 
   await blockstore.close()
