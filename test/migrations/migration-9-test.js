@@ -12,7 +12,7 @@ const { CarReader } = require('@ipld/car')
 const loadFixture = require('aegir/utils/fixtures')
 const multibase = require('multibase')
 const batch = require('it-batch')
-const { isBrowser } = require('ipfs-utils/src/env')
+const { isBrowser } = require('wherearewe')
 
 function pinToCid (key, pin) {
   const buf = multibase.encoding('base32upper').decode(key.toString().split('/').pop())
