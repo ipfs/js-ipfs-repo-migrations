@@ -11,8 +11,6 @@ const CID = require('cids')
 const { CarReader } = require('@ipld/car')
 const loadFixture = require('aegir/utils/fixtures')
 const multibase = require('multibase')
-const batch = require('it-batch')
-const { isBrowser } = require('wherearewe')
 
 function pinToCid (key, pin) {
   const buf = multibase.encoding('base32upper').decode(key.toString().split('/').pop())
@@ -83,28 +81,14 @@ async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expe
   expect(actualRoot.toString()).to.equal(expectedRoot.toString())
   await blockstore.open()
 
-  const concurrency = 50
-  let blocks = 0
+  const batch = blockstore.batch()
 
-  for await (const b of batch(car.blocks(), concurrency)) {
-    const start = Date.now()
-    const batch = blockstore.batch()
-
-    for await (const { cid, bytes } of b) {
-      batch.put(cidToKey(new CID(cid.toString())), bytes)
-      blocks++
-    }
-
-    await batch.commit()
-
-    const took = Date.now() - start
-
-    console.info('wrote', blocks, 'blocks in', (took / 1000), 's', Math.round(took / blocks), 'ms per block') // eslint-disable-line no-console
-
-    if (isBrowser) {
-      console.info(await navigator.storage.estimate()) // eslint-disable-line no-console
-    }
+  for await (const { cid, bytes } of car.blocks()) {
+    // if we don't create a new Uint8Array, IDB writes the whole backing buffer into the db
+    batch.put(cidToKey(new CID(cid.toString())), new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength))
   }
+
+  await batch.commit()
 
   await blockstore.close()
 
@@ -168,13 +152,7 @@ module.exports = (setup, cleanup, repoOptions) => {
           })
 
           it('should migrate pins forward', async () => {
-            await migration.migrate(dir, repoOptions, (percent, message) => {
-              console.info(Math.round(percent) + '%', message) // eslint-disable-line no-console
-
-              if (isBrowser) {
-                navigator.storage.estimate().then(console.info) // eslint-disable-line no-console
-              }
-            })
+            await migration.migrate(dir, repoOptions, () => {})
 
             await pinstore.open()
             let migratedDirect = 0
@@ -223,13 +201,7 @@ module.exports = (setup, cleanup, repoOptions) => {
           })
 
           it('should migrate pins backward', async () => {
-            await migration.revert(dir, repoOptions, (percent, message) => {
-              console.info(Math.round(percent) + '%', message) // eslint-disable-line no-console
-
-              if (isBrowser) {
-                navigator.storage.estimate().then(console.info) // eslint-disable-line no-console
-              }
-            })
+            await migration.revert(dir, repoOptions, () => {})
 
             await assertPinsetRootIsPresent(datastore, pinset)
           })

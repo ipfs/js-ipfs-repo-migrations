@@ -40,10 +40,6 @@ const repoOptions = {
 async function deleteDb (dir) {
   return new Promise((resolve) => {
     const req = globalThis.indexedDB.deleteDatabase(dir)
-
-    req.onblocked = () => {
-      console.error(`${dir} in blocked state`) // eslint-disable-line no-console
-    }
     req.onerror = () => {
       console.error(`Could not delete ${dir}`) // eslint-disable-line no-console
       resolve()
