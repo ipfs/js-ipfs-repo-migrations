@@ -10,8 +10,9 @@ const {
 const { Key } = require('interface-datastore')
 const PIN_DS_KEY = new Key('/local/pins')
 const fs = require('fs')
-const CarDatastore = require('datastore-car')
+const { CarWriter } = require('@ipld/car')
 const path = require('path')
+const { Readable } = require('stream')
 
 const TO_PIN = 9000
 
@@ -97,12 +98,10 @@ const main = async () => {
 
     console.info(`    root: new CID('${cid}'),`)
 
-    const outStream = fs.createWriteStream(path.join(__dirname, fileName))
-    const car = await CarDatastore.writeStream(outStream)
+    const { writer, out } = await CarWriter.create([cid])
+    Readable.from(out).pipe(fs.createWriteStream(path.join(__dirname, fileName)))
 
-    await car.setRoots(cid)
-
-    await walk(cid, car)
+    await walk(cid, writer)
 
     let pins = 0
 
@@ -113,7 +112,7 @@ const main = async () => {
     console.info(`    pins: ${pins}`)
     console.info(`  }${more ? ',' : ''}`)
 
-    await car.close()
+    await writer.close()
   }
 
   async function walk (cid, car, cids = {}) {
@@ -125,7 +124,7 @@ const main = async () => {
 
     const block = await ipfs.block.get(cid)
 
-    car.put(cid, block.data)
+    car.put({ cid, bytes: block.data })
 
     const { value: node } = await ipfs.dag.get(cid)
 

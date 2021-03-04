@@ -3,13 +3,13 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
-const cbor = require('cbor')
+const cbor = require('cborg')
 const migration = require('../../migrations/migration-9')
 const { cidToKey, PIN_DS_KEY } = require('../../migrations/migration-9/utils')
 const { createStore } = require('../../src/utils')
 const CID = require('cids')
-const CarDatastore = require('datastore-car')
-const loadFixture = require('aegir/fixtures')
+const { CarReader } = require('@ipld/car')
+const loadFixture = require('aegir/utils/fixtures')
 const multibase = require('multibase')
 
 function pinToCid (key, pin) {
@@ -75,20 +75,25 @@ const nonDagPbDirectPins = [
 ]
 
 async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expectedRoot }) {
-  const car = await CarDatastore.readBuffer(carBuf)
+  const car = await CarReader.fromBytes(carBuf)
   const [actualRoot] = await car.getRoots()
 
   expect(actualRoot.toString()).to.equal(expectedRoot.toString())
   await blockstore.open()
 
-  for await (const { key, value } of car.query()) {
-    await blockstore.put(cidToKey(new CID(key.toString())), value)
+  const batch = blockstore.batch()
+
+  for await (const { cid, bytes } of car.blocks()) {
+    // if we don't create a new Uint8Array, IDB writes the whole backing buffer into the db
+    batch.put(cidToKey(new CID(cid.toString())), new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength))
   }
+
+  await batch.commit()
 
   await blockstore.close()
 
   await datastore.open()
-  await datastore.put(PIN_DS_KEY, actualRoot.multihash)
+  await datastore.put(PIN_DS_KEY, actualRoot.multihash.bytes)
   await datastore.close()
 }
 
@@ -102,7 +107,7 @@ async function assertPinsetRootIsPresent (datastore, pinset) {
 
 module.exports = (setup, cleanup, repoOptions) => {
   describe('migration 9', function () {
-    this.timeout(480 * 1000)
+    this.timeout(1000 * 1000)
 
     let dir
     let datastore

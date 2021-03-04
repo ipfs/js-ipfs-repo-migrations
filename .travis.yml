@@ -1,5 +1,6 @@
 language: node_js
 cache: npm
+dist: bionic
 
 branches:
   only:
@@ -27,7 +28,6 @@ jobs:
   include:
     - stage: check
       script:
-        - npx aegir commitlint --travis
         - npx aegir dep-check
         - npm run lint
 
@@ -41,7 +41,7 @@ jobs:
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -- --browsers FirefoxHeadless
+      script: npx aegir test -t browser -- --browser firefox
 
     - stage: test
       name: electron-main

@@ -37,7 +37,27 @@ const repoOptions = {
   }
 }
 
+async function deleteDb (dir) {
+  return new Promise((resolve) => {
+    const req = globalThis.indexedDB.deleteDatabase(dir)
+    req.onerror = () => {
+      console.error(`Could not delete ${dir}`) // eslint-disable-line no-console
+      resolve()
+    }
+    req.onsuccess = () => {
+      resolve()
+    }
+  })
+}
+
 async function repoCleanup (dir) {
+  await deleteDb(dir)
+  await deleteDb('level-js-' + dir)
+
+  for (const type of ['blocks', 'keys', 'datastore', 'pins']) {
+    await deleteDb(dir + '/' + type)
+    await deleteDb('level-js-' + dir + '/' + type)
+  }
 }
 
 describe('Browser specific tests', () => {

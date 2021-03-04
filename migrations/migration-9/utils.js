@@ -14,6 +14,9 @@ const PinTypes = {
   recursive: 'recursive'
 }
 
+/**
+ * @param {import('cids')} cid
+ */
 function cidToKey (cid) {
   return new Key(`/${multibase.encoding('base32upper').encode(cid.multihash)}`)
 }

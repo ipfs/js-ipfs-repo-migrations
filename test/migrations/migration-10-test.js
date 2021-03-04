@@ -8,11 +8,12 @@ const { createStore } = require('../../src/utils')
 const migration = require('../../migrations/migration-10')
 const Key = require('interface-datastore').Key
 const fromString = require('uint8arrays/from-string')
+const equals = require('uint8arrays/equals')
 const Level5 = require('level-5')
 const Level6 = require('level-6')
 
 const keys = {
-  CIQCKN76QUQUGYCHIKGFE6V6P3GJ2W26YFFPQW6YXV7NFHH3QB2RI3I: 'hello',
+  CIQCKN76QUQUGYCHIKGFE6V6P3GJ2W26YFFPQW6YXV7NFHH3QB2RI3I: fromString('hello'),
   CIQKKLBWAIBQZOIS5X7E32LQAL6236OUKZTMHPQSFIXPWXNZHQOV7JQ: fromString('derp')
 }
 
@@ -36,7 +37,7 @@ async function validate (dir, backend, repoOptions) {
     const key = new Key(`/${name}`)
 
     expect(await store.has(key)).to.be.true(`Could not read key ${name}`)
-    expect(store.get(key)).to.eventually.equal(keys[name], `Could not read value for key ${keys[name]}`)
+    expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]}`)
   }
 
   await store.close()

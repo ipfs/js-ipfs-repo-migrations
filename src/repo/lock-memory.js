@@ -3,14 +3,17 @@
 const debug = require('debug')
 const log = debug('ipfs:repo:migrator:repo_mem_lock')
 const lockFile = 'repo.lock'
+
+/**
+ * @type {Record<string, boolean>}
+ */
 const LOCKS = {}
 
 /**
  * Lock the repo in the given dir and for given repo version.
  *
- * @param {int} version
+ * @param {number} version
  * @param {string} dir
- * @returns {Promise<Object>}
  */
 exports.lock = async function lock (version, dir) { // eslint-disable-line require-await
   const file = dir + '/' + lockFile

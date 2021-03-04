@@ -8,6 +8,13 @@ const uint8ArrayToString = require('uint8arrays/to-string')
 const { createStore } = require('../../src/utils')
 const length = require('it-length')
 
+/**
+ * @typedef {import('../../src/types').Migration} Migration
+ */
+
+/**
+ * @param {Key} key
+ */
 function keyToMultihash (key) {
   const buf = mb.decode(`b${key.toString().slice(1)}`)
 
@@ -18,11 +25,14 @@ function keyToMultihash (key) {
   multihash = mb.encode('base32', multihash).slice(1)
 
   // Should be uppercase for interop with go
-  multihash = uint8ArrayToString(multihash).toUpperCase()
+  const multihashStr = uint8ArrayToString(multihash).toUpperCase()
 
-  return new Key(`/${multihash}`, false)
+  return new Key(`/${multihashStr}`, false)
 }
 
+/**
+ * @param {Key} key
+ */
 function keyToCid (key) {
   const buf = mb.decode(`b${key.toString().slice(1)}`)
 
@@ -32,22 +42,26 @@ function keyToCid (key) {
   return new Key(`/${uint8ArrayToString(multihash)}`.toUpperCase(), false)
 }
 
+/**
+ * @param {string} repoPath
+ * @param {*} repoOptions
+ * @param {(percent: number, message: string) => void} onProgress
+ * @param {(key: Key) => Key} keyFunction
+ */
 async function process (repoPath, repoOptions, onProgress, keyFunction) {
   const blockstore = createStore(repoPath, 'blocks', repoOptions)
   await blockstore.open()
 
   let blockCount
 
-  if (onProgress) {
-    blockCount = await length(blockstore.query({
-      keysOnly: true,
-      filters: [({ key }) => {
-        const newKey = keyFunction(key)
+  blockCount = await length(blockstore.query({
+    keysOnly: true,
+    filters: [({ key }) => {
+      const newKey = keyFunction(key)
 
-        return newKey.toString() !== key.toString()
-      }]
-    }))
-  }
+      return newKey.toString() !== key.toString()
+    }]
+  }))
 
   try {
     let counter = 0
@@ -62,9 +76,7 @@ async function process (repoPath, repoOptions, onProgress, keyFunction) {
         await blockstore.delete(block.key)
         await blockstore.put(newKey, block.value)
 
-        if (onProgress) {
-          onProgress((counter / blockCount) * 100, `Migrated Block from ${block.key} to ${newKey}`)
-        }
+        onProgress((counter / blockCount) * 100, `Migrated Block from ${block.key} to ${newKey}`)
       }
     }
   } finally {
@@ -72,6 +84,7 @@ async function process (repoPath, repoOptions, onProgress, keyFunction) {
   }
 }
 
+/** @type {Migration} */
 module.exports = {
   version: 8,
   description: 'Transforms key names into base32 encoding and converts Block store to use bare multihashes encoded as base32',

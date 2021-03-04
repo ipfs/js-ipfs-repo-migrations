@@ -4,7 +4,11 @@ const log = require('debug')('ipfs:repo:migrator:repo:init')
 const { CONFIG_KEY, VERSION_KEY, createStore } = require('../utils')
 const { MissingRepoOptionsError } = require('../errors')
 
-exports.isRepoInitialized = async function isRepoInitialized (path, repoOptions) {
+/**
+ * @param {string} path
+ * @param {any} repoOptions
+ */
+async function isRepoInitialized (path, repoOptions) {
   if (!repoOptions) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
@@ -30,4 +34,8 @@ exports.isRepoInitialized = async function isRepoInitialized (path, repoOptions)
       await root.close()
     }
   }
+}
+
+module.exports = {
+  isRepoInitialized
 }

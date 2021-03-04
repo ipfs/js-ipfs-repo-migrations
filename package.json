@@ -17,16 +17,22 @@
     "src",
     "dist"
   ],
+  "types": "./dist/src/index.d.ts",
   "main": "src/index.js",
   "browser": {
     "./src/repo/lock.js": "./src/repo/lock-memory.js",
-    "datastore-fs": "datastore-level"
+    "datastore-fs": "datastore-level",
+    "@ipld/car": "@ipld/car/esm/car-browser.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/js-ipfs-repo-migrations.git"
   },
   "scripts": {
+    "prepare": "run-s prepare:*",
+    "prepare:proto": "pbjs -t static-module -w commonjs --force-number --no-verify --no-delimited --no-create --no-beautify --no-defaults --lint eslint-disable -o migrations/migration-9/pin.js migrations/migration-9/pin.proto",
+    "prepare:proto-types": "pbts -o migrations/migration-9/pin.d.ts migrations/migration-9/pin.js",
+    "prepare:types": "aegir build --no-bundle",
     "new-migration": "./src/cli.js add",
     "test": "aegir test",
     "test:node": "aegir test --target node",
@@ -41,34 +47,41 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "cbor": "^6.0.1",
+    "cborg": "^1.0.4",
     "cids": "^1.0.0",
     "datastore-core": "^3.0.0",
     "debug": "^4.1.0",
     "fnv1a": "^1.0.1",
     "interface-datastore": "^3.0.3",
-    "ipld-dag-pb": "^0.20.0",
+    "ipld-dag-pb": "^0.21.0",
     "it-length": "^1.0.1",
-    "multibase": "^3.0.0",
-    "multicodec": "^2.0.0",
+    "multibase": "^4.0.1",
+    "multicodec": "^3.0.1",
     "multihashing-async": "^2.0.0",
     "proper-lockfile": "^4.1.1",
-    "protons": "^2.0.0",
+    "protobufjs": "^6.10.2",
     "uint8arrays": "^2.0.5",
     "varint": "^6.0.0"
   },
   "devDependencies": {
-    "aegir": "^30.3.0",
-    "datastore-car": "^1.2.0",
+    "@ipld/car": "^0.1.2",
+    "@types/debug": "^4.1.5",
+    "@types/varint": "^6.0.0",
+    "aegir": "^31.0.0",
+    "assert": "^2.0.0",
     "datastore-fs": "^3.0.0",
-    "datastore-level": "^3.0.0",
+    "datastore-level": "^4.0.0",
+    "events": "^3.2.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
     "level-5": "npm:level@^5.0.0",
     "level-6": "npm:level@^6.0.0",
     "ncp": "^2.0.0",
+    "npm-run-all": "^4.1.5",
+    "readable-stream": "^3.6.0",
     "rimraf": "^3.0.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.2",
+    "util": "^0.12.3"
   },
   "engines": {
     "node": ">=10.0.0",
