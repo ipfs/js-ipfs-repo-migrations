@@ -1,3 +1,17 @@
+# [7.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v6.0.0...v7.0.0) (2021-03-04)
+
+
+### Features
+
+* add types ([#66](https://github.com/ipfs/js-ipfs-repo-migrations/issues/66)) ([349f3c8](https://github.com/ipfs/js-ipfs-repo-migrations/commit/349f3c842019edfbaed70fa3642fb280359a5aab))
+
+
+### BREAKING CHANGES
+
+* where there were previously no types, now there are types
+
+
+
 # [6.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v5.0.6...v6.0.0) (2021-01-29)
 
 
