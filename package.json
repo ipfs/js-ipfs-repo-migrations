@@ -22,7 +22,8 @@
   "browser": {
     "./src/repo/lock.js": "./src/repo/lock-memory.js",
     "datastore-fs": "datastore-level",
-    "@ipld/car": "@ipld/car/esm/car-browser.js"
+    "@ipld/car": "@ipld/car/esm/car-browser.js",
+    "cborg": "cborg/esm/cborg.js"
   },
   "repository": {
     "type": "git",
