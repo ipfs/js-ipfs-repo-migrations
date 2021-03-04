@@ -1,1362 +1,446 @@
 <!doctype html>
-<html lang="en">
+<html class="default no-js">
 <head>
-  <meta charset='utf-8'>
-  <title>ipfs-repo-migrations 5.0.5 | Documentation</title>
-  <meta name='description' content='Migration framework for versioning of JS IPFS Repo'>
-  <meta name='viewport' content='width=device-width,initial-scale=1'>
-  <link href='assets/bass.css' rel='stylesheet'>
-  <link href='assets/style.css' rel='stylesheet'>
-  <link href='assets/github.css' rel='stylesheet'>
-  <link href='assets/split.css' rel='stylesheet'>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ipfs-repo-migrations - v7.0.0</title>
+	<meta name="description" content="Documentation for ipfs-repo-migrations - v7.0.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
 </head>
-<body class='documentation m0'>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'>ipfs-repo-migrations</h3>
-          <div class='mb1'><code>5.0.5</code></div>
-          <input
-            placeholder='Filter'
-            id='filter-input'
-            class='col12 block input'
-            spellcheck='false'
-            autocapitalize='off'
-            autocorrect='off'
-            type='text' />
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
-              
-                
-                <li><a
-                  href='#getlatestmigrationversion'
-                  class="">
-                  getLatestMigrationVersion
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#migrate'
-                  class="">
-                  migrate
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#revert'
-                  class="">
-                  revert
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#verifyavailablemigrations'
-                  class="">
-                  verifyAvailableMigrations
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#pinproto'
-                  class="">
-                  pin.proto
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#getversion'
-                  class="">
-                  getVersion
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#setversion'
-                  class="">
-                  setVersion
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#lock'
-                  class="">
-                  lock
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#nonreversiblemigrationerror'
-                  class="">
-                  NonReversibleMigrationError
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#notinitializedrepoerror'
-                  class="">
-                  NotInitializedRepoError
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#requiredparametererror'
-                  class="">
-                  RequiredParameterError
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#invalidvalueerror'
-                  class="">
-                  InvalidValueError
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#missingrepooptionserror'
-                  class="">
-                  MissingRepoOptionsError
-                  
-                </a>
-                
-                </li>
-              
-            </ul>
-          </div>
-          <div class='mt1 h6 quiet'>
-            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
-          </div>
-        </div>
-      </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='getlatestmigrationversion'>
-      getLatestMigrationVersion
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/index.js#L20-L28'>
-      <span>src/index.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Returns the version of latest migration.
-If no migrations are present returns 0.</p>
-
-    <div class='pre p1 fill-light mt0'>getLatestMigrationVersion(migrations: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>?): int</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>migrations</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>?)</code>
-	    Array of migrations to consider. If undefined, the bundled migrations are used. Mainly for testing purpose.
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>int</code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='migrate'>
-      migrate
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/index.js#L48-L130'>
-      <span>src/index.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Main function to execute forward migrations.
-It acquire lock on the provided path before doing any migrations.</p>
-<p>Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)</p>
-
-    <div class='pre p1 fill-light mt0'>migrate(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, repoOptions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, toVersion: int, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    Path to initialized (!) JS-IPFS repo
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>repoOptions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
-	    Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>toVersion</span> <code class='quiet'>(int)</code>
-	    Version to which the repo should be migrated.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
-	    Options for migration
-
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.ignoreLock</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?</code>
-  
-    (default <code>false</code>)
-  </td>
-  <td class='break-word'><span>Won't lock the repo for applying the migrations. Use with caution.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.onProgress</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>?</code>
-  </td>
-  <td class='break-word'><span>Callback which will be called after each executed migration to report progress
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.isDryRun</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?</code>
-  
-    (default <code>false</code>)
-  </td>
-  <td class='break-word'><span>Allows to simulate the execution of the migrations without any effect.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.migrations</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>?</code>
-  </td>
-  <td class='break-word'><span>Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='revert'>
-      revert
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/index.js#L150-L233'>
-      <span>src/index.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Main function to execute backward migration (reversion).
-It acquire lock on the provided path before doing any migrations.</p>
-<p>Signature of the progress callback is: function(migrationObject: object, currentMigrationNumber: int, totalMigrationsCount: int)</p>
-
-    <div class='pre p1 fill-light mt0'>revert(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, repoOptions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, toVersion: int, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    Path to initialized (!) JS-IPFS repo
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>repoOptions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
-	    Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>toVersion</span> <code class='quiet'>(int)</code>
-	    Version to which the repo will be reverted.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
-	    Options for the reversion
-
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.ignoreLock</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?</code>
-  
-    (default <code>false</code>)
-  </td>
-  <td class='break-word'><span>Won't lock the repo for reverting the migrations. Use with caution.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.onProgress</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>?</code>
-  </td>
-  <td class='break-word'><span>Callback which will be called after each reverted migration to report progress
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.isDryRun</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?</code>
-  
-    (default <code>false</code>)
-  </td>
-  <td class='break-word'><span>Allows to simulate the execution of the reversion without any effects. Make sense to utilize onProgress with this argument.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.migrations</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>?</code>
-  </td>
-  <td class='break-word'><span>Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='verifyavailablemigrations'>
-      verifyAvailableMigrations
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/index.js#L246-L265'>
-      <span>src/index.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Function checks if all migrations in given range are available.</p>
-
-    <div class='pre p1 fill-light mt0'>verifyAvailableMigrations(migrations: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, fromVersion: int, toVersion: int, checkReversibility: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>): void</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>migrations</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>fromVersion</span> <code class='quiet'>(int)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>toVersion</span> <code class='quiet'>(int)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>checkReversibility</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
-            = <code>false</code>)</code>
-	    Will additionally checks if all the migrations in the range are reversible
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='pinproto'>
-      pin.proto
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/migrations/migration-9/pin.proto.js#L7-L19'>
-      <span>migrations/migration-9/pin.proto.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Protobuf interface
-from go-ipfs/pin/internal/pb/header.proto</p>
-
-    <div class='pre p1 fill-light mt0'>pin.proto</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='getversion'>
-      getVersion
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/repo/version.js#L19-L35'>
-      <span>src/repo/version.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Function that has responsibility to retrieve version of repo from its root datastore's instance.
-This function needs to be cross-repo-version functional to be able to fetch any version number,
-even in case of change of repo's versioning.</p>
-
-    <div class='pre p1 fill-light mt0'>getVersion(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, repoOptions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;int></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>repoOptions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
-	    Options used to create a repo, the same as pased to ipfs-repo
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;int></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='setversion'>
-      setVersion
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/repo/version.js#L45-L54'>
-      <span>src/repo/version.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Function for setting a version in cross-repo-version manner.</p>
-
-    <div class='pre p1 fill-light mt0'>setVersion(path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, version: int, repoOptions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>version</span> <code class='quiet'>(int)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>repoOptions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
-	    Options used to create a repo, the same as pased to ipfs-repo
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;void></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='lock'>
-      lock
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/repo/lock.js#L16-L26'>
-      <span>src/repo/lock.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Lock the repo in the given dir and given repo's version.</p>
-
-    <div class='pre p1 fill-light mt0'>lock(version: int, dir: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>version</span> <code class='quiet'>(int)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>dir</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='nonreversiblemigrationerror'>
-      NonReversibleMigrationError
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/errors.js#L7-L14'>
-      <span>src/errors.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Exception raised when trying to revert migration that is not possible
-to revert.</p>
-
-    <div class='pre p1 fill-light mt0'>new NonReversibleMigrationError(message: any)</div>
-  
-  
-    <p>
-      Extends
-      
-        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
-      
-    </p>
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>message</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='notinitializedrepoerror'>
-      NotInitializedRepoError
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/errors.js#L22-L29'>
-      <span>src/errors.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Exception raised when repo is not initialized.</p>
-
-    <div class='pre p1 fill-light mt0'>new NotInitializedRepoError(message: any)</div>
-  
-  
-    <p>
-      Extends
-      
-        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
-      
-    </p>
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>message</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='requiredparametererror'>
-      RequiredParameterError
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/errors.js#L37-L44'>
-      <span>src/errors.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Exception raised when required parameter is not provided.</p>
-
-    <div class='pre p1 fill-light mt0'>new RequiredParameterError(message: any)</div>
-  
-  
-    <p>
-      Extends
-      
-        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
-      
-    </p>
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>message</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='invalidvalueerror'>
-      InvalidValueError
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/errors.js#L52-L59'>
-      <span>src/errors.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Exception raised when value is not valid.</p>
-
-    <div class='pre p1 fill-light mt0'>new InvalidValueError(message: any)</div>
-  
-  
-    <p>
-      Extends
-      
-        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
-      
-    </p>
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>message</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='missingrepooptionserror'>
-      MissingRepoOptionsError
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/ipfs/js-ipfs-repo-migrations/blob/0ed3b241f23d3792425910b1ddd812c36f330464/src/errors.js#L67-L74'>
-      <span>src/errors.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Exception raised when config is not passed.</p>
-
-    <div class='pre p1 fill-light mt0'>new MissingRepoOptionsError(message: any)</div>
-  
-  
-    <p>
-      Extends
-      
-        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
-      
-    </p>
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>message</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-      </div>
-    </div>
-  <script src='assets/anchor.js'></script>
-  <script src='assets/split.js'></script>
-  <script src='assets/site.js'></script>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">ipfs-repo-migrations - v7.0.0</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>ipfs-repo-migrations - v7.0.0</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#migration-tool-for-js-ipfs-repo-" id="migration-tool-for-js-ipfs-repo-" style="color: inherit; text-decoration: none;">
+					<h1>Migration tool for JS IPFS Repo <!-- omit in toc --></h1>
+				</a>
+				<p><a href="https://travis-ci.com/ipfs/js-ipfs-repo-migrations"><img src="https://flat.badgen.net/travis/ipfs/js-ipfs-repo-migrations" alt="Travis CI"></a>
+					<a href="https://codecov.io/gh/ipfs/js-ipfs-repo-migrations"><img src="https://codecov.io/gh/ipfs/js-ipfs-repo-migrations/branch/master/graph/badge.svg" alt="codecov"></a>
+					<a href="https://david-dm.org/ipfs/js-ipfs-repo-migrations"><img src="https://david-dm.org/ipfs/js-ipfs-repo-migrations.svg?style=flat-square" alt="Dependency Status"></a>
+					<a href="http://ipn.io"><img src="https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square" alt=""></a>
+					<a href="http://ipfs.io/"><img src="https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square" alt=""></a>
+					<a href="http://webchat.freenode.net/?channels=%23ipfs"><img src="https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square" alt=""></a>
+					<a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" alt="standard-readme compliant"></a>
+					<a href="https://github.com/feross/standard"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square" alt="js-standard-style"></a>
+					<img src="https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat-square" alt="">
+				<img src="https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square" alt=""></p>
+				<blockquote>
+					<p>Migration framework for versioning of JS IPFS Repo</p>
+				</blockquote>
+				<p>This package is inspired by the <a href="https://github.com/ipfs/fs-repo-migrations/">go-ipfs repo migration tool</a></p>
+				<a href="#lead-maintainer-" id="lead-maintainer-" style="color: inherit; text-decoration: none;">
+					<h2>Lead Maintainer <!-- omit in toc --></h2>
+				</a>
+				<p><a href="http://github.com/achingbrain">Alex Potsides</a></p>
+				<a href="#table-of-contents-" id="table-of-contents-" style="color: inherit; text-decoration: none;">
+					<h2>Table of Contents <!-- omit in toc --></h2>
+				</a>
+				<ul>
+					<li><a href="#background">Background</a></li>
+					<li><a href="#install">Install</a><ul>
+							<li><a href="#npm">npm</a></li>
+							<li><a href="#use-in-nodejs">Use in Node.js</a></li>
+							<li><a href="#use-in-a-browser-with-browserify-webpack-or-any-other-bundler">Use in a browser with browserify, webpack or any other bundler</a></li>
+						</ul>
+					</li>
+					<li><a href="#usage">Usage</a></li>
+					<li><a href="#api">API</a><ul>
+							<li><a href="#migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid"><code>.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -&gt; Promise&lt;void&gt;</code></a><ul>
+									<li><a href="#onprogressversion-percent-message"><code>onProgress(version, percent, message)</code></a></li>
+								</ul>
+							</li>
+							<li><a href="#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun---promisevoid"><code>.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -&gt; Promise&lt;void&gt;</code></a></li>
+							<li><a href="#getlatestmigrationversion---int"><code>getLatestMigrationVersion() -&gt; int</code></a></li>
+						</ul>
+					</li>
+					<li><a href="#creating-a-new-migration">Creating a new migration</a><ul>
+							<li><a href="#architecture-of-a-migration">Architecture of a migration</a><ul>
+									<li><a href="#migraterepopath-repooptions"><code>.migrate(repoPath, repoOptions)</code></a></li>
+									<li><a href="#revertrepopath-repooptions"><code>.revert(repoPath, repoOptions)</code></a></li>
+								</ul>
+							</li>
+							<li><a href="#browser-vs-nodejs-environments">Browser vs. NodeJS environments</a></li>
+							<li><a href="#guidelines">Guidelines</a></li>
+							<li><a href="#integration-with-js-ipfs">Integration with js-ipfs</a></li>
+							<li><a href="#tests">Tests</a></li>
+							<li><a href="#empty-migrations">Empty migrations</a></li>
+							<li><a href="#migrations-matrix">Migrations matrix</a></li>
+							<li><a href="#migrations">Migrations</a><ul>
+									<li><a href="#7">7</a></li>
+									<li><a href="#8">8</a></li>
+									<li><a href="#9">9</a></li>
+									<li><a href="#10">10</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li><a href="#developer">Developer</a><ul>
+							<li><a href="#module-versioning-notes">Module versioning notes</a></li>
+						</ul>
+					</li>
+					<li><a href="#contribute">Contribute</a></li>
+					<li><a href="#license">License</a></li>
+				</ul>
+				<a href="#background" id="background" style="color: inherit; text-decoration: none;">
+					<h2>Background</h2>
+				</a>
+				<p>As js-ipfs evolves and new technologies, algorithms and data structures are incorporated it is necessary to
+					enable users to transition between versions. Different versions of js-ipfs may expect a different IPFS repo structure or content (see: <a href="https://github.com/ipfs/specs/blob/master/REPO.md">IPFS repo spec</a>, <a href="https://github.com/ipfs/js-ipfs-repo">JS implementation</a> ).
+					So the IPFS repo is versioned, and this package provides a framework to create migrations to transition
+				from one version of IPFS repo to the next/previous version.</p>
+				<p>This framework:</p>
+				<ul>
+					<li>Handles locking/unlocking of repository</li>
+					<li>Defines migrations API</li>
+					<li>Executes and reports migrations in both directions: forward and backward</li>
+					<li>Simplifies creation of new migrations</li>
+					<li>Works on the browser too!</li>
+				</ul>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<a href="#npm" id="npm" style="color: inherit; text-decoration: none;">
+					<h3>npm</h3>
+				</a>
+				<pre><code class="language-sh"><span style="color: #000000">&gt; npm install ipfs-repo-migrations</span>
+</code></pre>
+				<a href="#use-in-nodejs" id="use-in-nodejs" style="color: inherit; text-decoration: none;">
+					<h3>Use in Node.js</h3>
+				</a>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">migrations</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ipfs-repo-migrations&#039;</span><span style="color: #000000">)</span>
+</code></pre>
+				<a href="#use-in-a-browser-with-browserify-webpack-or-any-other-bundler" id="use-in-a-browser-with-browserify-webpack-or-any-other-bundler" style="color: inherit; text-decoration: none;">
+					<h3>Use in a browser with browserify, webpack or any other bundler</h3>
+				</a>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">migrations</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ipfs-repo-migrations&#039;</span><span style="color: #000000">)</span>
+</code></pre>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<p>Example:</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">migrations</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ipfs-repo-migrations&#039;</span><span style="color: #000000">)</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">repoPath</span><span style="color: #000000"> = </span><span style="color: #A31515">&#039;some/repo/path&#039;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">currentRepoVersion</span><span style="color: #000000"> = </span><span style="color: #098658">7</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">latestVersion</span><span style="color: #000000"> = </span><span style="color: #001080">migrations</span><span style="color: #000000">.</span><span style="color: #795E26">getLatestMigrationVersion</span><span style="color: #000000">()</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">repoOptions</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  ... </span><span style="color: #008000">// the same storage backend/storage options passed to `ipfs-repo`</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">if</span><span style="color: #000000">(</span><span style="color: #001080">currentRepoVersion</span><span style="color: #000000"> &lt; </span><span style="color: #001080">latestVersion</span><span style="color: #000000">){</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Old repo! Lets migrate to latest version!</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">migrations</span><span style="color: #000000">.</span><span style="color: #795E26">migrate</span><span style="color: #000000">(</span><span style="color: #001080">repoPath</span><span style="color: #000000">, </span><span style="color: #001080">latestVersion</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">repoOptions</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>To migrate your repository using the CLI, see the <a href="./run.md">how to run migrations</a> tutorial.</p>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h2>API</h2>
+				</a>
+				<a href="#migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun--gt-promiseltvoidgt" id="migratepath-repooptions-toversion-ignorelock-onprogress-isdryrun--gt-promiseltvoidgt" style="color: inherit; text-decoration: none;">
+					<h3><code>.migrate(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -&gt; Promise&lt;void&gt;</code></h3>
+				</a>
+				<p>Executes a forward migration to a specific version, or to the latest version if a specific version is not specified.</p>
+				<p><strong>Arguments:</strong></p>
+				<ul>
+					<li><code>path</code> (string, mandatory) - path to the repo to be migrated</li>
+					<li><code>repoOptions</code> (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).</li>
+					<li><code>toVersion</code> (int, mandatory) - version to which the repo should be migrated.</li>
+					<li><code>options</code> (object, optional) - options for the migration</li>
+					<li><code>options.ignoreLock</code> (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.</li>
+					<li><code>options.onProgress</code> (function, optional) - callback that is called during each migration to report progress.</li>
+					<li><code>options.isDryRun</code> (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.</li>
+				</ul>
+				<a href="#onprogressversion-percent-message" id="onprogressversion-percent-message" style="color: inherit; text-decoration: none;">
+					<h4><code>onProgress(version, percent, message)</code></h4>
+				</a>
+				<p>Signature of the progress callback.</p>
+				<p><strong>Arguments:</strong></p>
+				<ul>
+					<li><code>migration</code> (object) - object of migration that just successfully finished running. See <a href="#architecture-of-migrations">Architecture of migrations</a> for details.</li>
+					<li><code>counter</code> (int) - index of current migration.</li>
+					<li><code>totalMigrations</code> (int) - total count of migrations that will be run.</li>
+				</ul>
+				<a href="#revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun--gt-promiseltvoidgt" id="revertpath-repooptions-toversion-ignorelock-onprogress-isdryrun--gt-promiseltvoidgt" style="color: inherit; text-decoration: none;">
+					<h3><code>.revert(path, repoOptions, toVersion, {ignoreLock, onProgress, isDryRun}) -&gt; Promise&lt;void&gt;</code></h3>
+				</a>
+				<p>Executes backward migration to a specific version.</p>
+				<p><strong>Arguments:</strong></p>
+				<ul>
+					<li><code>path</code> (string, mandatory) - path to the repo to be reverted</li>
+					<li><code>repoOptions</code> (object, mandatory) - options that are passed to migrations, that use them to construct the datastore. (options are the same as for IPFSRepo).</li>
+					<li><code>toVersion</code> (int, mandatory) - version to which the repo should be reverted to.</li>
+					<li><code>options</code> (object, optional) - options for the reversion</li>
+					<li><code>options.ignoreLock</code> (bool, optional) - if true will not lock the repo when applying migrations. Use with caution.</li>
+					<li><code>options.onProgress</code> (function, optional) - callback that is called during each migration to report progress.</li>
+					<li><code>options.isDryRun</code> (bool, optional) - flag that indicates if it is a dry run that should give the same output as running a migration but without making any actual changes.</li>
+				</ul>
+				<a href="#getlatestmigrationversion--gt-int" id="getlatestmigrationversion--gt-int" style="color: inherit; text-decoration: none;">
+					<h3><code>getLatestMigrationVersion() -&gt; int</code></h3>
+				</a>
+				<p>Return the version of the latest migration.</p>
+				<a href="#creating-a-new-migration" id="creating-a-new-migration" style="color: inherit; text-decoration: none;">
+					<h2>Creating a new migration</h2>
+				</a>
+				<p>Migrations are one of those things that can be extremely painful on users. At the end of the day, we want users never to have to think about it. The process should be:</p>
+				<ul>
+					<li>SAFE. No data lost. Ever.</li>
+					<li>Revertible. Tools must implement forward and backward (if possible) migrations.</li>
+					<li>Tests. Migrations have to be well tested.</li>
+					<li>To Spec. The tools must conform to the spec.</li>
+				</ul>
+				<p>If your migration has several parts, it should be fail-proof enough that if one part of migration fails the previous changes
+					are reverted before propagating the error. If possible then the outcome should be consistent repo so it migration could
+				be run again.</p>
+				<a href="#architecture-of-a-migration" id="architecture-of-a-migration" style="color: inherit; text-decoration: none;">
+					<h3>Architecture of a migration</h3>
+				</a>
+				<p>All migrations are placed in the <code>/migrations</code> folder. Each folder there represents one migration that follows the migration
+				API.</p>
+				<p>All migrations are collected in <code>/migrations/index.js</code>, which should not be edited manually.</p>
+				<p><strong>The order of migrations is important and migrations must be sorted in ascending order</strong>.</p>
+				<p>Each migration must follow this API. It must export an object in its <code>index.js</code> that has following properties:</p>
+				<ul>
+					<li><code>version</code> (int) - Number that represents the version which the repo will migrate to (eg. <code>8</code> will move the repo to version 8).</li>
+					<li><code>description</code> (string) - Brief description of what the migrations does.</li>
+					<li><code>migrate</code> (function) - Function that performs the migration (see signature of this function below)</li>
+					<li><code>revert</code> (function) - If defined then this function will revert the migration to the previous version. Otherwise it is assumed that it is not possible to revert this migration.</li>
+				</ul>
+				<a href="#migraterepopath-repooptions" id="migraterepopath-repooptions" style="color: inherit; text-decoration: none;">
+					<h4><code>.migrate(repoPath, repoOptions)</code></h4>
+				</a>
+				<p><em>Do not confuse this function with the <code>require(&#39;ipfs-repo-migrations&#39;).migrate()</code> function that drives the whole migration process!</em></p>
+				<p>Arguments:</p>
+				<ul>
+					<li><code>repoPath</code> (string) - absolute path to the root of the repo</li>
+					<li><code>repoOptions</code> (object, optional) - object containing <code>IPFSRepo</code> options, that should be used to construct a datastore instance.</li>
+				</ul>
+				<a href="#revertrepopath-repooptions" id="revertrepopath-repooptions" style="color: inherit; text-decoration: none;">
+					<h4><code>.revert(repoPath, repoOptions)</code></h4>
+				</a>
+				<p><em>Do not confuse this function with the <code>require(&#39;ipfs-repo-migrations&#39;).revert()</code> function that drives the whole backward migration process!</em></p>
+				<p>Arguments:</p>
+				<ul>
+					<li><code>repoPath</code> (string) - path to the root of the repo</li>
+					<li><code>repoOptions</code> (object, optional) - object containing <code>IPFSRepo</code> options, that should be used to construct the datastore instance.</li>
+				</ul>
+				<a href="#browser-vs-nodejs-environments" id="browser-vs-nodejs-environments" style="color: inherit; text-decoration: none;">
+					<h3>Browser vs. NodeJS environments</h3>
+				</a>
+				<p>The migration might need to perform specific tasks in browser or NodeJS environment. In such a case create
+					migration file <code>/migrations/migration-&lt;number&gt;/index_browser.js</code> which have to follow the same API is described before.
+				Then add entry in <code>package.json</code> to the <code>browser</code> field as follow:</p>
+				<pre><code><span style="color: #A31515">&#039;./migrations/migration-&lt;number&gt;/index.js&#039;</span><span style="color: #000000">: </span><span style="color: #A31515">&#039;./migrations/migration-&lt;number&gt;/index_browser.js&#039;</span>
+</code></pre>
+				<p>In browser environments then <code>index.js</code> will be replaced with <code>index_browser.js</code>.</p>
+				<p>Simple migrations should not need to distinguish between
+				these environments as the datastore implementation will handle the main differences.</p>
+				<p>There are currently two main datastore implementations:</p>
+				<ol>
+					<li><a href="https://github.com/ipfs/js-datastore-fs"><code>datastore-fs</code></a> that is backed by file system and is used mainly in the NodeJS environment</li>
+					<li><a href="https://github.com/ipfs/js-datastore-idb"><code>datastore-idb</code></a> that is backed by LevelDB and is used mainly in the browser environment</li>
+				</ol>
+				<p> Both implementations share the same API and hence are interchangeable.</p>
+				<p> When the migration is run in a browser environment, <code>datastore-fs</code> is automatically replaced with <code>datastore-idb</code> even
+					when it is directly imported (<code>require(&#39;datastore-fs&#39;)</code> will return <code>datastore-idb</code> in a browser).
+					So with simple migrations you shouldn&#39;t worry about the difference between <code>datastore-fs</code> and <code>datastore-idb</code>
+				and by default use the <code>datastore-fs</code> package (as the replace mechanism does not work vice versa).</p>
+				<a href="#guidelines" id="guidelines" style="color: inherit; text-decoration: none;">
+					<h3>Guidelines</h3>
+				</a>
+				<p>The recommended way to write a new migration is to first bootstrap a dummy migration using the CLI:</p>
+				<pre><code class="language-sh"><span style="color: #000000">&gt; npm run new-migration</span>
+</code></pre>
+				<p>A new folder is created with the bootstrapped migration. You can then simply fill in the required fields and
+				write the rest of the migration!</p>
+				<a href="#integration-with-js-ipfs" id="integration-with-js-ipfs" style="color: inherit; text-decoration: none;">
+					<h3>Integration with js-ipfs</h3>
+				</a>
+				<p>When a new migration is created, new version of this package have to be released. Afterwards version of this package in <a href="https://github.com/ipfs/js-ipfs-repo"><code>js-ipfs-repo</code></a> have to be updated
+				together with the repo version that <code>IPFSRepo</code> expects. Then the updated version of <code>js-ipfs-repo</code> should be propagated to <code>js-ipfs</code>.</p>
+				<a href="#tests" id="tests" style="color: inherit; text-decoration: none;">
+					<h3>Tests</h3>
+				</a>
+				<p>If a migration affects any of the following functionality, it must provide tests for the following functions
+				to work under the version of the repo that it migrates to:</p>
+				<ul>
+					<li><code>/src/repo/version.js</code>:<code>getVersion()</code> - retrieving repository&#39;s version</li>
+					<li><code>/src/repo/lock.js</code>:<code>lock()</code> - locking repository that uses file system</li>
+					<li><code>/src/repo/lock-memory.js</code>:<code>lock()</code> - locking repository that uses memory</li>
+				</ul>
+				<p>Every migration must have test coverage. Tests for migrations should be placed in the <code>/test/migrations/</code> folder. Most probably
+				you will have to plug the tests into <code>browser.js</code>/<code>node.js</code> if they require specific bootstrapping on each platform.</p>
+				<a href="#empty-migrations" id="empty-migrations" style="color: inherit; text-decoration: none;">
+					<h3>Empty migrations</h3>
+				</a>
+				<p>For interop with go-ipfs it might be necessary just to bump a version of a repo without any actual
+				modification as there might not be any changes needed in the JS implementation. For that purpose you can create an &quot;empty migration&quot;.</p>
+				<p>The easiest way to do so is with the CLI:</p>
+				<pre><code class="language-sh"><span style="color: #000000">&gt; npm run new-migration -- --empty</span>
+</code></pre>
+				<p>This will create an empty migration with the next version.</p>
+				<a href="#migrations-matrix" id="migrations-matrix" style="color: inherit; text-decoration: none;">
+					<h3>Migrations matrix</h3>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th align="right">IPFS repo version</th>
+							<th align="center">JS IPFS version</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="right">7</td>
+							<td align="center">v0.0.0</td>
+						</tr>
+						<tr>
+							<td align="right">8</td>
+							<td align="center">v0.48.0</td>
+						</tr>
+						<tr>
+							<td align="right">9</td>
+							<td align="center">v0.49.0</td>
+						</tr>
+				</tbody></table>
+				<a href="#migrations" id="migrations" style="color: inherit; text-decoration: none;">
+					<h3>Migrations</h3>
+				</a>
+				<a href="#7" id="7" style="color: inherit; text-decoration: none;">
+					<h4>7</h4>
+				</a>
+				<p>This is the initial version of the datastore, inherited from go-IPFS in an attempt to maintain cross-compatibility between the two implementations.</p>
+				<a href="#8" id="8" style="color: inherit; text-decoration: none;">
+					<h4>8</h4>
+				</a>
+				<p>Blockstore keys are transformed into base32 representations of the multihash from the CID of the block.</p>
+				<a href="#9" id="9" style="color: inherit; text-decoration: none;">
+					<h4>9</h4>
+				</a>
+				<p>Pins were migrated from a DAG to a Datastore - see <a href="https://github.com/ipfs/js-ipfs/pull/2771">ipfs/js-ipfs#2771</a></p>
+				<a href="#10" id="10" style="color: inherit; text-decoration: none;">
+					<h4>10</h4>
+				</a>
+				<p><code>level@6.x.x</code> upgrades the <code>level-js</code> dependency from <code>4.x.x</code> to <code>5.x.x</code>.  This update requires a database migration to convert all string keys/values into buffers. Only runs in the browser, node is unaffected. See <a href="https://github.com/Level/level-js/pull/179">Level/level-js#179</a></p>
+				<a href="#developer" id="developer" style="color: inherit; text-decoration: none;">
+					<h2>Developer</h2>
+				</a>
+				<a href="#module-versioning-notes" id="module-versioning-notes" style="color: inherit; text-decoration: none;">
+					<h3>Module versioning notes</h3>
+				</a>
+				<p>In order to have good overview of what version of package contains what kind of migration, to every release there
+					should be appended version&#39;s metadata in format <code>migr-&lt;versionOfLatestMigration&gt;</code>. If for releasing is used <code>aegir</code>
+				you can use the <code>release --metadata</code> option.</p>
+				<a href="#contribute" id="contribute" style="color: inherit; text-decoration: none;">
+					<h2>Contribute</h2>
+				</a>
+				<p>There are some ways you can make this module better:</p>
+				<ul>
+					<li>Consult our <a href="https://github.com/ipfs/js-ipfs-repo/issues">open issues</a> and take on one of them</li>
+					<li>Help our tests reach 100% coverage!</li>
+				</ul>
+				<p>This repository falls under the IPFS <a href="https://github.com/ipfs/community/blob/master/code-of-conduct.md">Code of Conduct</a>.</p>
+				<p><a href="https://github.com/ipfs/community/blob/master/CONTRIBUTING.md"><img src="https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif" alt=""></a></p>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p><a href="LICENSE">MIT</a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/errors.html">errors</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#migration" class="tsd-kind-icon">Migration</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#migrationprogresscallback" class="tsd-kind-icon">Migration<wbr>Progress<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#progresscallback" class="tsd-kind-icon">Progress<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#getcurrentrepoversion" class="tsd-kind-icon">get<wbr>Current<wbr>Repo<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#getlatestmigrationversion" class="tsd-kind-icon">get<wbr>Latest<wbr>Migration<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#migrate" class="tsd-kind-icon">migrate</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#revert" class="tsd-kind-icon">revert</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
 </body>
 </html>
