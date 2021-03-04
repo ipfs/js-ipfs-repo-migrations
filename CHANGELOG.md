@@ -1,3 +1,12 @@
+## [7.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v7.0.0...v7.0.1) (2021-03-04)
+
+
+### Bug Fixes
+
+* add cborg to browser field ([#76](https://github.com/ipfs/js-ipfs-repo-migrations/issues/76)) ([8d6c65d](https://github.com/ipfs/js-ipfs-repo-migrations/commit/8d6c65d75dea367ffeb54d891106211abef68da3))
+
+
+
 # [7.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v6.0.0...v7.0.0) (2021-03-04)
 
 
