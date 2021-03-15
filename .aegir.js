@@ -12,18 +12,6 @@ const esbuild = {
         build.onResolve({ filter: /^stream$/ }, () => {
           return { path: require.resolve('readable-stream') }
         })
-        build.onResolve({ filter: /^multiformats\/hashes\/digest$/ }, () => {
-          // remove when https://github.com/evanw/esbuild/issues/187 is fixed
-          return { path: require.resolve('multiformats/hashes/digest') }
-        })
-        build.onResolve({ filter: /^multiformats$/ }, () => {
-          // remove when https://github.com/evanw/esbuild/issues/187 is fixed
-          return { path: require.resolve('multiformats') }
-        })
-        build.onResolve({ filter: /^cborg$/ }, () => {
-          // remove when https://github.com/evanw/esbuild/issues/187 is fixed
-          return { path: require.resolve('cborg') }
-        })
       }
     }
   ]
