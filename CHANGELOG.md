@@ -1,3 +1,7 @@
+## [7.0.2](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v7.0.1...v7.0.2) (2021-03-15)
+
+
+
 ## [7.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v7.0.0...v7.0.1) (2021-03-04)
 
 
