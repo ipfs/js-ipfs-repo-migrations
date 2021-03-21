@@ -1,3 +1,12 @@
+## [7.0.3](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v7.0.2...v7.0.3) (2021-03-21)
+
+
+### Bug Fixes
+
+* remove hacks from build and test ([#82](https://github.com/ipfs/js-ipfs-repo-migrations/issues/82)) ([18c0793](https://github.com/ipfs/js-ipfs-repo-migrations/commit/18c07937013dd95c53e38bb775aeb44b5eb75bcb))
+
+
+
 ## [7.0.2](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v7.0.1...v7.0.2) (2021-03-15)
 
 
