@@ -116,17 +116,15 @@ CONFIGURATIONS.forEach(({ name, repoOptions, cleanup }) => {
   const setup = () => createRepo(repoOptions, os.tmpdir())
 
   describe(name, () => {
-    describe('lock.js tests', () => {
+    if (repoOptions.lock === 'memory') {
+      describe('mem-lock tests', () => {
+        require('./lock-test')(require('../src/repo/lock-memory'), setup, cleanup, repoOptions)
+      })
+    } else {
       describe('fs-lock tests', () => {
         require('./lock-test')(require('../src/repo/lock'), setup, cleanup, repoOptions)
       })
-
-      describe('mem-lock tests', () => {
-        describe(name, () => {
-          require('./lock-test')(require('../src/repo/lock-memory'), setup, cleanup, repoOptions)
-        })
-      })
-    })
+    }
 
     describe('version tests', () => {
       require('./version-test')(setup, cleanup, repoOptions)
