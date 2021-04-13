@@ -2,6 +2,15 @@
 'use strict'
 
 const DatastoreLevel = require('datastore-level')
+const DatastoreS3 = require('datastore-s3')
+const mockS3 = require('./fixtures/mock-s3')
+const S3 = require('aws-sdk').S3
+const s3Instance = new S3({
+  params: {
+    Bucket: 'test'
+  }
+})
+mockS3(s3Instance)
 const { createRepo } = require('./fixtures/repo')
 
 async function deleteDb (dir) {
@@ -59,6 +68,48 @@ const CONFIGURATIONS = [{
         sharding: false,
         prefix: '',
         version: 2
+      }
+    }
+  }
+}, {
+  name: 'with s3',
+  cleanup: () => {},
+  repoOptions: {
+    lock: 'memory',
+    storageBackends: {
+      root: DatastoreS3,
+      blocks: DatastoreS3,
+      datastore: DatastoreS3,
+      keys: DatastoreS3,
+      pins: DatastoreS3
+    },
+    storageBackendOptions: {
+      root: {
+        sharding: true,
+        extension: '',
+        s3: s3Instance,
+        createIfMissing: false
+      },
+      blocks: {
+        sharding: true,
+        extension: '.data',
+        s3: s3Instance,
+        createIfMissing: false
+      },
+      datastore: {
+        sharding: true,
+        s3: s3Instance,
+        createIfMissing: false
+      },
+      keys: {
+        sharding: true,
+        s3: s3Instance,
+        createIfMissing: false
+      },
+      pins: {
+        sharding: true,
+        s3: s3Instance,
+        createIfMissing: false
       }
     }
   }

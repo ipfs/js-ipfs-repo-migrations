@@ -184,7 +184,7 @@ module.exports = (setup, cleanup, repoOptions) => {
             expect(Object.keys(pinned)).to.have.lengthOf(pinset.pins)
 
             await datastore.open()
-            await expect(datastore.has(PIN_DS_KEY)).to.become(false)
+            await expect(datastore.has(PIN_DS_KEY)).to.eventually.be.false()
             await datastore.close()
           })
         })
