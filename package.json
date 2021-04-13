@@ -71,7 +71,7 @@
     "aws-sdk": "^2.884.0",
     "datastore-fs": "^3.0.0",
     "datastore-level": "^4.0.0",
-    "datastore-s3": "^4.0.0",
+    "datastore-s3": "ipfs/js-datastore-s3#fix/remove-create-s3-repo",
     "events": "^3.2.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
