@@ -2,40 +2,7 @@
 'use strict'
 
 const DatastoreLevel = require('datastore-level')
-const { createRepo, createAndLoadRepo } = require('./fixtures/repo')
-
-const repoOptions = {
-  lock: 'memory',
-  storageBackends: {
-    root: DatastoreLevel,
-    blocks: DatastoreLevel,
-    keys: DatastoreLevel,
-    datastore: DatastoreLevel,
-    pins: DatastoreLevel
-  },
-  storageBackendOptions: {
-    root: {
-      extension: '',
-      prefix: '',
-      version: 2
-    },
-    blocks: {
-      sharding: false,
-      prefix: '',
-      version: 2
-    },
-    keys: {
-      sharding: false,
-      prefix: '',
-      version: 2
-    },
-    datastore: {
-      sharding: false,
-      prefix: '',
-      version: 2
-    }
-  }
-}
+const { createRepo } = require('./fixtures/repo')
 
 async function deleteDb (dir) {
   return new Promise((resolve) => {
@@ -50,7 +17,7 @@ async function deleteDb (dir) {
   })
 }
 
-async function repoCleanup (dir) {
+async function cleanup (dir) {
   await deleteDb(dir)
   await deleteDb('level-js-' + dir)
 
@@ -60,26 +27,65 @@ async function repoCleanup (dir) {
   }
 }
 
-describe('Browser specific tests', () => {
+const CONFIGURATIONS = [{
+  name: 'local',
+  cleanup,
+  repoOptions: {
+    lock: 'memory',
+    storageBackends: {
+      root: DatastoreLevel,
+      blocks: DatastoreLevel,
+      keys: DatastoreLevel,
+      datastore: DatastoreLevel,
+      pins: DatastoreLevel
+    },
+    storageBackendOptions: {
+      root: {
+        extension: '',
+        prefix: '',
+        version: 2
+      },
+      blocks: {
+        sharding: false,
+        prefix: '',
+        version: 2
+      },
+      keys: {
+        sharding: false,
+        prefix: '',
+        version: 2
+      },
+      datastore: {
+        sharding: false,
+        prefix: '',
+        version: 2
+      }
+    }
+  }
+}]
+
+CONFIGURATIONS.forEach(({ name, repoOptions, cleanup }) => {
+  const setup = () => createRepo(repoOptions)
+
   describe('lock.js tests', () => {
     describe('mem-lock tests', () => {
-      require('./lock-test')(require('../src/repo/lock-memory'), () => createRepo(repoOptions), repoCleanup, repoOptions)
+      require('./lock-test')(require('../src/repo/lock-memory'), setup, cleanup, repoOptions)
     })
   })
 
   describe('version tests', () => {
-    require('./version-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
+    require('./version-test')(setup, cleanup, repoOptions)
   })
 
   describe('migrations tests', () => {
-    require('./migrations')(() => createRepo(repoOptions), repoCleanup)
+    require('./migrations')(setup, cleanup, repoOptions)
   })
 
   describe('init tests', () => {
-    require('./init-test')(() => createRepo(repoOptions), repoCleanup, repoOptions)
+    require('./init-test')(setup, cleanup, repoOptions)
   })
 
   describe('integration tests', () => {
-    require('./integration-test')(() => createAndLoadRepo(repoOptions), repoCleanup, repoOptions)
+    require('./integration-test')(setup, cleanup, repoOptions)
   })
 })

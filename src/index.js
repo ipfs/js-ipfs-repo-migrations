@@ -85,7 +85,7 @@ async function migrate (path, repoOptions, toVersion, { ignoreLock = false, onPr
   let lock
 
   if (!isDryRun && !ignoreLock) {
-    lock = await repoLock.lock(currentVersion, path)
+    lock = await repoLock.lock(currentVersion, path, repoOptions)
   }
 
   try {
@@ -185,7 +185,9 @@ async function revert (path, repoOptions, toVersion, { ignoreLock = false, onPro
   verifyAvailableMigrations(migrations, toVersion, currentVersion, true)
 
   let lock
-  if (!isDryRun && !ignoreLock) lock = await repoLock.lock(currentVersion, path)
+  if (!isDryRun && !ignoreLock) {
+    lock = await repoLock.lock(currentVersion, path, repoOptions)
+  }
 
   log(`Reverting from version ${currentVersion} to ${toVersion}`)
 

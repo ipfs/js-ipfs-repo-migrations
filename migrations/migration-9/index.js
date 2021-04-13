@@ -2,7 +2,6 @@
 
 const CID = require('cids')
 const dagpb = require('ipld-dag-pb')
-// @ts-ignore https://github.com/rvagg/cborg/pull/5
 const cbor = require('cborg')
 const multicodec = require('multicodec')
 const multibase = require('multibase')
