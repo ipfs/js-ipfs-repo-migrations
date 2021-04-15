@@ -2,7 +2,6 @@
 
 const CID = require('cids')
 const dagpb = require('ipld-dag-pb')
-// @ts-ignore https://github.com/rvagg/cborg/pull/5
 const cbor = require('cborg')
 const multicodec = require('multicodec')
 const multibase = require('multibase')
@@ -94,7 +93,7 @@ async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
   let recursivePins = []
   let directPins = []
   let counter = 0
-  const pinCount = await length(pinstore.query({ keysOnly: true }))
+  const pinCount = await length(pinstore.queryKeys({}))
 
   for await (const { key, value } of pinstore.query({})) {
     counter++

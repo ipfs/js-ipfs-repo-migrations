@@ -6,16 +6,17 @@ const { expect } = require('aegir/utils/chai')
 const migrator = require('../src')
 const migrations = require('./test-migrations')
 const { VERSION_KEY, CONFIG_KEY, createStore } = require('../src/utils')
+const { initRepo } = require('./fixtures/repo')
 
 module.exports = (setup, cleanup, repoOptions) => {
   let dir
 
   beforeEach(async () => {
     dir = await setup()
+    await initRepo(dir, repoOptions)
   })
-  afterEach(() =>
-    cleanup(dir)
-  )
+
+  afterEach(() => cleanup(dir))
 
   it('migrate forward', async () => {
     await migrator.migrate(dir, repoOptions, migrator.getLatestMigrationVersion(migrations), {
