@@ -93,7 +93,7 @@ async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
   let recursivePins = []
   let directPins = []
   let counter = 0
-  const pinCount = await length(pinstore.query({ keysOnly: true }))
+  const pinCount = await length(pinstore.queryKeys({}))
 
   for await (const { key, value } of pinstore.query({})) {
     counter++
