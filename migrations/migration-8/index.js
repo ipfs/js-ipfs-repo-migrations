@@ -1,12 +1,13 @@
 'use strict'
 
-const CID = require('cids')
+const { CID } = require('multiformats')
 const Key = require('interface-datastore').Key
-const mb = require('multibase')
 const log = require('debug')('ipfs:repo:migrator:migration-8')
-const uint8ArrayToString = require('uint8arrays/to-string')
 const { createStore } = require('../../src/utils')
 const length = require('it-length')
+const { base32 } = require('multiformats/bases/base32')
+const raw = require('multiformats/codecs/raw')
+const mhd = require('multiformats/hashes/digest')
 
 /**
  * @typedef {import('../../src/types').Migration} Migration
@@ -16,16 +17,14 @@ const length = require('it-length')
  * @param {Key} key
  */
 function keyToMultihash (key) {
-  const buf = mb.decode(`b${key.toString().slice(1)}`)
+  const buf = base32.decode(`b${key.toString().toLowerCase().slice(1)}`)
 
   // Extract multihash from CID
-  let multihash = new CID(buf).multihash
+  let multihash = CID.decode(buf).multihash.bytes
 
   // Encode and slice off multibase codec
-  multihash = mb.encode('base32', multihash).slice(1)
-
   // Should be uppercase for interop with go
-  const multihashStr = uint8ArrayToString(multihash).toUpperCase()
+  const multihashStr = base32.encode(multihash).slice(1).toUpperCase()
 
   return new Key(`/${multihashStr}`, false)
 }
@@ -34,12 +33,13 @@ function keyToMultihash (key) {
  * @param {Key} key
  */
 function keyToCid (key) {
-  const buf = mb.decode(`b${key.toString().slice(1)}`)
+  const buf = base32.decode(`b${key.toString().toLowerCase().slice(1)}`)
+  const digest = mhd.decode(buf)
 
   // CID to Key
-  const multihash = mb.encode('base32', new CID(1, 'raw', buf).bytes).slice(1)
+  const multihash = base32.encode(CID.createV1(raw.code, digest).bytes).slice(1)
 
-  return new Key(`/${uint8ArrayToString(multihash)}`.toUpperCase(), false)
+  return new Key(`/${multihash.toUpperCase()}`, false)
 }
 
 /**

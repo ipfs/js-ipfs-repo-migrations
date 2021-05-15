@@ -1,13 +1,13 @@
 'use strict'
 
-const multibase = require('multibase')
 const { Key } = require('interface-datastore')
-const multihashes = require('multihashing-async').multihash
+const { base32 } = require('multiformats/bases/base32')
+const { CID } = require('multiformats')
 
 const PIN_DS_KEY = new Key('/local/pins')
 const DEFAULT_FANOUT = 256
 const MAX_ITEMS = 8192
-const EMPTY_KEY = multihashes.fromB58String('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
+const EMPTY_KEY = CID.parse('QmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n')
 
 const PinTypes = {
   direct: 'direct',
@@ -15,10 +15,10 @@ const PinTypes = {
 }
 
 /**
- * @param {import('cids')} cid
+ * @param {import('multiformats').CID} cid
  */
 function cidToKey (cid) {
-  return new Key(`/${multibase.encoding('base32upper').encode(cid.multihash)}`)
+  return new Key(`/${base32.encode(cid.multihash.bytes).toUpperCase().substring(1)}`)
 }
 
 module.exports = {
