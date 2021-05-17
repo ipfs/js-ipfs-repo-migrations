@@ -181,7 +181,6 @@ function storeItems (blockstore, items) {
         })
         // sorting makes any ordering of `pins` produce the same DAGNode
         .sort((a, b) => {
-          //return a.link.Name.localeCompare(b.link.Name)
           return uint8ArrayCompare(a.link.Hash.bytes, b.link.Hash.bytes)
         })
 
