@@ -1,6 +1,6 @@
 'use strict'
 
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const dagPb = require('@ipld/dag-pb')
 const cbor = require('cborg')
 const pinset = require('./pin-set')

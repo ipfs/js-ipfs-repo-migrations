@@ -1,6 +1,6 @@
 'use strict'
 
-const { CID } = require('multiformats')
+const { CID } = require('multiformats/cid')
 const Key = require('interface-datastore').Key
 const log = require('debug')('ipfs:repo:migrator:migration-8')
 const { createStore } = require('../../src/utils')
