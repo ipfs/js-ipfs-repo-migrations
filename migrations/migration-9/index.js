@@ -15,6 +15,7 @@ const { base32 } = require('multiformats/bases/base32')
  * @typedef {import('../../src/types').Migration} Migration
  * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
  * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  */
 
  /**
@@ -40,7 +41,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.recursive)) {
     counter++
 
-    /** @type {{ depth: number, version?: 0 | 1, codec?: number }} */
+    /** @type {{ depth: number, version?: CIDVersion, codec?: number }} */
     const pin = {
       depth: Infinity
     }
@@ -61,7 +62,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.direct)) {
     counter++
 
-    /** @type {{ depth: number, version?: 0 | 1, codec?: number }} */
+    /** @type {{ depth: number, version?: CIDVersion, codec?: number }} */
     const pin = {
       depth: 0
     }
