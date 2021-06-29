@@ -1,7 +1,6 @@
 'use strict'
 
 const {
-  createStore,
   findLevelJs
 } = require('../../src/utils')
 const fromString = require('uint8arrays/from-string')
@@ -10,6 +9,7 @@ const toString = require('uint8arrays/to-string')
 /**
  * @typedef {import('../../src/types').Migration} Migration
  * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
  *
  * @typedef {{ type: 'del', key: string | Uint8Array } | { type: 'put', key: string | Uint8Array, value: Uint8Array }} Operation
@@ -78,18 +78,32 @@ async function keysToStrings (name, store, onProgress = () => {}) {
 }
 
 /**
- *
- * @param {string} repoPath
- * @param {any} repoOptions
+ * @param {any} store
+ * @returns {Datastore}
+ */
+function unwrap (store) {
+  if (store.child) {
+    return unwrap(store.child)
+  }
+
+  return store
+}
+
+/**
+ * @param {import('../../src/types').Backends} backends
  * @param {MigrationProgressCallback} onProgress
  * @param {*} fn
  */
-async function process (repoPath, repoOptions, onProgress, fn) {
-  const datastores = Object.keys(repoOptions.storageBackends)
-    .filter(key => repoOptions.storageBackends[key].name === 'LevelDatastore')
-    .map(name => ({
-      name,
-      store: createStore(repoPath, name, repoOptions)
+async function process (backends, onProgress, fn) {
+  /**
+   * @type {{ name: string, store: Datastore }[]}
+   */
+  const datastores = Object.entries(backends)
+    .map(([key, backend]) => ({ key, backend: unwrap(backend) }))
+    .filter(({ key, backend }) => backend.constructor.name === 'LevelDatastore')
+    .map(({ key, backend }) => ({
+      name: key,
+      store: backend
     }))
 
   onProgress(0, `Migrating ${datastores.length} dbs`)
@@ -120,11 +134,11 @@ async function process (repoPath, repoOptions, onProgress, fn) {
 module.exports = {
   version: 10,
   description: 'Migrates datastore-level keys to binary',
-  migrate: (repoPath, repoOptions, onProgress = () => {}) => {
-    return process(repoPath, repoOptions, onProgress, keysToBinary)
+  migrate: (backends, onProgress = () => {}) => {
+    return process(backends, onProgress, keysToBinary)
   },
-  revert: (repoPath, repoOptions, onProgress = () => {}) => {
-    return process(repoPath, repoOptions, onProgress, keysToStrings)
+  revert: (backends, onProgress = () => {}) => {
+    return process(backends, onProgress, keysToStrings)
   }
 }
 

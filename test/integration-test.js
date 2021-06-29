@@ -5,26 +5,34 @@ const { expect } = require('aegir/utils/chai')
 
 const migrator = require('../src')
 const migrations = require('./test-migrations')
-const { VERSION_KEY, CONFIG_KEY, createStore } = require('../src/utils')
+const { VERSION_KEY, CONFIG_KEY } = require('../src/utils')
 const { initRepo } = require('./fixtures/repo')
 
-module.exports = (setup, cleanup, repoOptions) => {
+module.exports = (setup, cleanup) => {
   let dir
+  let backends
+  const repoOptions = {
+    repoLock: {
+      lock: () => ({
+        close: () => {}
+      })
+    }
+  }
 
   beforeEach(async () => {
-    dir = await setup()
-    await initRepo(dir, repoOptions)
+    ({ dir, backends } = await setup())
+    await initRepo(backends)
   })
 
   afterEach(() => cleanup(dir))
 
   it('migrate forward', async () => {
-    await migrator.migrate(dir, repoOptions, migrator.getLatestMigrationVersion(migrations), {
+    await migrator.migrate(dir, backends, repoOptions, migrator.getLatestMigrationVersion(migrations), {
       migrations: migrations,
       onProgress: () => {}
     })
 
-    const store = createStore(dir, 'root', repoOptions)
+    const store = backends.root
     await store.open()
     const version = await store.get(VERSION_KEY)
     expect(version.toString()).to.be.equal('2')
@@ -36,17 +44,17 @@ module.exports = (setup, cleanup, repoOptions) => {
   })
 
   it('revert', async () => {
-    await migrator.migrate(dir, repoOptions, migrator.getLatestMigrationVersion(migrations), {
+    await migrator.migrate(dir, backends, repoOptions, migrator.getLatestMigrationVersion(migrations), {
       migrations: migrations,
       onProgress: () => {}
     })
 
-    await migrator.revert(dir, repoOptions, 1, {
+    await migrator.revert(dir, backends, repoOptions, 1, {
       migrations: migrations,
       onProgress: () => {}
     })
 
-    const store = createStore(dir, 'root', repoOptions)
+    const store = backends.root
     await store.open()
     const version = await store.get(VERSION_KEY)
     expect(version.toString()).to.be.equal('1')

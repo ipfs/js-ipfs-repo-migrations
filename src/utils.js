@@ -4,8 +4,6 @@ const {
   Key,
   Errors
 } = require('interface-datastore')
-const core = require('datastore-core')
-const ShardingStore = core.ShardingDatastore
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
@@ -13,33 +11,6 @@ const ShardingStore = core.ShardingDatastore
 
 const CONFIG_KEY = new Key('/config')
 const VERSION_KEY = new Key('/version')
-
-/**
- * @param {string} name
- * @param {*} options
- */
-function getDatastoreAndOptions (name, options) {
-  if (!options || !options.storageBackends) {
-    throw new Error('Please pass storage backend definitions')
-  }
-
-  if (!options.storageBackends[name]) {
-    throw new Error(`Storage backend '${name}' not defined in config`)
-  }
-
-  const StorageBackend = options.storageBackends[name]
-
-  let storageBackendOptions = {}
-
-  if (options.storageBackendOptions !== undefined && options.storageBackendOptions[name] !== undefined) {
-    storageBackendOptions = options.storageBackendOptions[name]
-  }
-
-  return {
-    StorageBackend: StorageBackend,
-    storageOptions: storageBackendOptions
-  }
-}
 
 /**
  * Level dbs wrap level dbs that wrap level dbs. Find a level-js
@@ -112,7 +83,7 @@ async function getWithFallback (key, get, has, store) {
   }
 
   // Newer versions of level.js changed the key type from Uint8Array|string
-  // to Uint8Array  so fall back to trying Uint8Arrays if we are using level.js
+  // to Uint8Array so fall back to trying Uint8Arrays if we are using level.js
   // and the string version of the key did not work
   const levelJs = findLevelJs(store)
 
@@ -138,25 +109,9 @@ async function getWithFallback (key, get, has, store) {
 }
 
 /**
- * @param {string} location
- * @param {string} name
- * @param {*} options
- * @returns {Datastore}
+ * @param {Datastore} store
  */
-function createStore (location, name, options) {
-  const { StorageBackend, storageOptions } = getDatastoreAndOptions(name, options)
-
-  if (name !== 'root') {
-    location = `${location}/${name}`
-  }
-
-  let store = new StorageBackend(location, storageOptions)
-
-  // @ts-ignore
-  if (storageOptions.sharding) {
-    store = new ShardingStore(store, new core.shard.NextToLast(2))
-  }
-
+function wrapStore (store) {
   // necessary since level-js@5 cannot read keys from level-js@4 and earlier
   const originalGet = store.get.bind(store)
   const originalHas = store.has.bind(store)
@@ -172,8 +127,21 @@ function createStore (location, name, options) {
   return store
 }
 
+/**
+ * @param {import('./types').Backends} backends
+ */
+function wrapBackends (backends) {
+  return {
+    ...backends,
+    root: wrapStore(backends.root),
+    datastore: wrapStore(backends.datastore),
+    pins: wrapStore(backends.pins),
+    keys: wrapStore(backends.keys)
+  }
+}
+
 module.exports = {
-  createStore,
+  wrapBackends,
   hasWithFallback,
   getWithFallback,
   findLevelJs,

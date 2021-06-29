@@ -4,7 +4,6 @@ const { CID } = require('multiformats/cid')
 const dagPb = require('@ipld/dag-pb')
 const cbor = require('cborg')
 const pinset = require('./pin-set')
-const { createStore } = require('../../src/utils')
 const { cidToKey, PIN_DS_KEY, PinTypes } = require('./utils')
 const length = require('it-length')
 const { sha256 } = require('multiformats/hashes/sha2')
@@ -15,11 +14,12 @@ const { base32 } = require('multiformats/bases/base32')
  * @typedef {import('../../src/types').Migration} Migration
  * @typedef {import('../../src/types').MigrationProgressCallback} MigrationProgressCallback
  * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  */
 
  /**
-  * @param {Datastore} blockstore
+  * @param {Blockstore} blockstore
   * @param {Datastore} datastore
   * @param {Datastore} pinstore
   * @param {MigrationProgressCallback} onProgress
@@ -31,7 +31,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
 
   const mh = await datastore.get(PIN_DS_KEY)
   const cid = CID.decode(mh)
-  const pinRootBuf = await blockstore.get(cidToKey(cid))
+  const pinRootBuf = await blockstore.get(cid)
   const pinRoot = dagPb.decode(pinRootBuf)
   let counter = 0
   let pinCount
@@ -80,12 +80,12 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
     onProgress((counter / pinCount) * 100, `Migrated direct pin ${cid}`)
   }
 
-  await blockstore.delete(cidToKey(cid))
+  await blockstore.delete(cid)
   await datastore.delete(PIN_DS_KEY)
 }
 
 /**
-  * @param {Datastore} blockstore
+  * @param {Blockstore} blockstore
   * @param {Datastore} datastore
   * @param {Datastore} pinstore
   * @param {MigrationProgressCallback} onProgress
@@ -127,20 +127,19 @@ async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
   const digest = await sha256.digest(buf)
   const cid = CID.createV0(digest)
 
-  await blockstore.put(cidToKey(cid), buf)
+  await blockstore.put(cid, buf)
   await datastore.put(PIN_DS_KEY, cid.bytes)
 }
 
 /**
- * @param {string} repoPath
- * @param {*} repoOptions
+ *  @param {import('../../src/types').Backends} backends
  * @param {MigrationProgressCallback} onProgress
  * @param {*} fn
  */
-async function process (repoPath, repoOptions, onProgress, fn) {
-  const blockstore = createStore(repoPath, 'blocks', repoOptions)
-  const datastore = createStore(repoPath, 'datastore', repoOptions)
-  const pinstore = createStore(repoPath, 'pins', repoOptions)
+async function process (backends, onProgress, fn) {
+  const blockstore = backends.blocks
+  const datastore = backends.datastore
+  const pinstore = backends.pins
 
   await blockstore.open()
   await datastore.open()
@@ -159,10 +158,10 @@ async function process (repoPath, repoOptions, onProgress, fn) {
 module.exports = {
   version: 9,
   description: 'Migrates pins to datastore',
-  migrate: (repoPath, repoOptions, onProgress = () => {}) => {
-    return process(repoPath, repoOptions, onProgress, pinsToDatastore)
+  migrate: (backends, onProgress = () => {}) => {
+    return process(backends, onProgress, pinsToDatastore)
   },
-  revert: (repoPath, repoOptions, onProgress = () => {}) => {
-    return process(repoPath, repoOptions, onProgress, pinsToDAG)
+  revert: (backends, onProgress = () => {}) => {
+    return process(backends, onProgress, pinsToDAG)
   }
 }

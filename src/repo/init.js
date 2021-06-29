@@ -1,21 +1,20 @@
 'use strict'
 
 const log = require('debug')('ipfs:repo:migrator:repo:init')
-const { CONFIG_KEY, VERSION_KEY, createStore } = require('../utils')
+const { CONFIG_KEY, VERSION_KEY } = require('../utils')
 const { MissingRepoOptionsError } = require('../errors')
 
 /**
- * @param {string} path
- * @param {any} repoOptions
+ * @param {import('../types').Backends} backends
  */
-async function isRepoInitialized (path, repoOptions) {
-  if (!repoOptions) {
+async function isRepoInitialized (backends) {
+  if (!backends) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
 
-  let root
+  const root = backends.root
+
   try {
-    root = createStore(path, 'root', repoOptions)
     await root.open()
     const versionCheck = await root.has(VERSION_KEY)
     const configCheck = await root.has(CONFIG_KEY)

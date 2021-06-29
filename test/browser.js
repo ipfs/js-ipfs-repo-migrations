@@ -3,6 +3,8 @@
 
 const DatastoreLevel = require('datastore-level')
 const DatastoreS3 = require('datastore-s3')
+const { ShardingDatastore, shard: { NextToLast } } = require('datastore-core')
+const BlockstoreDatastoreAdapter = require('blockstore-datastore-adapter')
 const mockS3 = require('./fixtures/mock-s3')
 const S3 = require('aws-sdk').S3
 const s3Instance = new S3({
@@ -12,6 +14,10 @@ const s3Instance = new S3({
 })
 mockS3(s3Instance)
 const { createRepo } = require('./fixtures/repo')
+
+/**
+ * @typedef {import('../src/types').Backends} Backends
+ */
 
 async function deleteDb (dir) {
   return new Promise((resolve) => {
@@ -39,104 +45,94 @@ async function cleanup (dir) {
 const CONFIGURATIONS = [{
   name: 'local',
   cleanup,
-  repoOptions: {
-    lock: 'memory',
-    storageBackends: {
-      root: DatastoreLevel,
-      blocks: DatastoreLevel,
-      keys: DatastoreLevel,
-      datastore: DatastoreLevel,
-      pins: DatastoreLevel
-    },
-    storageBackendOptions: {
-      root: {
-        extension: '',
-        prefix: '',
+  /**
+   * @param {string} prefix
+   * @returns {import('../src/types').Backends}
+   */
+  createBackends: (prefix) => {
+    return {
+      root: new DatastoreLevel(prefix, {
         version: 2
-      },
-      blocks: {
-        sharding: false,
-        prefix: '',
+      }),
+      blocks: new BlockstoreDatastoreAdapter(
+        new DatastoreLevel(`${prefix}/blocks`, {
+          extension: '.data',
+          version: 2
+        })
+      ),
+      datastore: new DatastoreLevel(`${prefix}/datastore`, {
         version: 2
-      },
-      keys: {
-        sharding: false,
-        prefix: '',
+      }),
+      keys: new DatastoreLevel(`${prefix}/keys`, {
         version: 2
-      },
-      datastore: {
-        sharding: false,
-        prefix: '',
+      }),
+      pins: new DatastoreLevel(`${prefix}/pins`, {
         version: 2
-      }
+      })
     }
   }
 }, {
   name: 'with s3',
   cleanup: () => {},
-  repoOptions: {
-    lock: 'memory',
-    storageBackends: {
-      root: DatastoreS3,
-      blocks: DatastoreS3,
-      datastore: DatastoreS3,
-      keys: DatastoreS3,
-      pins: DatastoreS3
-    },
-    storageBackendOptions: {
-      root: {
-        sharding: true,
-        extension: '',
+  createBackends: (prefix) => {
+    return {
+      root: new DatastoreS3(prefix, {
         s3: s3Instance,
         createIfMissing: false
-      },
-      blocks: {
-        sharding: true,
-        extension: '.data',
-        s3: s3Instance,
-        createIfMissing: false
-      },
-      datastore: {
-        sharding: true,
-        s3: s3Instance,
-        createIfMissing: false
-      },
-      keys: {
-        sharding: true,
-        s3: s3Instance,
-        createIfMissing: false
-      },
-      pins: {
-        sharding: true,
-        s3: s3Instance,
-        createIfMissing: false
-      }
+      }),
+      blocks: new BlockstoreDatastoreAdapter(
+        new ShardingDatastore(
+          new DatastoreS3(`${prefix}/blocks`, {
+            s3: s3Instance,
+            createIfMissing: false,
+            extension: '.data'
+          }),
+          new NextToLast(2)
+        )
+      ),
+      datastore: new ShardingDatastore(
+        new DatastoreS3(`${prefix}/datastore`, {
+          s3: s3Instance,
+          createIfMissing: false
+        }),
+        new NextToLast(2)
+      ),
+      keys: new ShardingDatastore(
+        new DatastoreS3(`${prefix}/keys`, {
+          s3: s3Instance,
+          createIfMissing: false
+        }),
+        new NextToLast(2)
+      ),
+      pins: new ShardingDatastore(
+        new DatastoreS3(`${prefix}/pins`, {
+          s3: s3Instance,
+          createIfMissing: false
+        }),
+        new NextToLast(2)
+      )
     }
   }
 }]
 
-CONFIGURATIONS.forEach(({ name, repoOptions, cleanup }) => {
-  const setup = () => createRepo(repoOptions)
+CONFIGURATIONS.forEach(({ name, createBackends, cleanup }) => {
+  const setup = (options) => createRepo(createBackends, options)
 
-  describe('lock.js tests', () => {
-    describe('mem-lock tests', () => {
-      require('./lock-test')(require('../src/repo/lock-memory'), setup, cleanup, repoOptions)
+  describe(name, () => {
+    describe('version tests', () => {
+      require('./version-test')(setup, cleanup)
     })
-  })
 
-  describe('version tests', () => {
-    require('./version-test')(setup, cleanup, repoOptions)
-  })
+    describe('migrations tests', () => {
+      require('./migrations')(setup, cleanup)
+    })
 
-  describe('migrations tests', () => {
-    require('./migrations')(setup, cleanup, repoOptions)
-  })
+    describe('init tests', () => {
+      require('./init-test')(setup, cleanup)
+    })
 
-  describe('init tests', () => {
-    require('./init-test')(setup, cleanup, repoOptions)
-  })
-
-  describe('integration tests', () => {
-    require('./integration-test')(setup, cleanup, repoOptions)
+    describe('integration tests', () => {
+      require('./integration-test')(setup, cleanup)
+    })
   })
 })

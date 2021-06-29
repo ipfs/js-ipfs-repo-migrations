@@ -13,7 +13,7 @@ const {
 const fnv1a = require('fnv1a')
 const varint = require('varint')
 const dagPb = require('@ipld/dag-pb')
-const { cidToKey, DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
+const { DEFAULT_FANOUT, MAX_ITEMS, EMPTY_KEY } = require('./utils')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const uint8ArrayCompare = require('uint8arrays/compare')
 const uint8ArrayToString = require('uint8arrays/to-string')
@@ -22,6 +22,7 @@ const { sha256 } = require('multiformats/hashes/sha2')
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
+ * @typedef {import('interface-blockstore').Blockstore} Blockstore
  * @typedef {import('@ipld/dag-pb').PBNode} PBNode
  *
  * @typedef {object} Pin
@@ -89,7 +90,7 @@ function hash (seed, key) {
 }
 
 /**
- * @param {Datastore} blockstore
+ * @param {Blockstore} blockstore
  * @param {PBNode} node
  * @returns {AsyncGenerator<CID, void, undefined>}
  */
@@ -105,7 +106,7 @@ async function * walkItems (blockstore, node) {
 
       if (!EMPTY_KEY.equals(linkHash)) {
         // walk the links of this fanout bin
-        const buf = await blockstore.get(cidToKey(linkHash))
+        const buf = await blockstore.get(linkHash)
         const node = dagPb.decode(buf)
 
         yield * walkItems(blockstore, node)
@@ -120,7 +121,7 @@ async function * walkItems (blockstore, node) {
 }
 
 /**
- * @param {Datastore} blockstore
+ * @param {Blockstore} blockstore
  * @param {PBNode} rootNode
  * @param {string} name
  */
@@ -131,14 +132,14 @@ async function * loadSet (blockstore, rootNode, name) {
     throw new Error('No link found with name ' + name)
   }
 
-  const buf = await blockstore.get(cidToKey(link.Hash))
+  const buf = await blockstore.get(link.Hash)
   const node = dagPb.decode(buf)
 
   yield * walkItems(blockstore, node)
 }
 
 /**
- * @param {Datastore} blockstore
+ * @param {Blockstore} blockstore
  * @param {Pin[]} items
  */
 function storeItems (blockstore, items) {
@@ -234,7 +235,7 @@ function storeItems (blockstore, items) {
       const digest = await sha256.digest(buf)
       const cid = CID.createV0(digest)
 
-      await blockstore.put(cidToKey(cid), buf)
+      await blockstore.put(cid, buf)
 
       let size = child.Links.reduce((acc, curr) => acc + (curr?.Tsize || 0), 0) + buf.length
 
@@ -248,7 +249,7 @@ function storeItems (blockstore, items) {
 }
 
 /**
- * @param {Datastore} blockstore
+ * @param {Blockstore} blockstore
  * @param {string} type
  * @param {CID[]} cids
  */
@@ -262,7 +263,7 @@ async function storeSet (blockstore, type, cids) {
   const digest = await sha256.digest(buf)
   const cid = CID.createV0(digest)
 
-  await blockstore.put(cidToKey(cid), buf)
+  await blockstore.put(cid, buf)
 
   let size = rootNode.Links.reduce((acc, curr) => acc + curr.Tsize, 0) + buf.length
 
