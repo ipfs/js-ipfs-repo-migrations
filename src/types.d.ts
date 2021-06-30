@@ -20,6 +20,10 @@ export interface Backends {
   pins: Datastore
 }
 
+export interface LockCloser {
+  close: () => Promise<void>
+}
+
 export interface RepoLock {
   /**
    * Sets the lock if one does not already exist. If a lock already exists, should throw an error.

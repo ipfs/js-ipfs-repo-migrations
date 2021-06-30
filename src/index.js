@@ -13,9 +13,6 @@ const log = require('debug')('ipfs:repo:migrator')
  * @typedef {import('./types').MigrationProgressCallback} MigrationProgressCallback
  */
 
-exports.getCurrentRepoVersion = repoVersion.getVersion
-exports.errors = errors
-
 /**
  * Returns the version of latest migration.
  * If no migrations are present returns 0.
@@ -31,8 +28,6 @@ function getLatestMigrationVersion (migrations) {
 
   return migrations[migrations.length - 1].version
 }
-
-exports.getLatestMigrationVersion = getLatestMigrationVersion
 
 /**
  * Main function to execute forward migrations.
@@ -137,8 +132,6 @@ async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = f
     }
   }
 }
-
-exports.migrate = migrate
 
 /**
  * Main function to execute backward migration (reversion).
@@ -247,8 +240,6 @@ async function revert (path, backends, repoOptions, toVersion, { ignoreLock = fa
   }
 }
 
-exports.revert = revert
-
 /**
  * Function checks if all migrations in given range are available.
  *
@@ -276,4 +267,12 @@ function verifyAvailableMigrations (migrations, fromVersion, toVersion, checkRev
   if (migrationCounter !== (toVersion - fromVersion)) {
     throw new errors.InvalidValueError(`The ipfs-repo-migrations package does not have all migration to migrate from version ${fromVersion} to ${toVersion}`)
   }
+}
+
+module.exports = {
+  getCurrentRepoVersion: repoVersion.getVersion,
+  getLatestMigrationVersion,
+  errors,
+  migrate,
+  revert
 }
