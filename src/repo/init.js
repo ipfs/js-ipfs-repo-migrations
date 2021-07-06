@@ -30,7 +30,9 @@ async function isRepoInitialized (backends) {
     return false
   } finally {
     if (root !== undefined) {
-      await root.close()
+      try {
+        await root.close()
+      } catch {}
     }
   }
 }
