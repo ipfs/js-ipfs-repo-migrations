@@ -71,7 +71,7 @@
     "aws-sdk": "^2.884.0",
     "datastore-fs": "^4.0.0",
     "datastore-level": "^5.0.0",
-    "datastore-s3": "^5.0.0",
+    "datastore-s3": "^6.0.0",
     "events": "^3.2.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
