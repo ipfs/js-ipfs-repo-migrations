@@ -85,14 +85,9 @@ async function bootstrapBlocks (blockstore, datastore, { car: carBuf, root: expe
   expect(actualRoot.toString()).to.equal(expectedRoot.toString())
   await blockstore.open()
 
-  const batch = blockstore.batch()
-
   for await (const { cid, bytes } of car.blocks()) {
-    // if we don't create a new Uint8Array, IDB writes the whole backing buffer into the db
-    batch.put(CID.parse(cid.toString()), new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength))
+    blockstore.put(CID.parse(cid.toString()), new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength))
   }
-
-  await batch.commit()
 
   await blockstore.close()
 
