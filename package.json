@@ -69,7 +69,7 @@
     "aegir": "^33.0.0",
     "assert": "^2.0.0",
     "aws-sdk": "^2.884.0",
-    "datastore-fs": "^4.0.0",
+    "datastore-fs": "^5.0.0",
     "datastore-level": "^5.0.0",
     "datastore-s3": "^5.0.0",
     "events": "^3.2.0",
