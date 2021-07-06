@@ -19,6 +19,7 @@ const uint8ArrayCompare = require('uint8arrays/compare')
 const uint8ArrayToString = require('uint8arrays/to-string')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const { sha256 } = require('multiformats/hashes/sha2')
+const { base58btc } = require('multiformats/bases/base58')
 
 /**
  * @typedef {import('interface-datastore').Datastore} Datastore
@@ -83,7 +84,7 @@ function hash (seed, key) {
   const buffer = new Uint8Array(4)
   const dataView = new DataView(buffer.buffer)
   dataView.setUint32(0, seed, true)
-  const encodedKey = uint8ArrayFromString(key.toString())
+  const encodedKey = uint8ArrayFromString(key.toString(base58btc))
   const data = uint8ArrayConcat([buffer, encodedKey], buffer.byteLength + encodedKey.byteLength)
 
   return fnv1a(uint8ArrayToString(data))
