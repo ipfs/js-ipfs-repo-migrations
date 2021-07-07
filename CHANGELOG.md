@@ -1,3 +1,19 @@
+# [9.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v8.0.0...v9.0.0) (2021-07-07)
+
+
+### chore
+
+* upgrade to new multiformats module ([#98](https://github.com/ipfs/js-ipfs-repo-migrations/issues/98)) ([dad30b6](https://github.com/ipfs/js-ipfs-repo-migrations/commit/dad30b6cd4f3067a1ed86b0971d84b26f42667ce))
+
+
+### BREAKING CHANGES
+
+* Uses new CID class
+
+Co-authored-by: Rod Vagg <rod@vagg.org>
+
+
+
 # [8.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v7.0.3...v8.0.0) (2021-04-15)
 
 
