@@ -3,8 +3,9 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
+const { CID } = require('multiformats/cid')
+const { BlockstoreAdapter } = require('interface-blockstore')
 
-const { createStore } = require('../../src/utils')
 const migration = require('../../migrations/migration-10')
 const Key = require('interface-datastore').Key
 const fromString = require('uint8arrays/from-string')
@@ -17,58 +18,78 @@ const keys = {
   CIQKKLBWAIBQZOIS5X7E32LQAL6236OUKZTMHPQSFIXPWXNZHQOV7JQ: fromString('derp')
 }
 
-async function bootstrap (dir, backend, repoOptions) {
-  const store = createStore(dir, backend, repoOptions)
+async function bootstrap (store) {
   await store.open()
 
   for (const name of Object.keys(keys)) {
-    await store.put(new Key(name), keys[name])
-  }
-
-  await store.close()
-}
-
-async function validate (dir, backend, repoOptions) {
-  const store = createStore(dir, backend, repoOptions)
-
-  await store.open()
-
-  for (const name of Object.keys(keys)) {
-    const key = new Key(`/${name}`)
-
-    expect(await store.has(key)).to.be.true(`Could not read key ${name}`)
-    expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]}`)
-  }
-
-  await store.close()
-}
-
-function withLevel (repoOptions, levelImpl) {
-  const stores = Object.keys(repoOptions.storageBackends)
-    .filter(key => repoOptions.storageBackends[key].name === 'LevelDatastore')
-
-  const output = {
-    ...repoOptions
-  }
-
-  stores.forEach(store => {
-    // override version of level passed to datastore options
-    output.storageBackendOptions[store] = {
-      ...output.storageBackendOptions[store],
-      db: levelImpl
+    if (store instanceof BlockstoreAdapter) {
+      await store.put(CID.parse(`b${name.toLowerCase()}`), keys[name])
+    } else {
+      await store.put(new Key(name), keys[name])
     }
-  })
+  }
+
+  await store.close()
+}
+
+async function validate (store) {
+  await store.open()
+
+  for (const name of Object.keys(keys)) {
+    if (store instanceof BlockstoreAdapter) {
+      const key = CID.parse(`b${name.toLowerCase()}`)
+
+      expect(await store.has(key)).to.be.true(`Could not read key ${name}`)
+      expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]}`)
+    } else {
+      const key = new Key(`/${name}`)
+
+      await expect(store.has(key)).to.eventually.be.true(`Could not read key ${name}`)
+      expect(equals(await store.get(key), keys[name])).to.be.true(`Could not read value for key ${keys[name]}`)
+    }
+  }
+
+  await store.close()
+}
+
+function withLevels (backends, LevelImpl) {
+  const output = {}
+
+  Object.entries(backends)
+    .forEach(([key, value]) => {
+      output[key] = withLevel(value, LevelImpl)
+    })
 
   return output
 }
 
-module.exports = (setup, cleanup, repoOptions) => {
+function withLevel (store, LevelImpl) {
+  let parent = {
+    child: store
+  }
+
+  while (parent.child) {
+    if (parent.child.constructor.name === 'LevelDatastore') {
+      parent.child.database = LevelImpl
+      delete parent.child.db
+
+      return store
+    }
+
+    parent = parent.child
+  }
+
+  return store
+}
+
+module.exports = (setup, cleanup) => {
   describe('migration 10', function () {
     this.timeout(240 * 1000)
     let dir
+    let backends
 
     beforeEach(async () => {
-      dir = await setup()
+      ({ dir, backends } = await setup())
     })
 
     afterEach(async () => {
@@ -77,48 +98,48 @@ module.exports = (setup, cleanup, repoOptions) => {
 
     describe('forwards', () => {
       beforeEach(async () => {
-        for (const backend of Object.keys(repoOptions.storageBackends)) {
-          await bootstrap(dir, backend, withLevel(repoOptions, Level5))
+        for (const backend of Object.values(backends)) {
+          await bootstrap(withLevel(backend, Level5))
         }
       })
 
       it('should migrate keys and values forward', async () => {
-        await migration.migrate(dir, withLevel(repoOptions, Level6), () => {})
+        await migration.migrate(withLevels(backends, Level6), () => {})
 
-        for (const backend of Object.keys(repoOptions.storageBackends)) {
-          await validate(dir, backend, withLevel(repoOptions, Level6))
+        for (const backend of Object.values(backends)) {
+          await validate(withLevel(backend, Level6))
         }
       })
     })
 
     describe('backwards using level@6.x.x', () => {
       beforeEach(async () => {
-        for (const backend of Object.keys(repoOptions.storageBackends)) {
-          await bootstrap(dir, backend, withLevel(repoOptions, Level6))
+        for (const backend of Object.values(backends)) {
+          await bootstrap(withLevel(backend, Level6))
         }
       })
 
       it('should migrate keys and values backward', async () => {
-        await migration.revert(dir, withLevel(repoOptions, Level6), () => {})
+        await migration.revert(withLevels(backends, Level6), () => {})
 
-        for (const backend of Object.keys(repoOptions.storageBackends)) {
-          await validate(dir, backend, withLevel(repoOptions, Level5))
+        for (const backend of Object.values(backends)) {
+          await validate(withLevel(backend, Level5))
         }
       })
     })
 
     describe('backwards using level@5.x.x', () => {
       beforeEach(async () => {
-        for (const backend of Object.keys(repoOptions.storageBackends)) {
-          await bootstrap(dir, backend, withLevel(repoOptions, Level6))
+        for (const backend of Object.values(backends)) {
+          await bootstrap(withLevel(backend, Level6))
         }
       })
 
       it('should migrate keys and values backward', async () => {
-        await migration.revert(dir, withLevel(repoOptions, Level5), () => {})
+        await migration.revert(withLevels(backends, Level5), () => {})
 
-        for (const backend of Object.keys(repoOptions.storageBackends)) {
-          await validate(dir, backend, withLevel(repoOptions, Level5))
+        for (const backend of Object.values(backends)) {
+          await validate(withLevel(backend, Level5))
         }
       })
     })

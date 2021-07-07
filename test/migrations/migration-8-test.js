@@ -4,7 +4,6 @@
 
 const { expect } = require('aegir/utils/chai')
 
-const { createStore } = require('../../src/utils')
 const migration = require('../../migrations/migration-8')
 const Key = require('interface-datastore').Key
 
@@ -51,39 +50,61 @@ const blocksFixtures = [
     'CIQFTFEEHEDF6KLBT32BFAGLXEZL4UWFNWM4LFTLMXQBCERZ6CMLX3Y']
 ]
 
-async function bootstrapBlocks (dir, encoded, repoOptions) {
-  const store = createStore(dir, 'blocks', repoOptions)
+/**
+ * @param {*} blockstore
+ * @returns {Datastore}
+ */
+function unwrap (blockstore) {
+  if (blockstore.child) {
+    return unwrap(blockstore.child)
+  }
+
+  return blockstore
+}
+
+async function bootstrapBlocks (backends, encoded) {
+  const store = backends.blocks
   await store.open()
+
+  const datastore = unwrap(store)
 
   for (const blocksNames of blocksFixtures) {
     const name = encoded ? blocksNames[1] : blocksNames[0]
-    await store.put(new Key(name), '')
+
+    await datastore.put(new Key(`/${name}`), '')
   }
 
   await store.close()
 }
 
-async function validateBlocks (dir, encoded, repoOptions) {
-  const store = createStore(dir, 'blocks', repoOptions)
+async function validateBlocks (backends, migrated) {
+  const store = backends.blocks
   await store.open()
 
+  const datastore = unwrap(store)
+
   for (const blockNames of blocksFixtures) {
-    const newName = encoded ? blockNames[1] : blockNames[0]
-    const oldName = encoded ? blockNames[0] : blockNames[1]
-    expect(await store.has(new Key(`/${oldName}`))).to.be.false(`${oldName} was not migrated to ${newName}`)
-    expect(await store.has(new Key(`/${newName}`))).to.be.true(`${newName} was not removed`)
+    const newName = migrated ? blockNames[1] : blockNames[0]
+    const oldName = migrated ? blockNames[0] : blockNames[1]
+
+    const oldKey = new Key(`/${oldName}`)
+    const newKey = new Key(`/${newName}`)
+
+    expect(await datastore.has(oldKey)).to.be.false(`${oldName} was not migrated to ${newName}`)
+    expect(await datastore.has(newKey)).to.be.true(`${newName} was not removed`)
   }
 
   await store.close()
 }
 
-module.exports = (setup, cleanup, repoOptions) => {
+module.exports = (setup, cleanup) => {
   describe('migration 8', function () {
     this.timeout(240 * 1000)
     let dir
+    let backends
 
     beforeEach(async () => {
-      dir = await setup()
+      ({ dir, backends } = await setup())
     })
 
     afterEach(async () => {
@@ -93,27 +114,27 @@ module.exports = (setup, cleanup, repoOptions) => {
     describe('empty repo', () => {
       describe('forwards', () => {
         it('should migrate pins forward', async () => {
-          await migration.migrate(dir, repoOptions, () => {})
+          await migration.migrate(backends, () => {})
         })
       })
 
       describe('backwards', () => {
         it('should migrate pins backward', async () => {
-          await migration.revert(dir, repoOptions, () => {})
+          await migration.revert(backends, () => {})
         })
       })
     })
 
     it('should migrate blocks forward', async () => {
-      await bootstrapBlocks(dir, false, repoOptions)
-      await migration.migrate(dir, repoOptions, () => {})
-      await validateBlocks(dir, true, repoOptions)
+      await bootstrapBlocks(backends, false)
+      await migration.migrate(backends, () => {})
+      await validateBlocks(backends, true)
     })
 
     it('should migrate blocks backward', async () => {
-      await bootstrapBlocks(dir, true, repoOptions)
-      await migration.revert(dir, repoOptions, () => {})
-      await validateBlocks(dir, false, repoOptions)
+      await bootstrapBlocks(backends, true)
+      await migration.revert(backends, () => {})
+      await validateBlocks(backends, false)
     })
   })
 }

@@ -94,9 +94,9 @@ const main = async () => {
     console.info(`    car: loadFixture('test/fixtures/${fileName}'),`)
 
     const buf = await ipfs.libp2p.datastore.get(PIN_DS_KEY)
-    const cid = new CID(buf)
+    const cid = CID.decode(buf)
 
-    console.info(`    root: new CID('${cid}'),`)
+    console.info(`    root: CID.parse('${cid}'),`)
 
     const { writer, out } = await CarWriter.create([cid])
     Readable.from(out).pipe(fs.createWriteStream(path.join(__dirname, fileName)))

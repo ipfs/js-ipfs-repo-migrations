@@ -3,7 +3,6 @@
 const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
 const uint8ArrayFromString = require('uint8arrays/from-string')
-const { createStore } = require('../../../src/utils')
 
 const CONFIG_KEY = new Key('config')
 const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
@@ -53,8 +52,8 @@ function removeNewApiAddress (config) {
   return config
 }
 
-async function migrate (repoPath, repoOptions, onProgress) {
-  const store = createStore(repoPath, 'root', repoOptions)
+async function migrate (backends, onProgress) {
+  const store = backends.root
   await store.open()
 
   try {
@@ -76,8 +75,8 @@ async function migrate (repoPath, repoOptions, onProgress) {
   onProgress(100, 'done!')
 }
 
-async function revert (repoPath, repoOptions, onProgress) {
-  const store = createStore(repoPath, 'root', repoOptions)
+async function revert (backends, onProgress) {
+  const store = backends.root
   await store.open()
 
   try {

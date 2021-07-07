@@ -2,7 +2,7 @@
 
 const repoInit = require('./init')
 const { MissingRepoOptionsError, NotInitializedRepoError } = require('../errors')
-const { VERSION_KEY, createStore } = require('../utils')
+const { VERSION_KEY } = require('../utils')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
@@ -11,19 +11,14 @@ const uint8ArrayToString = require('uint8arrays/to-string')
  * This function needs to be cross-repo-version functional to be able to fetch any version number,
  * even in case of change of repo's versioning.
  *
- * @param {string} path
- * @param {Object} repoOptions - Options used to create a repo, the same as pased to ipfs-repo
+ * @param {import('../types').Backends} backends
  */
-async function getVersion (path, repoOptions) {
-  if (!(await repoInit.isRepoInitialized(path, repoOptions))) {
-    throw new NotInitializedRepoError(`Repo in path ${path} is not initialized!`)
+async function getVersion (backends) {
+  if (!(await repoInit.isRepoInitialized(backends))) {
+    throw new NotInitializedRepoError('Repo is not initialized!')
   }
 
-  if (!repoOptions) {
-    throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
-  }
-
-  const store = createStore(path, 'root', repoOptions)
+  const store = backends.root
   await store.open()
 
   try {
@@ -36,16 +31,15 @@ async function getVersion (path, repoOptions) {
 /**
  * Function for setting a version in cross-repo-version manner.
  *
- * @param {string} path
  * @param {number} version
- * @param {Object} repoOptions - Options used to create a repo, the same as pased to ipfs-repo
+ * @param {import('../types').Backends} backends
  */
-async function setVersion (path, version, repoOptions) {
-  if (!repoOptions) {
+async function setVersion (version, backends) {
+  if (!backends) {
     throw new MissingRepoOptionsError('Please pass repo options when trying to open a repo')
   }
 
-  const store = createStore(path, 'root', repoOptions)
+  const store = backends.root
   await store.open()
   await store.put(VERSION_KEY, uint8ArrayFromString(String(version)))
   await store.close()
