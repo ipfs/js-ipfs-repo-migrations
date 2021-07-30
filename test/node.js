@@ -10,12 +10,6 @@ const { ShardingDatastore, shard: { NextToLast } } = require('datastore-core')
 const BlockstoreDatastoreAdapter = require('blockstore-datastore-adapter')
 const mockS3 = require('./fixtures/mock-s3')
 const S3 = require('aws-sdk').S3
-const s3Instance = new S3({
-  params: {
-    Bucket: 'test'
-  }
-})
-mockS3(s3Instance)
 const { createRepo } = require('./fixtures/repo')
 
 function cleanup (dir) {
@@ -64,6 +58,13 @@ const CONFIGURATIONS = [{
   name: 'with s3',
   cleanup: () => {},
   createBackends: (prefix) => {
+    const s3Instance = new S3({
+      params: {
+        Bucket: 'test'
+      }
+    })
+    mockS3(s3Instance)
+
     return {
       root: new DatastoreS3(prefix, {
         s3: s3Instance,
