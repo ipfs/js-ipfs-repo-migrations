@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ipfs-repo-migrations - v9.0.0</title>
-	<meta name="description" content="Documentation for ipfs-repo-migrations - v9.0.0">
+	<title>ipfs-repo-migrations - v9.0.1</title>
+	<meta name="description" content="Documentation for ipfs-repo-migrations - v9.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">ipfs-repo-migrations - v9.0.0</a>
+					<a href="index.html" class="title">ipfs-repo-migrations - v9.0.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>ipfs-repo-migrations - v9.0.0</h1>
+			<h1>ipfs-repo-migrations - v9.0.1</h1>
 		</div>
 	</div>
 </header>
@@ -70,15 +70,15 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#migration" class="tsd-kind-icon">Migration</a></li>
-								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#migrationprogresscallback" class="tsd-kind-icon">Migration<wbr>Progress<wbr>Callback</a></li>
-								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#progresscallback" class="tsd-kind-icon">Progress<wbr>Callback</a></li>
+								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#Migration" class="tsd-kind-icon">Migration</a></li>
+								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#MigrationProgressCallback" class="tsd-kind-icon">Migration<wbr>Progress<wbr>Callback</a></li>
+								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#ProgressCallback" class="tsd-kind-icon">Progress<wbr>Callback</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property"><a href="modules.html#default" class="tsd-kind-icon">default</a></li>
+								<li class="tsd-kind-property"><a href="modules.html#export_" class="tsd-kind-icon">export&#61;</a></li>
 							</ul>
 						</section>
 					</div>
@@ -87,7 +87,7 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
-					<a name="migration" class="tsd-anchor"></a>
+					<a name="Migration" class="tsd-anchor"></a>
 					<h3>Migration</h3>
 					<div class="tsd-signature tsd-kind-icon">Migration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Migration</span></div>
 					<aside class="tsd-sources">
@@ -97,7 +97,7 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
-					<a name="migrationprogresscallback" class="tsd-anchor"></a>
+					<a name="MigrationProgressCallback" class="tsd-anchor"></a>
 					<h3>Migration<wbr>Progress<wbr>Callback</h3>
 					<div class="tsd-signature tsd-kind-icon">Migration<wbr>Progress<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">MigrationProgressCallback</span></div>
 					<aside class="tsd-sources">
@@ -107,7 +107,7 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
-					<a name="progresscallback" class="tsd-anchor"></a>
+					<a name="ProgressCallback" class="tsd-anchor"></a>
 					<h3>Progress<wbr>Callback</h3>
 					<div class="tsd-signature tsd-kind-icon">Progress<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ProgressCallback</span></div>
 					<aside class="tsd-sources">
@@ -120,10 +120,13 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property">
-					<a name="default" class="tsd-anchor"></a>
-					<h3>default</h3>
-					<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>errors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__module</span><span class="tsd-signature-symbol">; </span>getCurrentRepoVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>backends<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Backends</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getLatestMigrationVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>migrations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Migration</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>migrate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, backends<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Backends</span>, repoOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RepoOptions</span>, toVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>ignoreLock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isDryRun<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>migrations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Migration</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>onProgress<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ProgressCallback</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>revert<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, backends<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Backends</span>, repoOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RepoOptions</span>, toVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>ignoreLock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isDryRun<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>migrations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Migration</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>onProgress<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ProgressCallback</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
+					<a name="export_" class="tsd-anchor"></a>
+					<h3>export&#61;</h3>
+					<div class="tsd-signature tsd-kind-icon">export&#61;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>errors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__module</span><span class="tsd-signature-symbol">; </span>getCurrentRepoVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>backends<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Backends</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>getLatestMigrationVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>migrations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Migration</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>migrate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, backends<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Backends</span>, repoOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RepoOptions</span>, toVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>ignoreLock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isDryRun<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>migrations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Migration</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>onProgress<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ProgressCallback</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>revert<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, backends<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Backends</span>, repoOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RepoOptions</span>, toVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>ignoreLock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isDryRun<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>migrations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Migration</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>onProgress<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ProgressCallback</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ipfs/js-ipfs-repo-migrations/blob/master/src/index.js#L272">index.js:272</a></li>
+						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -305,16 +308,16 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#migration" class="tsd-kind-icon">Migration</a>
+						<a href="modules.html#Migration" class="tsd-kind-icon">Migration</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#migrationprogresscallback" class="tsd-kind-icon">Migration<wbr>Progress<wbr>Callback</a>
+						<a href="modules.html#MigrationProgressCallback" class="tsd-kind-icon">Migration<wbr>Progress<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#progresscallback" class="tsd-kind-icon">Progress<wbr>Callback</a>
+						<a href="modules.html#ProgressCallback" class="tsd-kind-icon">Progress<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-property">
-						<a href="modules.html#default" class="tsd-kind-icon">default</a>
+						<a href="modules.html#export_" class="tsd-kind-icon">export&#61;</a>
 					</li>
 				</ul>
 			</nav>
