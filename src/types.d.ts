@@ -1,14 +1,18 @@
 import type { Datastore } from 'interface-datastore'
 import type { Blockstore } from 'interface-blockstore'
 
-export type ProgressCallback = (version: number, progress: string, message: string) => void
+export interface ProgressCallback {
+  (version: number, progress: string, message: string): void
+}
 
-export type MigrationProgressCallback = (percent: number, message: string) => void
+export interface MigrationProgressCallback {
+  (percent: number, message: string): void
+}
 
 export interface Migration {
   version: number
   description: string
-  migrate: (backends: Backends, onProgress: MigrationProgressCallback) => Promise<void>,
+  migrate: (backends: Backends, onProgress: MigrationProgressCallback) => Promise<void>
   revert: (backends: Backends, onProgress: MigrationProgressCallback) => Promise<void>
 }
 
