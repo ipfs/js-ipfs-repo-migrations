@@ -1,3 +1,12 @@
+## [9.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v9.0.0...v9.0.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* remove optional chaining ([#122](https://github.com/ipfs/js-ipfs-repo-migrations/issues/122)) ([242dc8e](https://github.com/ipfs/js-ipfs-repo-migrations/commit/242dc8efcb5e612f01d4d8a6788d9640f21e2325))
+
+
+
 # [9.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v8.0.0...v9.0.0) (2021-07-07)
 
 
