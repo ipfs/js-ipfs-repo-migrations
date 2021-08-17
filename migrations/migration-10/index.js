@@ -3,8 +3,8 @@
 const {
   findLevelJs
 } = require('../../src/utils')
-const fromString = require('uint8arrays/from-string')
-const toString = require('uint8arrays/to-string')
+const { fromString } = require('uint8arrays/from-string')
+const { toString } = require('uint8arrays/to-string')
 
 /**
  * @typedef {import('../../src/types').Migration} Migration

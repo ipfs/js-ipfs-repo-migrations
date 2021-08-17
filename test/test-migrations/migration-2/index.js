@@ -2,7 +2,7 @@
 
 const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 const CONFIG_KEY = new Key('config')
 const NEW_API_ADDRESS = '/ip6/::/tcp/5001'

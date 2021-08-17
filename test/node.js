@@ -34,7 +34,7 @@ const CONFIGURATIONS = [{
           new NextToLast(2))
       ),
       datastore: new DatastoreLevel(`${prefix}/datastore`),
-      keys: new DatastoreLevel(`${prefix}/keys`),
+      keys: new DatastoreFS(`${prefix}/keys`),
       pins: new DatastoreLevel(`${prefix}/pins`)
     }
   }
@@ -50,7 +50,7 @@ const CONFIGURATIONS = [{
         })
       ),
       datastore: new DatastoreLevel(`${prefix}/datastore`),
-      keys: new DatastoreLevel(`${prefix}/keys`),
+      keys: new DatastoreFS(`${prefix}/keys`),
       pins: new DatastoreLevel(`${prefix}/pins`)
     }
   }

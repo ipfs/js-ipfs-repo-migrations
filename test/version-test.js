@@ -4,7 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const { VERSION_KEY, CONFIG_KEY } = require('../src/utils')
 const version = require('../src/repo/version')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 const errors = require('../src/errors')
 
 // When new versioning mechanism is introduced in new version don't forget to update

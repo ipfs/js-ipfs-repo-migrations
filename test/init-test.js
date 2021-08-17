@@ -4,7 +4,7 @@
 const { expect } = require('aegir/utils/chai')
 const { CONFIG_KEY, VERSION_KEY } = require('../src/utils')
 const repoInit = require('../src/repo/init')
-const uint8ArrayFromString = require('uint8arrays/from-string')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 module.exports = (setup, cleanup) => {
   let dir
