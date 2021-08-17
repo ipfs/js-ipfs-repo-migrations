@@ -17,13 +17,13 @@ const { toString } = require('uint8arrays/to-string')
  * @typedef {function (Uint8Array, Uint8Array): Operation[]} DowngradeFunction
  */
 
- /**
-  * @param {string} name
-  * @param {Datastore} store
-  * @param {(message: string) => void} onProgress
-  */
+/**
+ * @param {string} name
+ * @param {Datastore} store
+ * @param {(message: string) => void} onProgress
+ */
 async function keysToBinary (name, store, onProgress = () => {}) {
-  let db = findLevelJs(store)
+  const db = findLevelJs(store)
 
   // only interested in level-js
   if (!db) {
@@ -47,13 +47,13 @@ async function keysToBinary (name, store, onProgress = () => {}) {
   await withEach(db, upgrade)
 }
 
- /**
-  * @param {string} name
-  * @param {Datastore} store
-  * @param {(message: string) => void} onProgress
-  */
+/**
+ * @param {string} name
+ * @param {Datastore} store
+ * @param {(message: string) => void} onProgress
+ */
 async function keysToStrings (name, store, onProgress = () => {}) {
-  let db = findLevelJs(store)
+  const db = findLevelJs(store)
 
   // only interested in level-js
   if (!db) {
@@ -109,21 +109,21 @@ async function process (backends, onProgress, fn) {
   onProgress(0, `Migrating ${datastores.length} dbs`)
   let migrated = 0
 
+  /**
+   * @param {string} message
+   */
+  const progress = (message) => {
+    onProgress(Math.round((migrated / datastores.length) * 100), message)
+  }
+
   for (const { name, store } of datastores) {
     await store.open()
 
     try {
-      /**
-       * @param {string} message
-       */
-      const progress = (message) => {
-        onProgress(Math.round((migrated / datastores.length) * 100), message)
-      }
-
       await fn(name, store, progress)
     } finally {
       migrated++
-      store.close()
+      await store.close()
     }
   }
 
@@ -150,7 +150,7 @@ module.exports = {
  *
  * @param {any} db
  * @param {UpgradeFunction | DowngradeFunction} fn
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 function withEach (db, fn) {
   /**
@@ -168,11 +168,12 @@ function withEach (db, fn) {
     transaction.oncomplete = () => next()
 
     function loop () {
-      var op = operations[index++]
-      var key = op.key
+      const op = operations[index++]
+      const key = op.key
+      let req
 
       try {
-        var req = op.type === 'del' ? store.delete(key) : store.put(op.value, key)
+        req = op.type === 'del' ? store.delete(key) : store.put(op.value, key)
       } catch (err) {
         error = err
         transaction.abort()

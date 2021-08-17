@@ -28,7 +28,7 @@ async function storeMfsRootInDatastore (backends, onProgress = () => {}) {
  * @param {import('../../src/types').Backends} backends
  * @param {import('../../src/types').MigrationProgressCallback} onProgress
  */
- async function storeMfsRootInRoot (backends, onProgress = () => {}) {
+async function storeMfsRootInRoot (backends, onProgress = () => {}) {
   onProgress(100, 'Migrating MFS root to repo root datastore')
 
   await backends.root.open()

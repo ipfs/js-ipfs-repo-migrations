@@ -18,12 +18,12 @@ const { base32 } = require('multiformats/bases/base32')
  * @typedef {import('multiformats/cid').CIDVersion} CIDVersion
  */
 
- /**
-  * @param {Blockstore} blockstore
-  * @param {Datastore} datastore
-  * @param {Datastore} pinstore
-  * @param {MigrationProgressCallback} onProgress
-  */
+/**
+ * @param {Blockstore} blockstore
+ * @param {Datastore} datastore
+ * @param {Datastore} pinstore
+ * @param {MigrationProgressCallback} onProgress
+ */
 async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
   if (!await datastore.has(PIN_DS_KEY)) {
     return
@@ -34,9 +34,7 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
   const pinRootBuf = await blockstore.get(cid)
   const pinRoot = dagPb.decode(pinRootBuf)
   let counter = 0
-  let pinCount
-
-  pinCount = (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.recursive))) + (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.direct)))
+  const pinCount = (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.recursive))) + (await length(pinset.loadSet(blockstore, pinRoot, PinTypes.direct)))
 
   for await (const cid of pinset.loadSet(blockstore, pinRoot, PinTypes.recursive)) {
     counter++
@@ -85,14 +83,14 @@ async function pinsToDatastore (blockstore, datastore, pinstore, onProgress) {
 }
 
 /**
-  * @param {Blockstore} blockstore
-  * @param {Datastore} datastore
-  * @param {Datastore} pinstore
-  * @param {MigrationProgressCallback} onProgress
-  */
+ * @param {Blockstore} blockstore
+ * @param {Datastore} datastore
+ * @param {Datastore} pinstore
+ * @param {MigrationProgressCallback} onProgress
+ */
 async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
-  let recursivePins = []
-  let directPins = []
+  const recursivePins = []
+  const directPins = []
   let counter = 0
   const pinCount = await length(pinstore.queryKeys({}))
 
@@ -132,7 +130,7 @@ async function pinsToDAG (blockstore, datastore, pinstore, onProgress) {
 }
 
 /**
- *  @param {import('../../src/types').Backends} backends
+ * @param {import('../../src/types').Backends} backends
  * @param {MigrationProgressCallback} onProgress
  * @param {*} fn
  */

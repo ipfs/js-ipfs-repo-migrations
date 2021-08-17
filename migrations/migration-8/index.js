@@ -18,7 +18,7 @@ const mhd = require('multiformats/hashes/digest')
  * @param {*} blockstore
  * @returns {Datastore}
  */
- function unwrap (blockstore) {
+function unwrap (blockstore) {
   if (blockstore.child) {
     return unwrap(blockstore.child)
   }
@@ -34,7 +34,7 @@ function keyToMultihash (key) {
     const buf = base32.decode(`b${key.toString().toLowerCase().slice(1)}`)
 
     // Extract multihash from CID
-    let multihash = CID.decode(buf).multihash.bytes
+    const multihash = CID.decode(buf).multihash.bytes
 
     // Encode and slice off multibase codec
     // Should be uppercase for interop with go
@@ -74,9 +74,7 @@ async function process (backends, onProgress, keyFunction) {
 
   const unwrapped = unwrap(blockstore)
 
-  let blockCount
-
-  blockCount = await length(unwrapped.queryKeys({
+  const blockCount = await length(unwrapped.queryKeys({
     filters: [(key) => {
       const newKey = keyFunction(key)
 
@@ -91,7 +89,7 @@ async function process (backends, onProgress, keyFunction) {
       const newKey = keyFunction(block.key)
 
       // If the Key is base32 CIDv0 then there's nothing to do
-      if(newKey.toString() !== block.key.toString()) {
+      if (newKey.toString() !== block.key.toString()) {
         counter += 1
         log(`Migrating Block from ${block.key} to ${newKey}`, await unwrapped.has(block.key))
 
