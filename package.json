@@ -56,14 +56,14 @@
     "multiformats": "^9.0.0",
     "proper-lockfile": "^4.1.1",
     "protobufjs": "^6.10.2",
-    "uint8arrays": "^2.0.5",
+    "uint8arrays": "^3.0.0",
     "varint": "^6.0.0"
   },
   "devDependencies": {
     "@ipld/car": "^3.0.0",
     "@types/debug": "^4.1.5",
     "@types/varint": "^6.0.0",
-    "aegir": "^34.1.0",
+    "aegir": "^35.0.1",
     "assert": "^2.0.0",
     "aws-sdk": "^2.884.0",
     "blockstore-datastore-adapter": "1.0.0",
