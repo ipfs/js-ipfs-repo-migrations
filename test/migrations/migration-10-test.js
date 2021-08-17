@@ -8,8 +8,8 @@ const { BlockstoreAdapter } = require('interface-blockstore')
 
 const migration = require('../../migrations/migration-10')
 const Key = require('interface-datastore').Key
-const fromString = require('uint8arrays/from-string')
-const equals = require('uint8arrays/equals')
+const { fromString } = require('uint8arrays/from-string')
+const { equals } = require('uint8arrays/equals')
 const Level5 = require('level-5')
 const Level6 = require('level-6')
 
