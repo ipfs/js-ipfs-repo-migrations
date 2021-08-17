@@ -237,7 +237,7 @@ function storeItems (blockstore, items) {
 
       await blockstore.put(cid, buf)
 
-      let size = child.Links.reduce((acc, curr) => acc + (curr.Tsize || 0), 0) + buf.length
+      const size = child.Links.reduce((acc, curr) => acc + (curr.Tsize || 0), 0) + buf.length
 
       fanoutLinks[binIdx] = {
         Name: '',
@@ -265,7 +265,7 @@ async function storeSet (blockstore, type, cids) {
 
   await blockstore.put(cid, buf)
 
-  let size = rootNode.Links.reduce((acc, curr) => acc + curr.Tsize, 0) + buf.length
+  const size = rootNode.Links.reduce((acc, curr) => acc + curr.Tsize, 0) + buf.length
 
   return {
     Name: type,
