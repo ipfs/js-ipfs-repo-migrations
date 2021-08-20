@@ -8,15 +8,25 @@ const migrations = require('./test-migrations')
 const { VERSION_KEY, CONFIG_KEY } = require('../src/utils')
 const { initRepo } = require('./fixtures/repo')
 
+/**
+ * @param {import('./types').SetupFunction} setup
+ * @param {import('./types').CleanupFunction} cleanup
+ */
 module.exports = (setup, cleanup) => {
+  /** @type {string} */
   let dir
+  /** @type {import('../src/types').Backends} */
   let backends
   const repoOptions = {
     repoLock: {
-      lock: () => ({
-        close: () => {}
+      locked: () => Promise.resolve(false),
+      lock: () => Promise.resolve({
+        close: () => Promise.resolve()
       })
-    }
+    },
+    autoMigrate: true,
+    onMigrationProgress: () => {},
+    repoOwner: true
   }
 
   beforeEach(async () => {

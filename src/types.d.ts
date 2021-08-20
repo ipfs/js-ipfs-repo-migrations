@@ -16,6 +16,25 @@ export interface Migration {
   revert: (backends: Backends, onProgress: MigrationProgressCallback) => Promise<void>
 }
 
+export interface MigrationOptions {
+  /**
+   * Won't lock the repo for applying the migrations. Use with caution.
+   */
+  ignoreLock?: boolean
+  /**
+   * Allows to simulate the execution of the migrations without any effect
+   */
+  isDryRun?: boolean
+  /**
+   * Callback which will be called after each executed migration to report progress
+   */
+  onProgress?: ProgressCallback
+  /**
+   * Array of migrations to perform. If undefined, the bundled migrations are used. Mainly for testing purposes.
+   */
+  migrations?: Migration[]
+}
+
 export interface Backends {
   root: Datastore
   blocks: Blockstore

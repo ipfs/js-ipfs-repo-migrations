@@ -9,6 +9,7 @@ const log = require('debug')('ipfs:repo:migrator')
 
 /**
  * @typedef {import('./types').Migration} Migration
+ * @typedef {import('./types').MigrationOptions} MigrationOptions
  * @typedef {import('./types').ProgressCallback} ProgressCallback
  * @typedef {import('./types').MigrationProgressCallback} MigrationProgressCallback
  */
@@ -39,11 +40,7 @@ function getLatestMigrationVersion (migrations) {
  * @param {import('./types').Backends} backends
  * @param {import('./types').RepoOptions} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {number} toVersion - Version to which the repo should be migrated.
- * @param {object} [options] - Options for migration
- * @param {boolean} [options.ignoreLock] - Won't lock the repo for applying the migrations. Use with caution.
- * @param {ProgressCallback} [options.onProgress] - Callback which will be called after each executed migration to report progress
- * @param {boolean} [options.isDryRun] - Allows to simulate the execution of the migrations without any effect.
- * @param {Migration[]} [options.migrations] - Array of migrations to perform. If undefined, the bundled migrations are used. Mainly for testing purpose.
+ * @param {MigrationOptions} [options] - Options for migration
  */
 async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations
@@ -143,11 +140,7 @@ async function migrate (path, backends, repoOptions, toVersion, { ignoreLock = f
  * @param {import('./types').Backends} backends
  * @param {import('./types').RepoOptions} repoOptions - Options that are passed to migrations, that can use them to correctly construct datastore. Options are same like for IPFSRepo.
  * @param {number} toVersion - Version to which the repo will be reverted.
- * @param {object} [options] - Options for the reversion
- * @param {ProgressCallback} [options.onProgress] - Callback which will be called after each reverted migration to report progress
- * @param {boolean} [options.isDryRun] - Allows to simulate the execution of the reversion without any effects. Make sense to utilize onProgress with this argument.
- * @param {boolean} [options.ignoreLock] - Won't lock the repo for reverting the migrations. Use with caution.
- * @param {Migration[]} [options.migrations] - Array of migrations to migrate. If undefined, the bundled migrations are used. Mainly for testing purpose.
+ * @param {MigrationOptions} [options] - Options for the reversion
  */
 async function revert (path, backends, repoOptions, toVersion, { ignoreLock = false, onProgress, isDryRun = false, migrations }) {
   migrations = migrations || defaultMigrations

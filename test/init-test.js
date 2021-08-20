@@ -6,8 +6,14 @@ const { CONFIG_KEY, VERSION_KEY } = require('../src/utils')
 const repoInit = require('../src/repo/init')
 const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
+/**
+ * @param {import('./types').SetupFunction} setup
+ * @param {import('./types').CleanupFunction} cleanup
+ */
 module.exports = (setup, cleanup) => {
+  /** @type {string} */
   let dir
+  /** @type {import('../src/types').Backends} */
   let backends
 
   beforeEach(async () => {
@@ -30,7 +36,7 @@ module.exports = (setup, cleanup) => {
   it('should return false with missing version key', async () => {
     const store = backends.root
     await store.open()
-    await store.put(CONFIG_KEY, '')
+    await store.put(CONFIG_KEY, uint8ArrayFromString(''))
     await store.close()
 
     expect(await repoInit.isRepoInitialized(backends)).to.be.false()
@@ -39,7 +45,7 @@ module.exports = (setup, cleanup) => {
   it('should return false with missing config key', async () => {
     const store = backends.root
     await store.open()
-    await store.put(VERSION_KEY, '')
+    await store.put(VERSION_KEY, uint8ArrayFromString(''))
     await store.close()
 
     expect(await repoInit.isRepoInitialized(backends)).to.be.false()

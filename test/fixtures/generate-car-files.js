@@ -3,6 +3,7 @@
 /* eslint-disable no-console */
 
 // nb. must be ipfs@0.48.0 or below
+// @ts-expect-error not in package.json
 const IPFS = require('ipfs')
 const {
   CID
@@ -87,6 +88,10 @@ const main = async () => {
 
   await ipfs.stop()
 
+  /**
+   * @param {string} pinsetName
+   * @param {boolean} [more]
+   */
   async function writeCar (pinsetName, more) {
     const fileName = `pinset-${pinsetName.replace(/\s/g, '-').replace('-pinset', '')}.car`
 
@@ -115,6 +120,12 @@ const main = async () => {
     await writer.close()
   }
 
+  /**
+   * @param {CID} cid
+   * @param {import('@ipld/car/api').BlockWriter} car
+   * @param {Record<string, boolean>} cids
+   * @returns
+   */
   async function walk (cid, car, cids = {}) {
     if (cids[cid.toString()]) {
       return

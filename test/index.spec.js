@@ -11,49 +11,88 @@ const repoVersion = require('../src/repo/version')
 const repoInit = require('../src/repo/init')
 const errors = require('../src/errors')
 
+/**
+ * @typedef {import('../src/types').Migration} Migration
+ * @typedef {import('../src/types').MigrationOptions} MigrationOptions
+ */
+
+/**
+ * @returns {Migration[]}
+ */
 function createMigrations () {
   return [
     {
       version: 1,
+      description: '',
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     },
     {
       version: 2,
+      description: '',
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     },
     {
       version: 3,
+      description: '',
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     },
     {
       version: 4,
+      description: '',
       migrate: sinon.stub().resolves(),
       revert: sinon.stub().resolves()
     }
   ]
 }
 
+/**
+ * @returns {Required<MigrationOptions>}
+ */
 function createOptions () {
   return {
+    ignoreLock: false,
+    isDryRun: false,
+    onProgress: () => {},
     migrations: createMigrations()
   }
 }
 
 describe('index.js', () => {
+  /**
+   * @type {import('sinon').SinonStub}
+   */
   let getVersionStub
+  /**
+   * @type {import('sinon').SinonStub}
+   */
   let setVersionStub
+  /**
+   * @type {import('sinon').SinonStub}
+   */
   let lockStub
+  /**
+   * @type {import('sinon').SinonStub}
+   */
   let initStub
+  /**
+   * @type {import('sinon').SinonStub}
+   */
   let lockCloseStub
-  let repoOptions
-  const repoLock = {
-    lock: () => ({
-      close: () => {}
-    })
+  let repoOptions = {
+    repoLock: {
+      locked: () => Promise.resolve(false),
+      lock: () => Promise.resolve({
+        close: () => Promise.resolve()
+      })
+    },
+    autoMigrate: true,
+    onMigrationProgress: () => {},
+    repoOwner: true
   }
+
   const backends = {
     root: new MemoryDatastore(),
     blocks: new MemoryBlockstore(),
@@ -69,17 +108,13 @@ describe('index.js', () => {
     initStub.resolves(true)
     lockCloseStub.resolves()
     lockStub.resolves({ close: lockCloseStub })
-
-    repoOptions = {
-      repoLock
-    }
   })
 
   before(() => {
     getVersionStub = sinon.stub(repoVersion, 'getVersion')
     setVersionStub = sinon.stub(repoVersion, 'setVersion')
     lockCloseStub = sinon.stub()
-    lockStub = sinon.stub(repoLock, 'lock')
+    lockStub = sinon.stub(repoOptions.repoLock, 'lock')
     initStub = sinon.stub(repoInit, 'isRepoInitialized')
   })
 
@@ -101,6 +136,7 @@ describe('index.js', () => {
     it('should error with out path argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.revert(undefined, undefined, undefined, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -108,6 +144,7 @@ describe('index.js', () => {
     it('should error without backends argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.revert('/some/path', undefined, undefined, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -115,6 +152,7 @@ describe('index.js', () => {
     it('should error without repo options argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.revert('/some/path', backends, undefined, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -122,6 +160,7 @@ describe('index.js', () => {
     it('should error without toVersion argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.revert('/some/path', backends, {}, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -131,6 +170,7 @@ describe('index.js', () => {
       const options = createOptions()
 
       return Promise.all(
+        // @ts-expect-error invalid params
         invalidValues.map((value) => expect(migrator.revert('/some/path', backends, repoOptions, value, options))
           .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
       )
@@ -143,7 +183,7 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockStub.called).to.be.false()
+      expect(lockStub).to.have.property('called', false)
     })
 
     it('should not revert if current repo version is lower then toVersion', async () => {
@@ -153,11 +193,12 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 3, options))
         .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
 
-      expect(lockStub.called).to.be.false()
+      expect(lockStub).to.have.property('called', false)
     })
 
     it('should not allow to reverse migration that is not reversible', () => {
       const nonReversibleMigrationsMock = createMigrations()
+      // @ts-expect-error invalid params
       nonReversibleMigrationsMock[2].revert = undefined
       const options = { migrations: nonReversibleMigrationsMock }
 
@@ -175,15 +216,15 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 1, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.calledOnce).to.be.true()
-      expect(lockStub.calledOnce).to.be.true()
+      expect(lockCloseStub).to.have.property('calledOnce', true)
+      expect(lockStub).to.have.property('calledOnce', true)
       expect(setVersionStub.calledOnceWith(1, backends)).to.be.true()
 
       // Checking migrations
-      expect(options.migrations[3].revert.called).to.be.false()
-      expect(options.migrations[2].revert.calledOnce).to.be.true()
-      expect(options.migrations[1].revert.calledOnce).to.be.true()
-      expect(options.migrations[0].revert.called).to.be.false()
+      expect(options.migrations[3].revert).to.have.property('called', false)
+      expect(options.migrations[2].revert).to.have.property('calledOnce', true)
+      expect(options.migrations[1].revert).to.have.property('calledOnce', true)
+      expect(options.migrations[0].revert).to.have.property('called', false)
     })
 
     it('should revert one migration as expected', async () => {
@@ -193,21 +234,22 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 1, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.calledOnce).to.be.true()
-      expect(lockStub.calledOnce).to.be.true()
+      expect(lockCloseStub).to.have.property('calledOnce', true)
+      expect(lockStub).to.have.property('calledOnce', true)
       expect(setVersionStub.calledOnceWith(1, backends)).to.be.true()
 
       // Checking migrations
-      expect(options.migrations[3].revert.called).to.be.false()
-      expect(options.migrations[2].revert.called).to.be.false()
-      expect(options.migrations[1].revert.calledOnce).to.be.true()
-      expect(options.migrations[0].revert.called).to.be.false()
+      expect(options.migrations[3].revert).to.have.property('called', false)
+      expect(options.migrations[2].revert).to.have.property('called', false)
+      expect(options.migrations[1].revert).to.have.property('calledOnce', true)
+      expect(options.migrations[0].revert).to.have.property('called', false)
     })
 
     it('should reversion with one migration', async () => {
       const migrationsMock = [
         {
           version: 2,
+          description: '',
           reversible: true,
           migrate: sinon.stub().resolves(),
           revert: sinon.stub().resolves()
@@ -219,12 +261,12 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 1, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.calledOnce).to.be.true()
-      expect(lockStub.calledOnce).to.be.true()
+      expect(lockCloseStub).to.have.property('calledOnce', true)
+      expect(lockStub).to.have.property('calledOnce', true)
       expect(setVersionStub.calledOnceWith(1, backends)).to.be.true()
 
       // Checking migrations
-      expect(migrationsMock[0].revert.calledOnce).to.be.true()
+      expect(migrationsMock[0].revert).to.have.property('calledOnce', true)
     })
 
     it('should not have any side-effects when in dry run', async () => {
@@ -235,11 +277,11 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.called).to.be.false()
-      expect(lockStub.called).to.be.false()
-      expect(setVersionStub.called).to.be.false()
+      expect(lockCloseStub).to.have.property('called', false)
+      expect(lockStub).to.have.property('called', false)
+      expect(setVersionStub).to.have.property('called', false)
 
-      return options.migrations.forEach(({ revert }) => expect(revert.calledOnce).to.be.false)
+      return options.migrations.forEach(({ revert }) => expect(revert).to.have.property('calledOnce', false))
     })
 
     it('should not lock repo when ignoreLock is used', async () => {
@@ -251,30 +293,31 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.called).to.be.false()
-      expect(lockStub.called).to.be.false()
+      expect(lockCloseStub).to.have.property('called', false)
+      expect(lockStub).to.have.property('called', false)
       expect(setVersionStub.calledOnceWith(2, backends)).to.be.true()
 
       // Checking migrations
-      expect(options.migrations[3].revert.calledOnce).to.be.true()
-      expect(options.migrations[2].revert.calledOnce).to.be.true()
-      expect(options.migrations[1].revert.called).to.be.false()
-      expect(options.migrations[0].revert.called).to.be.false()
+      expect(options.migrations[3].revert).to.have.property('calledOnce', true)
+      expect(options.migrations[2].revert).to.have.property('calledOnce', true)
+      expect(options.migrations[1].revert).to.have.property('called', false)
+      expect(options.migrations[0].revert).to.have.property('called', false)
     })
 
     it('should report progress when progress callback is supplied', async () => {
       const options = createOptions()
-      options.onProgress = sinon.stub()
+      const onProgressStub = sinon.stub()
+      options.onProgress = onProgressStub
       getVersionStub.returns(4)
 
-      options.migrations[2].revert = (backends, onProgress) => {
+      options.migrations[2].revert = async (backends, onProgress) => {
         onProgress(50, 'hello')
       }
 
       await expect(migrator.revert('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.onProgress.getCall(0).calledWith(3, '50.00', 'hello')).to.be.true()
+      expect(onProgressStub.getCall(0).calledWith(3, '50.00', 'hello')).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {
@@ -285,8 +328,8 @@ describe('index.js', () => {
       await expect(migrator.revert('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.rejected()
 
-      expect(lockCloseStub.calledOnce).to.be.true()
-      expect(lockStub.calledOnce).to.be.true()
+      expect(lockCloseStub).to.have.property('calledOnce', true)
+      expect(lockStub).to.have.property('calledOnce', true)
 
       // The last successfully reverted migration should be set as repo's version
       expect(setVersionStub.calledOnceWith(3, backends)).to.be.true()
@@ -297,6 +340,7 @@ describe('index.js', () => {
     it('should error with out path argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.migrate(undefined, undefined, undefined, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -304,6 +348,7 @@ describe('index.js', () => {
     it('should error with out backends argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.migrate('/some/path', undefined, undefined, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -311,6 +356,7 @@ describe('index.js', () => {
     it('should error with out repoOptions argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.migrate('/some/path', backends, undefined, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -318,6 +364,7 @@ describe('index.js', () => {
     it('should error with out toVersion argument', () => {
       const options = createOptions()
 
+      // @ts-expect-error invalid params
       return expect(migrator.migrate('/some/path', backends, repoOptions, undefined, options))
         .to.eventually.be.rejectedWith(errors.RequiredParameterError).with.property('code', errors.RequiredParameterError.code)
     })
@@ -326,6 +373,7 @@ describe('index.js', () => {
       const invalidValues = ['eight', '-1', '1', -1, {}]
 
       return Promise.all(
+        // @ts-expect-error invalid params
         invalidValues.map((invalidValue) => expect(migrator.migrate('/some/path', backends, repoOptions, invalidValue, createOptions()))
           .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code))
       )
@@ -336,11 +384,13 @@ describe('index.js', () => {
         migrations: [
           {
             version: 3,
+            description: '',
             migrate: sinon.stub().resolves(),
             revert: sinon.stub().resolves()
           },
           {
             version: 4,
+            description: '',
             migrate: sinon.stub().resolves(),
             revert: sinon.stub().resolves()
           }
@@ -358,11 +408,13 @@ describe('index.js', () => {
         migrations: [
           {
             version: 3,
+            description: '',
             migrate: sinon.stub().resolves(),
             revert: sinon.stub().resolves()
           },
           {
             version: 4,
+            description: '',
             migrate: sinon.stub().resolves(),
             revert: sinon.stub().resolves()
           }
@@ -382,7 +434,7 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockStub.called).to.be.false()
+      expect(lockStub).to.have.property('called', false)
     })
 
     it('should not migrate if current repo version is higher then toVersion', async () => {
@@ -392,7 +444,7 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', backends, repoOptions, 2, options))
         .to.eventually.be.rejectedWith(errors.InvalidValueError).with.property('code', errors.InvalidValueError.code)
 
-      expect(lockStub.called).to.be.false()
+      expect(lockStub).to.have.property('called', false)
     })
 
     it('should migrate expected migrations', async () => {
@@ -402,15 +454,15 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', backends, repoOptions, 3, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.calledOnce).to.be.true()
-      expect(lockStub.calledOnce).to.be.true()
+      expect(lockCloseStub).to.have.property('calledOnce', true)
+      expect(lockStub).to.have.property('calledOnce', true)
       expect(setVersionStub.calledOnceWith(3, backends)).to.be.true()
 
       // Checking migrations
-      expect(options.migrations[3].migrate.called).to.be.false()
-      expect(options.migrations[2].migrate.calledOnce).to.be.true()
-      expect(options.migrations[1].migrate.calledOnce).to.be.true()
-      expect(options.migrations[0].migrate.called).to.be.false()
+      expect(options.migrations[3].migrate).to.have.property('called', false)
+      expect(options.migrations[2].migrate).to.have.property('calledOnce', true)
+      expect(options.migrations[1].migrate).to.have.property('calledOnce', true)
+      expect(options.migrations[0].migrate).to.have.property('called', false)
     })
 
     it('should not have any side-effects when in dry run', async () => {
@@ -421,11 +473,11 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', backends, repoOptions, 4, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.called).to.be.false()
-      expect(lockStub.called).to.be.false()
-      expect(setVersionStub.called).to.be.false()
+      expect(lockCloseStub).to.have.property('called', false)
+      expect(lockStub).to.have.property('called', false)
+      expect(setVersionStub).to.have.property('called', false)
 
-      return options.migrations.forEach(({ migrate }) => expect(migrate.calledOnce).to.be.false)
+      return options.migrations.forEach(({ migrate }) => expect(migrate).to.have.property('calledOnce', false))
     })
 
     it('should not lock repo when ignoreLock is used', async () => {
@@ -436,30 +488,31 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', backends, repoOptions, 4, options))
         .to.eventually.be.fulfilled()
 
-      expect(lockCloseStub.called).to.be.false()
-      expect(lockStub.called).to.be.false()
+      expect(lockCloseStub).to.have.property('called', false)
+      expect(lockStub).to.have.property('called', false)
       expect(setVersionStub.calledOnceWith(4, backends)).to.be.true()
 
       // Checking migrations
-      expect(options.migrations[3].migrate.calledOnce).to.be.true()
-      expect(options.migrations[2].migrate.calledOnce).to.be.true()
-      expect(options.migrations[1].migrate.called).to.be.false()
-      expect(options.migrations[0].migrate.called).to.be.false()
+      expect(options.migrations[3].migrate).to.have.property('calledOnce', true)
+      expect(options.migrations[2].migrate).to.have.property('calledOnce', true)
+      expect(options.migrations[1].migrate).to.have.property('called', false)
+      expect(options.migrations[0].migrate).to.have.property('called', false)
     })
 
     it('should report progress when progress callback is supplied', async () => {
       const options = createOptions()
-      options.onProgress = sinon.stub()
+      const onProgressStub = sinon.stub()
+      options.onProgress = onProgressStub
       getVersionStub.returns(2)
 
-      options.migrations[2].migrate = (backends, onProgress) => {
+      options.migrations[2].migrate = async (backends, onProgress) => {
         onProgress(50, 'hello')
       }
 
       await expect(migrator.migrate('/some/path', backends, repoOptions, 4, options))
         .to.eventually.be.fulfilled()
 
-      expect(options.onProgress.getCall(0).calledWith(3, '50.00', 'hello')).to.be.true()
+      expect(onProgressStub.getCall(0).calledWith(3, '50.00', 'hello')).to.be.true()
     })
 
     it('should unlock repo when error is thrown', async () => {
@@ -470,8 +523,8 @@ describe('index.js', () => {
       await expect(migrator.migrate('/some/path', backends, repoOptions, 4, options))
         .to.eventually.be.rejected()
 
-      expect(lockCloseStub.calledOnce).to.be.true()
-      expect(lockStub.calledOnce).to.be.true()
+      expect(lockCloseStub).to.have.property('calledOnce', true)
+      expect(lockStub).to.have.property('calledOnce', true)
 
       // The last successfully migrated migration should be set as repo's version
       expect(setVersionStub.calledOnceWith(3, backends)).to.be.true()
