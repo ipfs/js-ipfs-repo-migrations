@@ -62,6 +62,7 @@
   "devDependencies": {
     "@ipld/car": "^3.0.0",
     "@types/debug": "^4.1.5",
+    "@types/rimraf": "^3.0.2",
     "@types/varint": "^6.0.0",
     "aegir": "^35.0.1",
     "assert": "^2.0.0",
@@ -69,7 +70,7 @@
     "blockstore-datastore-adapter": "1.0.0",
     "datastore-fs": "^5.0.0",
     "datastore-level": "^6.0.0",
-    "datastore-s3": "^6.0.0",
+    "datastore-s3": "^7.0.0",
     "events": "^3.2.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
@@ -79,7 +80,6 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.0",
     "sinon": "^11.1.1",
-    "stand-in": "^4.2.0",
     "util": "^0.12.3"
   },
   "engines": {

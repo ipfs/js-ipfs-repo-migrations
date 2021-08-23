@@ -3,9 +3,15 @@
 'use strict'
 
 const { expect } = require('aegir/utils/chai')
+const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
 const migration = require('../../migrations/migration-8')
 const Key = require('interface-datastore').Key
+
+/**
+ * @typedef {import('../../src/types').Backends} Backends
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ */
 
 const blocksFixtures = [
   ['AFKREIBFG77IKIKDMBDUFDCSPK7H5TE5LNPMCSXYLPML27WSTT5YA5IUNU',
@@ -62,6 +68,10 @@ function unwrap (blockstore) {
   return blockstore
 }
 
+/**
+ * @param {Backends} backends
+ * @param {boolean} encoded
+ */
 async function bootstrapBlocks (backends, encoded) {
   const store = backends.blocks
   await store.open()
@@ -71,12 +81,16 @@ async function bootstrapBlocks (backends, encoded) {
   for (const blocksNames of blocksFixtures) {
     const name = encoded ? blocksNames[1] : blocksNames[0]
 
-    await datastore.put(new Key(`/${name}`), '')
+    await datastore.put(new Key(`/${name}`), uint8ArrayFromString(''))
   }
 
   await store.close()
 }
 
+/**
+ * @param {Backends} backends
+ * @param {boolean} migrated
+ */
 async function validateBlocks (backends, migrated) {
   const store = backends.blocks
   await store.open()
@@ -97,10 +111,16 @@ async function validateBlocks (backends, migrated) {
   await store.close()
 }
 
+/**
+ * @param {import('../types').SetupFunction} setup
+ * @param {import('../types').CleanupFunction} cleanup
+ */
 module.exports = (setup, cleanup) => {
   describe('migration 8', function () {
     this.timeout(240 * 1000)
+    /** @type {string} */
     let dir
+    /** @type {import('../../src/types').Backends} */
     let backends
 
     beforeEach(async () => {

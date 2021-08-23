@@ -13,6 +13,10 @@ const { createRepo } = require('./fixtures/repo')
  * @typedef {import('../src/types').Backends} Backends
  */
 
+/**
+ * @param {*} dir
+ * @returns {Promise<void>}
+ */
 async function deleteDb (dir) {
   return new Promise((resolve) => {
     const req = globalThis.indexedDB.deleteDatabase(dir)
@@ -26,6 +30,9 @@ async function deleteDb (dir) {
   })
 }
 
+/**
+ * @type {import('./types').CleanupFunction}
+ */
 async function cleanup (dir) {
   await deleteDb(dir)
   await deleteDb('level-js-' + dir)
@@ -50,7 +57,6 @@ const CONFIGURATIONS = [{
       }),
       blocks: new BlockstoreDatastoreAdapter(
         new DatastoreLevel(`${prefix}/blocks`, {
-          extension: '.data',
           version: 2
         })
       ),
@@ -67,7 +73,11 @@ const CONFIGURATIONS = [{
   }
 }, {
   name: 'with s3',
-  cleanup: () => {},
+  cleanup: async () => {},
+  /**
+   * @param {string} prefix
+   * @returns {import('../src/types').Backends}
+   */
   createBackends: (prefix) => {
     const s3Instance = new S3({
       params: {
@@ -85,8 +95,7 @@ const CONFIGURATIONS = [{
         new ShardingDatastore(
           new DatastoreS3(`${prefix}/blocks`, {
             s3: s3Instance,
-            createIfMissing: false,
-            extension: '.data'
+            createIfMissing: false
           }),
           new NextToLast(2)
         )
@@ -117,7 +126,8 @@ const CONFIGURATIONS = [{
 }]
 
 CONFIGURATIONS.forEach(({ name, createBackends, cleanup }) => {
-  const setup = (options) => createRepo(createBackends, options)
+  /** @type {import('./types').SetupFunction} */
+  const setup = (prefix) => createRepo(createBackends, prefix)
 
   describe(name, () => {
     describe('version tests', () => {

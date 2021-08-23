@@ -10,14 +10,27 @@ const migration = require('../../migrations/migration-10')
 const Key = require('interface-datastore').Key
 const { fromString } = require('uint8arrays/from-string')
 const { equals } = require('uint8arrays/equals')
+// @ts-expect-error no types
 const Level5 = require('level-5')
+// @ts-expect-error no types
 const Level6 = require('level-6')
 
+/**
+ * @typedef {import('../../src/types').Backends} Backends
+ * @typedef {import('interface-datastore').Datastore} Datastore
+ */
+
+/**
+ * @type {Record<string, Uint8Array>}
+ */
 const keys = {
   CIQCKN76QUQUGYCHIKGFE6V6P3GJ2W26YFFPQW6YXV7NFHH3QB2RI3I: fromString('hello'),
   CIQKKLBWAIBQZOIS5X7E32LQAL6236OUKZTMHPQSFIXPWXNZHQOV7JQ: fromString('derp')
 }
 
+/**
+ * @param {Datastore} store
+ */
 async function bootstrap (store) {
   await store.open()
 
@@ -32,6 +45,9 @@ async function bootstrap (store) {
   await store.close()
 }
 
+/**
+ * @param {Datastore} store
+ */
 async function validate (store) {
   await store.open()
 
@@ -52,17 +68,29 @@ async function validate (store) {
   await store.close()
 }
 
+/**
+ * @param {Backends} backends
+ * @param {*} LevelImpl
+ * @returns {Backends}
+ */
 function withLevels (backends, LevelImpl) {
-  const output = {}
+  const output = {
+    ...backends
+  }
 
   Object.entries(backends)
     .forEach(([key, value]) => {
+      // @ts-ignore it's ok
       output[key] = withLevel(value, LevelImpl)
     })
 
   return output
 }
 
+/**
+ * @param {Datastore} store
+ * @param {*} LevelImpl
+ */
 function withLevel (store, LevelImpl) {
   let parent = {
     child: store
@@ -70,22 +98,31 @@ function withLevel (store, LevelImpl) {
 
   while (parent.child) {
     if (parent.child.constructor.name === 'LevelDatastore') {
+      // @ts-ignore undocumented properties
       parent.child.database = LevelImpl
+      // @ts-ignore undocumented properties
       delete parent.child.db
 
       return store
     }
 
+    // @ts-ignore undocumented properties
     parent = parent.child
   }
 
   return store
 }
 
+/**
+ * @param {import('../types').SetupFunction} setup
+ * @param {import('../types').CleanupFunction} cleanup
+ */
 module.exports = (setup, cleanup) => {
   describe('migration 10', function () {
     this.timeout(240 * 1000)
+    /** @type {string} */
     let dir
+    /** @type {import('../../src/types').Backends} */
     let backends
 
     beforeEach(async () => {

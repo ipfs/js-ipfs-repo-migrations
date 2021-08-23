@@ -10,8 +10,14 @@ const errors = require('../src/errors')
 // When new versioning mechanism is introduced in new version don't forget to update
 // the range (from/to) of the previous version test's description
 
+/**
+ * @param {import('./types').SetupFunction} setup
+ * @param {import('./types').CleanupFunction} cleanup
+ */
 module.exports = (setup, cleanup) => {
+  /** @type {string} */
   let dir
+  /** @type {import('../src/types').Backends} */
   let backends
 
   beforeEach(async () => {

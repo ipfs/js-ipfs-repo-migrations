@@ -3,6 +3,16 @@
 const loadFixture = require('aegir/utils/fixtures')
 const { CONFIG_KEY, VERSION_KEY } = require('../../src/utils')
 
+/**
+ * @typedef {import('../../src/types').Backends} Backends
+ */
+
+/**
+ *
+ * @param {(dir: string) => import('../../src/types').Backends} createBackends
+ * @param {*} prefix
+ * @returns
+ */
 async function createRepo (createBackends, prefix) {
   const dir = `${prefix ? `${prefix}/` : ''}test-repo-for-${Date.now()}`
   const backends = createBackends(dir)
@@ -16,6 +26,9 @@ async function createRepo (createBackends, prefix) {
   }
 }
 
+/**
+ * @param {Backends} backends
+ */
 async function initRepo (backends) {
   const store = backends.root
   await store.open()

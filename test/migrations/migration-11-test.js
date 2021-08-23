@@ -10,10 +10,16 @@ const { Key } = require('interface-datastore')
 const MFS_ROOT_KEY = new Key('/local/filesroot')
 const MFS_ROOT = CID.parse('Qmc42sn2WBHYeAShU3nx8mYkhKVq4sRLapawTaGh4XH4iE')
 
+/**
+ * @param {import('../types').SetupFunction} setup
+ * @param {import('../types').CleanupFunction} cleanup
+ */
 module.exports = (setup, cleanup) => {
   describe('migration 11', function () {
     this.timeout(240 * 1000)
+    /** @type {string} */
     let dir
+    /** @type {import('../../src/types').Backends} */
     let backends
 
     beforeEach(async () => {

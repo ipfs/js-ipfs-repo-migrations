@@ -4,6 +4,11 @@ const Key = require('interface-datastore').Key
 const _set = require('just-safe-set')
 const { fromString: uint8ArrayFromString } = require('uint8arrays/from-string')
 
+/**
+ * @typedef {import('../../../src/types').Backends} Backends
+ * @typedef {import('../../../src/types').MigrationProgressCallback} MigrationProgressCallback
+ */
+
 const CONFIG_KEY = new Key('config')
 const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
 
@@ -16,6 +21,9 @@ const NEW_API_ADDRESS = '/ip6/::/tcp/5001'
  * 2) Changes 'Gateway.HTTPHeaders.Access-Control-Allow-Origin' to specific origin
  */
 
+/**
+ * @param {*} config
+ */
 function addNewApiAddress (config) {
   let apiAddrs = config.Addresses.API
 
@@ -32,6 +40,9 @@ function addNewApiAddress (config) {
   return config
 }
 
+/**
+ * @param {*} config
+ */
 function removeNewApiAddress (config) {
   const apiAddrs = config.Addresses.API
 
@@ -52,6 +63,10 @@ function removeNewApiAddress (config) {
   return config
 }
 
+/**
+ * @param {Backends} backends
+ * @param {MigrationProgressCallback} onProgress
+ */
 async function migrate (backends, onProgress) {
   const store = backends.root
   await store.open()
@@ -75,6 +90,10 @@ async function migrate (backends, onProgress) {
   onProgress(100, 'done!')
 }
 
+/**
+ * @param {Backends} backends
+ * @param {MigrationProgressCallback} onProgress
+ */
 async function revert (backends, onProgress) {
   const store = backends.root
   await store.open()

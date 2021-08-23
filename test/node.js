@@ -12,8 +12,11 @@ const mockS3 = require('./fixtures/mock-s3')
 const S3 = require('aws-sdk').S3
 const { createRepo } = require('./fixtures/repo')
 
-function cleanup (dir) {
-  rimraf.sync(dir)
+/**
+ * @param {string} dir
+ */
+async function cleanup (dir) {
+  await rimraf.sync(dir)
 }
 
 const CONFIGURATIONS = [{
@@ -41,6 +44,10 @@ const CONFIGURATIONS = [{
 }, {
   name: 'without sharding',
   cleanup,
+  /**
+   * @param {string} prefix
+   * @returns {import('../src/types').Backends}
+   */
   createBackends: (prefix) => {
     return {
       root: new DatastoreFS(prefix),
@@ -56,7 +63,11 @@ const CONFIGURATIONS = [{
   }
 }, {
   name: 'with s3',
-  cleanup: () => {},
+  cleanup: async () => {},
+  /**
+   * @param {string} prefix
+   * @returns {import('../src/types').Backends}
+   */
   createBackends: (prefix) => {
     const s3Instance = new S3({
       params: {
@@ -74,8 +85,7 @@ const CONFIGURATIONS = [{
         new ShardingDatastore(
           new DatastoreS3(`${prefix}/blocks`, {
             s3: s3Instance,
-            createIfMissing: false,
-            extension: '.data'
+            createIfMissing: false
           }),
           new NextToLast(2)
         )
