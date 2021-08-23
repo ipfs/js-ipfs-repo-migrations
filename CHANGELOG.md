@@ -1,3 +1,22 @@
+# [10.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v9.0.1...v10.0.0) (2021-08-23)
+
+
+### Bug Fixes
+
+* use new s3 instance for every test ([#124](https://github.com/ipfs/js-ipfs-repo-migrations/issues/124)) ([d3c0056](https://github.com/ipfs/js-ipfs-repo-migrations/commit/d3c0056160d7592da5d89e57f9d9faefa1fadd7d))
+
+
+### Features
+
+* migrate mfs root to datastore ([#126](https://github.com/ipfs/js-ipfs-repo-migrations/issues/126)) ([540a077](https://github.com/ipfs/js-ipfs-repo-migrations/commit/540a077528037f00468c09fc15a9f190de283967))
+
+
+### BREAKING CHANGES
+
+* adds a new migration, should go out as a major
+
+
+
 ## [9.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v9.0.0...v9.0.1) (2021-07-30)
 
 
