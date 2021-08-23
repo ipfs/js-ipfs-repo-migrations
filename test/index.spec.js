@@ -81,7 +81,7 @@ describe('index.js', () => {
    * @type {import('sinon').SinonStub}
    */
   let lockCloseStub
-  let repoOptions = {
+  const repoOptions = {
     repoLock: {
       locked: () => Promise.resolve(false),
       lock: () => Promise.resolve({

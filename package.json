@@ -36,7 +36,7 @@
     "test:node": "aegir test --target node",
     "test:browser": "aegir test --target browser",
     "build": "aegir build",
-    "lint": "aegir ts -p check && aegir lint --files './src/**/*.{js,ts}' --files './migrations/**/*.{js,ts}' --files '!migrations/migration-9/pin.js' --files '!migrations/migration-9/pin.d.ts'",
+    "lint": "aegir ts -p check && aegir lint",
     "release": "aegir release --docs",
     "release-minor": "aegir release --type minor --docs",
     "release-major": "aegir release --type major --docs",
