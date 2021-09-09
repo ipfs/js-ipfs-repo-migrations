@@ -1,4 +1,4 @@
-# ⛔️ DEPRECATED: This module has been merged into by the [ipfs-repo](https://github.com/ipfs/js-ipfs-repo) module <!-- omit in toc -->
+# ⛔️ DEPRECATED: This module has been merged into the [ipfs-repo](https://github.com/ipfs/js-ipfs-repo) module <!-- omit in toc -->
 
 # Migration tool for JS IPFS Repo <!-- omit in toc -->
 
