@@ -1,3 +1,5 @@
+# ⛔️ DEPRECATED: This module has been merged into by the [ipfs-repo](https://github.com/ipfs/js-ipfs-repo) module <!-- omit in toc -->
+
 # Migration tool for JS IPFS Repo <!-- omit in toc -->
 
 [![Travis CI](https://flat.badgen.net/travis/ipfs/js-ipfs-repo-migrations)](https://travis-ci.com/ipfs/js-ipfs-repo-migrations)
