@@ -67,7 +67,7 @@
     "aegir": "^35.0.1",
     "assert": "^2.0.0",
     "aws-sdk": "^2.884.0",
-    "blockstore-datastore-adapter": "1.0.0",
+    "blockstore-datastore-adapter": "2.0.1",
     "datastore-fs": "^5.0.0",
     "datastore-level": "^6.0.0",
     "datastore-s3": "^7.0.0",
