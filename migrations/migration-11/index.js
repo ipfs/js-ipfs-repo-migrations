@@ -14,9 +14,11 @@ async function storeMfsRootInDatastore (backends, onProgress = () => {}) {
   await backends.root.open()
   await backends.datastore.open()
 
-  const root = await backends.root.get(MFS_ROOT_KEY)
-  await backends.datastore.put(MFS_ROOT_KEY, root)
-  await backends.root.delete(MFS_ROOT_KEY)
+  if (await backends.root.has(MFS_ROOT_KEY)) {
+    const root = await backends.root.get(MFS_ROOT_KEY)
+    await backends.datastore.put(MFS_ROOT_KEY, root)
+    await backends.root.delete(MFS_ROOT_KEY)
+  }
 
   await backends.datastore.close()
   await backends.root.close()
@@ -34,9 +36,11 @@ async function storeMfsRootInRoot (backends, onProgress = () => {}) {
   await backends.root.open()
   await backends.datastore.open()
 
-  const root = await backends.datastore.get(MFS_ROOT_KEY)
-  await backends.root.put(MFS_ROOT_KEY, root)
-  await backends.datastore.delete(MFS_ROOT_KEY)
+  if (await backends.datastore.has(MFS_ROOT_KEY)) {
+    const root = await backends.datastore.get(MFS_ROOT_KEY)
+    await backends.root.put(MFS_ROOT_KEY, root)
+    await backends.datastore.delete(MFS_ROOT_KEY)
+  }
 
   await backends.datastore.close()
   await backends.root.close()
