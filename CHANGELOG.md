@@ -1,3 +1,12 @@
+## [10.0.1](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v10.0.0...v10.0.1) (2021-09-13)
+
+
+### Bug Fixes
+
+* handle no mfs root found ([#138](https://github.com/ipfs/js-ipfs-repo-migrations/issues/138)) ([f9cb0a2](https://github.com/ipfs/js-ipfs-repo-migrations/commit/f9cb0a2ceea0a021603400eb912759706adb3379))
+
+
+
 # [10.0.0](https://github.com/ipfs/js-ipfs-repo-migrations/compare/v9.0.1...v10.0.0) (2021-08-23)
 
 
