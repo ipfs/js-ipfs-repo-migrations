@@ -70,7 +70,7 @@
     "blockstore-datastore-adapter": "1.0.0",
     "datastore-fs": "^5.0.0",
     "datastore-level": "^6.0.0",
-    "datastore-s3": "^7.0.0",
+    "datastore-s3": "^8.0.0",
     "events": "^3.2.0",
     "it-all": "^1.0.2",
     "just-safe-set": "^2.1.0",
